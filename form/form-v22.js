@@ -672,10 +672,17 @@ function getSizeSuggestions(mediumName) {
   const suggestions = [];
   (planSizeData[mediumName] || []).forEach(plan => {
     (plan.sizes || []).forEach(sizeLabel => {
-      if (/\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel) && !suggestions.includes(sizeLabel)) suggestions.push(sizeLabel);
+      const displayLabel = formatPlanSizeLabel(plan.plan, sizeLabel);
+      if (/\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel) && !suggestions.includes(displayLabel)) {
+        suggestions.push(displayLabel);
+      }
     });
   });
   return suggestions;
+}
+
+function formatPlanSizeLabel(planName, sizeLabel) {
+  return planName ? `【${planName}】${sizeLabel}` : sizeLabel;
 }
 
 function splitSizeSuggestion(sizeLabel) {
@@ -696,7 +703,9 @@ function splitSizeSuggestion(sizeLabel) {
 }
 
 function getSizeSuggestionPlanName(mediumName, sizeLabel) {
-  const plan = (planSizeData[mediumName] || []).find(item => (item.sizes || []).includes(sizeLabel));
+  const plan = (planSizeData[mediumName] || []).find(item =>
+    (item.sizes || []).some(itemSize => formatPlanSizeLabel(item.plan, itemSize) === sizeLabel)
+  );
   return plan ? plan.plan : '';
 }
 
