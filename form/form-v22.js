@@ -669,16 +669,35 @@ function renderQuantityStepper(quantity, decreaseAction, increaseAction, context
 }
 
 function getSizeSuggestions(mediumName) {
-  const suggestions = [];
+  const planGroups = [];
   (planSizeData[mediumName] || []).forEach(plan => {
-    (plan.sizes || []).forEach(sizeLabel => {
-      const displayLabel = formatPlanSizeLabel(plan.plan, sizeLabel);
-      if (/\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel) && !suggestions.includes(displayLabel)) {
-        suggestions.push(displayLabel);
-      }
-    });
+    const sizes = (plan.sizes || []).filter(sizeLabel => /\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel));
+    if (!sizes.length) return;
+    const groupKey = JSON.stringify(sizes);
+    const existingGroup = planGroups.find(group => group.key === groupKey);
+    if (existingGroup) {
+      existingGroup.planNames.push(plan.plan);
+    } else {
+      planGroups.push({ key: groupKey, planNames: [plan.plan], sizes });
+    }
   });
-  return suggestions;
+  return planGroups
+    .flatMap(group => {
+      const planName = formatCombinedPlanName(group.planNames);
+      return group.sizes.map(sizeLabel => formatPlanSizeLabel(planName, sizeLabel));
+    })
+    .sort((left, right) => getSizeSuggestionPriority(left) - getSizeSuggestionPriority(right));
+}
+
+function formatCombinedPlanName(planNames) {
+  if (planNames.length > 1 && planNames.every(planName => planName.endsWith('プラン'))) {
+    return `${planNames.map(planName => planName.slice(0, -3)).join('・')}プラン`;
+  }
+  return planNames.join('・');
+}
+
+function getSizeSuggestionPriority(sizeLabel) {
+  return sizeLabel.includes('メイン') ? 0 : 1;
 }
 
 function formatPlanSizeLabel(planName, sizeLabel) {
@@ -703,10 +722,8 @@ function splitSizeSuggestion(sizeLabel) {
 }
 
 function getSizeSuggestionPlanName(mediumName, sizeLabel) {
-  const plan = (planSizeData[mediumName] || []).find(item =>
-    (item.sizes || []).some(itemSize => formatPlanSizeLabel(item.plan, itemSize) === sizeLabel)
-  );
-  return plan ? plan.plan : '';
+  const planMatch = sizeLabel.match(/^【([^】]+)】/);
+  return planMatch ? planMatch[1] : '';
 }
 
 function renderSizeSuggestion(mediumName, sizeLabel, isSelected, quantity) {
