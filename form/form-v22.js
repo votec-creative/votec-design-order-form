@@ -1203,6 +1203,12 @@ function renderCardTemplate(prefix, card, opts) {
   const collapsed = isIndividual && !!card.collapsed;
   const personUsage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
   const currentTargetId = card.targetIds?.[0];
+  const currentTarget = prefix.startsWith('card-')
+    ? getInstructionTargets().find(target => target.id === currentTargetId)
+    : null;
+  const currentTargetLabel = currentTarget
+    ? `${currentTarget.displayName}／${currentTarget.sizeLabel}`
+    : '同じ媒体・サイズ';
   const sameTargetRemaining = prefix.startsWith('card-')
     ? state.imgCards.filter(item => item !== card && item.targetIds?.[0] === currentTargetId).length
     : 0;
@@ -1319,18 +1325,18 @@ function renderCardTemplate(prefix, card, opts) {
         <details class="instruction-copy-menu">
           <summary class="instruction-apply-all ${canCopyInstruction ? '' : 'is-disabled'}" ${canCopyInstruction ? '' : 'onclick="event.preventDefault()"'} title="${canCopyInstruction ? 'コピー先を選択' : 'この画像の必須項目を入力すると使用できます'}">
             <span class="copy-action-icon" aria-hidden="true"></span>
-            この指示をコピー
+            コピー先を選ぶ
             <span class="instruction-copy-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="instruction-copy-options">
             ${sameTargetRemaining > 0 ? `
               <button type="button" onclick="applyInstructionToCurrentTarget()">
-                <strong>このサイズの残り${sameTargetRemaining}枚に適用</strong>
-                <small>同じ媒体・サイズ内だけにコピー</small>
+                <strong>同じサイズの残り${sameTargetRemaining}枚にコピー</strong>
+                <small>${escHtml(currentTargetLabel)}のみ</small>
               </button>` : ''}
             <button type="button" onclick="applyInstructionToUnenteredImages()" ${unenteredRemaining ? '' : 'disabled'}>
-              <strong>未入力の制作画像だけに適用${unenteredRemaining ? `（${unenteredRemaining}枚）` : ''}</strong>
-              <small>${unenteredRemaining ? '入力途中・設定済みの画像は変更しません' : '未入力の制作画像はありません'}</small>
+              <strong>すべての未入力画像にコピー${unenteredRemaining ? `（${unenteredRemaining}枚）` : ''}</strong>
+              <small>${unenteredRemaining ? '媒体・サイズを問わずコピーします。入力済みの画像は変更しません' : '未入力の制作画像はありません'}</small>
             </button>
           </div>
         </details>
