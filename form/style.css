@@ -954,6 +954,8 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.65; }
   border: 1px solid var(--color-warn-border);
 }
 .bulk-instruction-panel[open] ~ .instruction-group-toolbar,
+.bulk-instruction-panel[open] ~ .instruction-target-sticky,
+.bulk-instruction-panel[open] ~ .instruction-group-tabs,
 .bulk-instruction-panel[open] ~ #common-instructions-wrap {
   display: none;
 }

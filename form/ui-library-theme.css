@@ -2458,6 +2458,17 @@ textarea {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 7px;
 }
+.instruction-target-sticky {
+  position: sticky;
+  top: calc(var(--header-h) + 6px);
+  z-index: 80;
+  margin: 10px -10px 0;
+  padding: 8px 10px;
+  background: rgba(249, 249, 248, .94);
+  border-bottom: 1px solid rgba(17, 17, 17, .1);
+  box-shadow: 0 5px 12px rgba(17, 17, 17, .05);
+  backdrop-filter: blur(12px);
+}
 .instruction-image-target {
   position: relative;
   display: grid;
@@ -3251,7 +3262,20 @@ textarea {
     width: auto;
   }
   .instruction-image-targets {
-    grid-template-columns: 1fr;
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+  }
+  .instruction-target-sticky {
+    overflow-x: auto;
+    margin-right: -4px;
+    margin-left: -4px;
+    padding-right: 4px;
+    padding-left: 4px;
+    scrollbar-width: thin;
+  }
+  .instruction-image-target {
+    flex: 0 0 190px;
   }
   .instruction-copy-nav {
     gap: 6px;

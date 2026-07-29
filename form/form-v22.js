@@ -1828,6 +1828,7 @@ function syncInstructionGroups() {
 
 function renderInstructionGroups() {
   const tabs = document.getElementById('instruction-group-tabs');
+  const targetTabs = document.getElementById('instruction-target-tabs');
   const targets = getInstructionTargets();
   if (!state.imgCards.length) {
     state.imgCards = [makeBlankCard()];
@@ -1858,7 +1859,7 @@ function renderInstructionGroups() {
   const reuseSourceHasInstruction = reuseSource ? hasRequiredInstruction(reuseSource) : false;
 
   tabs.classList.add('instruction-image-navigation');
-  tabs.innerHTML = `
+  targetTabs.innerHTML = `
     <div class="instruction-image-targets">
       ${targets.map((target, index) => {
         const targetLabel = splitSizeSuggestion(target.sizeLabel);
@@ -1874,8 +1875,8 @@ function renderInstructionGroups() {
             <i class="instruction-complete-icon ${isInstructionTargetComplete(target) ? 'is-visible' : ''}" aria-label="入力済み">✓</i>
           </button>`;
       }).join('')}
-    </div>
-    ${activeTarget?.quantity > 1 ? `
+    </div>`;
+  tabs.innerHTML = activeTarget?.quantity > 1 ? `
       <div class="instruction-copy-nav">
         <span class="instruction-copy-label">画像別の指示</span>
         <div class="instruction-copy-tabs">
@@ -1887,8 +1888,7 @@ function renderInstructionGroups() {
             </div>`).join('')}
         </div>
         <span class="instruction-copy-status is-complete">${cardsForTarget.length}/${activeTarget.quantity}枚分</span>
-      </div>` : ''}
-  `;
+      </div>` : '';
 
   const wrap = document.querySelector('#common-instructions-wrap .design-instruction-block');
   document.getElementById('common-instructions-wrap').classList.toggle('is-tabbed', activeTarget?.quantity > 1);
