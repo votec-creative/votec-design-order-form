@@ -2833,6 +2833,14 @@ textarea {
 .instruction-copy-options button:hover {
   background: #f2f4ff;
 }
+.instruction-copy-options button:disabled {
+  background: transparent;
+  color: #aaa9a3;
+  cursor: not-allowed;
+}
+.instruction-copy-options button:disabled small {
+  color: #aaa9a3;
+}
 .instruction-copy-options strong {
   font-size: 12px;
 }
