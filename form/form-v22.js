@@ -1865,9 +1865,11 @@ function renderInstructionGroups() {
         return `
           <button type="button" class="instruction-image-target instruction-color-${index % 6} ${target.id === activeTarget?.id ? 'is-active' : ''} ${isInstructionTargetComplete(target) ? 'is-complete' : ''}" data-target-id="${target.id}" onclick="selectInstructionTarget('${target.id}')">
             <span>${escHtml(target.displayName)}</span>
-            ${targetLabel.title ? `<strong>${escHtml(targetLabel.title)}</strong>` : ''}
+            <span class="instruction-image-meta">
+              ${targetLabel.title ? `<strong>${escHtml(targetLabel.title)}</strong>` : ''}
+              ${targetLabel.plan ? `<em>${escHtml(targetLabel.plan)}</em>` : ''}
+            </span>
             <b class="instruction-image-dimension">${escHtml(targetLabel.dimension)}</b>
-            ${targetLabel.plan ? `<em class="instruction-image-plan">${escHtml(targetLabel.plan)}</em>` : ''}
             <small>${target.quantity}枚</small>
             <i class="instruction-complete-icon ${isInstructionTargetComplete(target) ? 'is-visible' : ''}" aria-label="入力済み">✓</i>
           </button>`;

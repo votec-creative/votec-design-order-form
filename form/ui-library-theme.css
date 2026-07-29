@@ -2463,8 +2463,8 @@ textarea {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   gap: 3px 10px;
-  min-height: 82px;
-  padding: 9px 11px;
+  min-height: 68px;
+  padding: 7px 11px;
   text-align: left;
   border: 1px solid #d7d7d2;
   border-radius: 9px;
@@ -2483,32 +2483,42 @@ textarea {
   font-size: 11px;
   font-weight: 700;
 }
-.instruction-image-target strong {
+.instruction-image-meta {
   grid-column: 1;
-  font-size: 11px;
+  display: flex;
+  min-width: 0;
+  gap: 5px;
+  align-items: baseline;
+}
+.instruction-image-meta strong {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: #555550;
+  font-size: 9px;
+  font-weight: 600;
+}
+.instruction-image-meta em {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: #a0a09a;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .instruction-image-dimension {
   grid-column: 1;
   color: #111;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.25;
   white-space: nowrap;
 }
-.instruction-image-plan {
-  grid-column: 1;
-  overflow: hidden;
-  color: #969690;
-  font-size: 9px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .instruction-image-target small {
   grid-column: 2;
-  grid-row: 1 / span 4;
+  grid-row: 1 / span 3;
   align-self: center;
   padding: 3px 7px;
   border-radius: 999px;
