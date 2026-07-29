@@ -669,29 +669,36 @@ function renderQuantityStepper(quantity, decreaseAction, increaseAction, context
 }
 
 function getSizeSuggestions(mediumName) {
-  const planGroups = [];
+  const sizeGroups = [];
   (planSizeData[mediumName] || []).forEach(plan => {
     const sizes = (plan.sizes || []).filter(sizeLabel => /\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel));
-    if (!sizes.length) return;
-    const groupKey = JSON.stringify(sizes);
-    const existingGroup = planGroups.find(group => group.key === groupKey);
-    if (existingGroup) {
-      existingGroup.planNames.push(plan.plan);
-    } else {
-      planGroups.push({ key: groupKey, planNames: [plan.plan], sizes });
-    }
+    sizes.forEach(sizeLabel => {
+      const keepSeparate = mediumName === '駅ちか' && plan.plan === '駅DX';
+      const groupKey = keepSeparate ? `${plan.plan}:${sizeLabel}` : sizeLabel;
+      const existingGroup = sizeGroups.find(group => group.key === groupKey);
+      if (existingGroup) {
+        existingGroup.planNames.push(plan.plan);
+      } else {
+        sizeGroups.push({ key: groupKey, planNames: [plan.plan], sizeLabel });
+      }
+    });
   });
-  return planGroups
-    .flatMap(group => {
-      const planName = formatCombinedPlanName(group.planNames);
-      return group.sizes.map(sizeLabel => formatPlanSizeLabel(planName, sizeLabel));
-    })
+  return sizeGroups
+    .map(group => formatPlanSizeLabel(formatCombinedPlanName(group.planNames), group.sizeLabel))
     .sort((left, right) => getSizeSuggestionPriority(left) - getSizeSuggestionPriority(right));
 }
 
 function formatCombinedPlanName(planNames) {
   if (planNames.length > 1 && planNames.every(planName => planName.endsWith('プラン'))) {
     return `${planNames.map(planName => planName.slice(0, -3)).join('・')}プラン`;
+  }
+  const alphaPlans = planNames.map(planName => planName.match(/^(.*?)([A-Z])$/));
+  if (planNames.length > 1 && alphaPlans.every(Boolean) && alphaPlans.every(match => match[1] === alphaPlans[0][1])) {
+    const prefix = alphaPlans[0][1];
+    const letters = alphaPlans.map(match => match[2]);
+    const isContinuousRange = letters.length >= 3 &&
+      letters.every((letter, index) => letter.charCodeAt(0) === letters[0].charCodeAt(0) + index);
+    return isContinuousRange ? `${prefix}${letters[0]}～${letters[letters.length - 1]}` : `${prefix}${letters.join('・')}`;
   }
   return planNames.join('・');
 }
