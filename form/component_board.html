@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Component Board</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="ui-library-theme.css">
+<style>
+  .board-title{font-size:12px;font-weight:800;letter-spacing:.14em;margin-bottom:8px}
+  .board-note{font-size:12px;color:var(--color-text-sub);margin-bottom:32px}
+  .board-section{padding:28px 0;border-top:1px solid #cfcfca}
+  .board-section h2{font-size:15px;margin-bottom:16px;letter-spacing:.06em}
+  .board-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+  .board-col{flex:1 1 280px}
+  .focus-demo{border-color:#111!important;box-shadow:0 0 0 3px rgba(65,86,255,.14)!important}
+  .disabled-demo{opacity:.48;pointer-events:none}
+  .error-demo{border-color:var(--color-error-border)!important;background:#fff8f8!important}
+  .board-card{padding:18px;border:1px solid #d9d9d4;border-radius:18px;background:#f6f6f4}
+  @media(max-width:760px){.board-section{padding:22px 0}.board-col{flex-basis:100%}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="header-inner"><div class="header-logo"><span>デザインオーダー</span></div><div class="header-right">UI COMPONENTS</div></div></header>
+<main class="main"><article class="fw">
+<div class="board-title">DESIGN ORDER FORM</div>
+<h1 class="ptitle">UIコンポーネント一覧</h1>
+<p class="board-note">フォーム本体へ適用する見た目・状態の確認用ボードです。</p>
+
+<section class="board-section">
+<h2>ボタン・選択肢</h2>
+<div class="board-row">
+  <button class="btn">戻る</button>
+  <button class="btn pri">次へ</button>
+  <button class="btn pri disabled-demo">送信する</button>
+  <div class="rbtn">代理</div>
+  <div class="rbtn sel">本人</div>
+  <div class="tag-chk"><label>ブルー</label><label class="chk">シンプル</label></div>
+</div>
+</section>
+
+<section class="board-section">
+<h2>入力欄</h2>
+<div class="r2">
+  <div class="field"><div class="lbl">支社名 <span class="req">必須</span></div><select><option>選択してください</option></select><div class="hint">通常状態</div></div>
+  <div class="field"><div class="lbl">営業担当者 <span class="req">必須</span></div><input class="focus-demo" value="入力・フォーカス状態"><div class="hint">フォーカス状態</div></div>
+  <div class="field inv"><div class="lbl">記入者メールアドレス <span class="req">必須</span></div><input class="error-demo" value="example"><div class="err" style="display:block">有効なメールアドレスを入力してください</div></div>
+  <div class="field"><div class="lbl">デザイン指示 <span class="opt">任意</span></div><textarea placeholder="指示がない場合は必ず「おまかせ」と記載してください"></textarea></div>
+</div>
+</section>
+
+<section class="board-section">
+<h2>大型選択カード</h2>
+<div class="r2">
+  <div class="rcard"><div class="rcard-icon">＋</div><div class="rcard-title">新規作成</div><div class="rcard-sub">新しくデザインを作成する</div></div>
+  <div class="rcard sel"><div class="rcard-icon">✓</div><div class="rcard-title">修正</div><div class="rcard-sub">過去に制作した画像の修正・変更・リサイズなど</div></div>
+</div>
+</section>
+
+<section class="board-section">
+<h2>チェック・プラン・サイズ</h2>
+<div class="board-card">
+  <div class="chk-grid">
+    <label class="chk-item"><input type="checkbox"><div class="chk-label-text">Sプラン</div></label>
+    <label class="chk-item chk"><input type="checkbox" checked><div class="chk-label-text">Aプラン</div></label>
+  </div>
+  <div class="size-grid" style="margin-top:10px">
+    <label class="size-item chk"><input type="checkbox" checked><span>【集客メインPC】1280×256</span></label>
+    <label class="size-item"><input type="checkbox"><span>【集客メインSP】750×550</span></label>
+  </div>
+</div>
+</section>
+
+<section class="board-section">
+<h2>アップロード・ファイル</h2>
+<div class="upload-box"><div class="upload-icon">↑</div><div class="upload-main">参考画像をアップロード</div><div class="upload-sub">PNG / JPG / ZIP · 最大5ファイル・各20MBまで</div></div>
+<div class="flist"><div class="ftag"><span>□</span><span class="fn">reference-image.jpg</span><span class="fsize">1.2MB</span><span class="dx">×</span></div></div>
+</section>
+
+<section class="board-section">
+<h2>通知・状態</h2>
+<div class="warn-box"><span>!</span><span>印刷仕様が未確定のため、一般的な仕様で制作を進めます。</span></div>
+<div class="ok-box"><span>i</span><span>選択中の媒体・サイズを表示します。</span></div>
+<div class="submit-notice"><span>i</span><span>送信することで利用規約に同意したものとみなします。</span><a class="terms-link">利用規約を確認</a></div>
+</section>
+
+<section class="board-section">
+<h2>確認表示</h2>
+<div class="preview"><div class="psec"><div class="psec-h">依頼者情報</div><div class="prow"><span class="pk">支社名</span><span class="pv">関西支社</span></div><div class="prow"><span class="pk">フォーム記入者</span><span class="pv"><span class="badge">本人</span></span></div></div></div>
+</section>
+</article></main>
+</body>
+</html>
