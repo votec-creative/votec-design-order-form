@@ -1828,7 +1828,13 @@ function syncInstructionGroups() {
 
 function renderInstructionGroups() {
   const tabs = document.getElementById('instruction-group-tabs');
-  const targetTabs = document.getElementById('instruction-target-tabs');
+  let targetTabs = document.getElementById('instruction-target-tabs');
+  if (!targetTabs && tabs?.parentElement) {
+    targetTabs = document.createElement('div');
+    targetTabs.id = 'instruction-target-tabs';
+    targetTabs.className = 'instruction-target-tabs-fallback';
+    tabs.parentElement.insertBefore(targetTabs, tabs);
+  }
   const targets = getInstructionTargets();
   if (!state.imgCards.length) {
     state.imgCards = [makeBlankCard()];
