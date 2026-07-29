@@ -2793,6 +2793,52 @@ textarea {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  list-style: none;
+}
+.instruction-apply-all-footer .instruction-apply-all::-webkit-details-marker {
+  display: none;
+}
+.instruction-copy-menu {
+  position: relative;
+}
+.instruction-copy-chevron {
+  margin-left: 2px;
+  font-size: 14px;
+  line-height: 1;
+}
+.instruction-copy-options {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  bottom: calc(100% + 7px);
+  display: grid;
+  width: 300px;
+  padding: 6px;
+  border: 1px solid #d7d7d2;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(31, 31, 27, .14);
+}
+.instruction-copy-options button {
+  display: grid;
+  gap: 3px;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #33332f;
+  text-align: left;
+  cursor: pointer;
+}
+.instruction-copy-options button:hover {
+  background: #f2f4ff;
+}
+.instruction-copy-options strong {
+  font-size: 12px;
+}
+.instruction-copy-options small {
+  color: #777771;
+  font-size: 10px;
 }
 .copy-action-icon {
   position: relative;
@@ -2827,7 +2873,8 @@ textarea {
   background: #4657d8;
   color: #fff;
 }
-.instruction-apply-all-footer .instruction-apply-all:disabled {
+.instruction-apply-all-footer .instruction-apply-all:disabled,
+.instruction-apply-all-footer .instruction-apply-all.is-disabled {
   border-color: #c9c9c4;
   color: #aaa9a3;
   cursor: not-allowed;
@@ -3157,6 +3204,14 @@ textarea {
   .instruction-apply-all-footer .instruction-apply-all {
     justify-content: center;
     width: 100%;
+  }
+  .instruction-copy-menu {
+    width: 100%;
+  }
+  .instruction-copy-options {
+    right: 0;
+    left: 0;
+    width: auto;
   }
   .instruction-image-targets {
     grid-template-columns: 1fr;
