@@ -732,7 +732,8 @@ function splitSizeSuggestion(sizeLabel) {
   }
   const noteMatch = remainder.match(/^(.+?)([（(].*)$/);
   return {
-    title: tags.join(' / ') || 'サイズ候補',
+    plan: tags[0] || '',
+    title: tags.slice(1).join(' / '),
     dimension: noteMatch ? noteMatch[1].trim() : remainder,
     note: noteMatch ? noteMatch[2].trim() : ''
   };
@@ -745,18 +746,14 @@ function getSizeSuggestionPlanName(mediumName, sizeLabel) {
 
 function renderSizeSuggestion(mediumName, sizeLabel, isSelected, quantity) {
   const suggestion = splitSizeSuggestion(sizeLabel);
-  const planName = getSizeSuggestionPlanName(mediumName, sizeLabel);
-  const isVanillaUrgent = mediumName === 'バニラ' && planName === '急募';
-  const subtitle = isVanillaUrgent ? suggestion.title : '';
-  if (isVanillaUrgent) suggestion.title = '急募';
   const checkboxId = `size-choice-${cssId(mediumName)}-${cssId(sizeLabel)}`;
   return `
     <div class="size-item size-option-card ${isSelected ? 'chk' : ''}" data-medium="${escAttr(mediumName)}" title="${escAttr(sizeLabel)}">
       <input type="checkbox" id="${checkboxId}" ${isSelected ? 'checked' : ''} onchange="toggleSizeSuggestion('${escJs(mediumName)}','${escJs(sizeLabel)}',this)">
       <label class="size-option-content" for="${checkboxId}">
-        <span class="size-option-title">${escHtml(suggestion.title)}</span>
-        ${subtitle ? `<span class="size-option-subtitle">${escHtml(subtitle)}</span>` : ''}
+        ${suggestion.title ? `<span class="size-option-title">${escHtml(suggestion.title)}</span>` : ''}
         <strong class="size-option-dimension">${escHtml(suggestion.dimension)}</strong>
+        ${suggestion.plan ? `<span class="size-option-plan">${escHtml(suggestion.plan)}</span>` : ''}
         ${suggestion.note ? `<span class="size-option-note">${escHtml(suggestion.note)}</span>` : ''}
       </label>
       ${isSelected ? renderQuantityStepper(

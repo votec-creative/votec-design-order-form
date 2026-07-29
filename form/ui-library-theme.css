@@ -2362,20 +2362,17 @@ textarea {
 .size-option-title {
   display: -webkit-box;
   overflow: hidden;
-  color: #666660;
-  font-size: 9px;
-  font-weight: 700;
+  color: #44443f;
+  font-size: 10px;
+  font-weight: 600;
   line-height: 1.3;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.size-option-card[data-medium="爆サイ.com"] .size-option-title {
-  font-weight: 500;
-}
-.size-option-subtitle {
-  color: #33332f;
-  font-size: 9px;
-  font-weight: 700;
+.size-option-plan {
+  color: #989892;
+  font-size: 8px;
+  font-weight: 400;
   line-height: 1.3;
 }
 .size-option-dimension {
