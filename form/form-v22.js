@@ -1861,10 +1861,13 @@ function renderInstructionGroups() {
   tabs.innerHTML = `
     <div class="instruction-image-targets">
       ${targets.map((target, index) => {
+        const targetLabel = splitSizeSuggestion(target.sizeLabel);
         return `
           <button type="button" class="instruction-image-target instruction-color-${index % 6} ${target.id === activeTarget?.id ? 'is-active' : ''} ${isInstructionTargetComplete(target) ? 'is-complete' : ''}" data-target-id="${target.id}" onclick="selectInstructionTarget('${target.id}')">
             <span>${escHtml(target.displayName)}</span>
-            <strong>${escHtml(target.sizeLabel)}</strong>
+            ${targetLabel.title ? `<strong>${escHtml(targetLabel.title)}</strong>` : ''}
+            <b class="instruction-image-dimension">${escHtml(targetLabel.dimension)}</b>
+            ${targetLabel.plan ? `<em class="instruction-image-plan">${escHtml(targetLabel.plan)}</em>` : ''}
             <small>${target.quantity}枚</small>
             <i class="instruction-complete-icon ${isInstructionTargetComplete(target) ? 'is-visible' : ''}" aria-label="入力済み">✓</i>
           </button>`;
