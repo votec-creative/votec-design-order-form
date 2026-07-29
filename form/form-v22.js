@@ -674,18 +674,28 @@ function getSizeSuggestions(mediumName) {
     const sizes = (plan.sizes || []).filter(sizeLabel => /\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel));
     sizes.forEach(sizeLabel => {
       const keepSeparate = mediumName === '駅ちか' && plan.plan === '駅DX';
-      const groupKey = keepSeparate ? `${plan.plan}:${sizeLabel}` : sizeLabel;
+      const displayPlanName = normalizePlanNameForDisplay(mediumName, plan.plan);
+      const displaySizeLabel = normalizeSizeLabelForDisplay(mediumName, sizeLabel);
+      const groupKey = keepSeparate ? `${displayPlanName}:${displaySizeLabel}` : displaySizeLabel;
       const existingGroup = sizeGroups.find(group => group.key === groupKey);
       if (existingGroup) {
-        existingGroup.planNames.push(plan.plan);
+        existingGroup.planNames.push(displayPlanName);
       } else {
-        sizeGroups.push({ key: groupKey, planNames: [plan.plan], sizeLabel });
+        sizeGroups.push({ key: groupKey, planNames: [displayPlanName], sizeLabel: displaySizeLabel });
       }
     });
   });
   return sizeGroups
     .map(group => formatPlanSizeLabel(formatCombinedPlanName(group.planNames), group.sizeLabel))
     .sort((left, right) => getSizeSuggestionPriority(left) - getSizeSuggestionPriority(right));
+}
+
+function normalizePlanNameForDisplay(mediumName, planName) {
+  return mediumName === '爆サイ.com' ? planName.replace(/^【\d+】/, '') : planName;
+}
+
+function normalizeSizeLabelForDisplay(mediumName, sizeLabel) {
+  return mediumName === '爆サイ.com' ? sizeLabel.replace(/^【\d+】/, '') : sizeLabel;
 }
 
 function formatCombinedPlanName(planNames) {
@@ -741,7 +751,7 @@ function renderSizeSuggestion(mediumName, sizeLabel, isSelected, quantity) {
   if (isVanillaUrgent) suggestion.title = '急募';
   const checkboxId = `size-choice-${cssId(mediumName)}-${cssId(sizeLabel)}`;
   return `
-    <div class="size-item size-option-card ${isSelected ? 'chk' : ''}" title="${escAttr(sizeLabel)}">
+    <div class="size-item size-option-card ${isSelected ? 'chk' : ''}" data-medium="${escAttr(mediumName)}" title="${escAttr(sizeLabel)}">
       <input type="checkbox" id="${checkboxId}" ${isSelected ? 'checked' : ''} onchange="toggleSizeSuggestion('${escJs(mediumName)}','${escJs(sizeLabel)}',this)">
       <label class="size-option-content" for="${checkboxId}">
         <span class="size-option-title">${escHtml(suggestion.title)}</span>

@@ -2369,6 +2369,9 @@ textarea {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+.size-option-card[data-medium="爆サイ.com"] .size-option-title {
+  font-weight: 500;
+}
 .size-option-subtitle {
   color: #33332f;
   font-size: 9px;
