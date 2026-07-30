@@ -1270,7 +1270,7 @@ function renderCardTemplate(prefix, card, opts) {
 
     <div class="field unified-assets-field">
       <div class="lbl">参考資料・素材 <span class="opt">任意</span></div>
-      <textarea class="control-w-lg" placeholder="人物素材や参考画像、参考URL、画像IDなど、制作の参考となる情報をご記入ください。" oninput="updateCardField('${prefix}','assetNote',this.value)" style="min-height:84px">${escHtml(card.assetNote)}</textarea>
+      <textarea class="control-w-lg reference-note-textarea" placeholder="人物素材や参考画像、参考URL、画像IDなど、制作の参考となる情報をご記入ください。" oninput="updateCardField('${prefix}','assetNote',this.value)">${escHtml(card.assetNote)}</textarea>
       <div class="upload-box small" onclick="document.getElementById('af-${prefix}').click()" ondragover="handleUploadDragOver(event)" ondragleave="handleUploadDragLeave(event)" ondrop="handleAssetFileDrop(event,'${prefix}')">
         <svg class="upload-icon upload-icon-prominent" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <path d="M21.5 50H16a14 14 0 1 1 3.2-27.6A17.5 17.5 0 0 1 52.4 29 12 12 0 0 1 48 52H42"></path>

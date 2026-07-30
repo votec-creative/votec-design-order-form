@@ -2511,13 +2511,17 @@ textarea {
   margin-bottom: 0;
 }
 .instruction-text-part textarea {
-  min-height: 176px;
+  min-height: 140px;
 }
-.instruction-text-part textarea::placeholder {
+.instruction-text-part textarea::placeholder,
+.reference-note-textarea::placeholder {
   color: #9a9a94;
   font-size: 12px;
   line-height: 1.65;
   opacity: 1;
+}
+.reference-note-textarea {
+  min-height: 140px;
 }
 .all-omakase-bar {
   display: flex;
