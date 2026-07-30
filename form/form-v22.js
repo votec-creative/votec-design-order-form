@@ -648,7 +648,7 @@ function renderMediumBlocks() {
       <div class="medium-accordion-body" ${isOpen ? '' : 'hidden'}>
         ${suggestionHtml}
         <div class="field medium-size-field" id="f-size-${cssId(mediumName)}">
-        <div class="lbl">サイズを入力 <span class="req">必須</span></div>
+        <div class="lbl">サイズを入力 <span class="opt">任意</span></div>
         <div class="hint">画像名を含めても構いません。例：メイン 700×300</div>
         <div class="size-input-list">
           ${mediaEntry.customSizes.map((sizeValue, sizeIndex) => `
