@@ -2745,3 +2745,15 @@ document.addEventListener('keydown', event => {
 window.addEventListener('resize', () => {
   if (window.innerWidth > 600) closeMobileMediaMenu();
 });
+
+function placeAdvancedInstructionsAfterDesign(root) {
+  const split = root.querySelector('.instruction-text-split');
+  const advanced = root.querySelector('.advanced-instructions');
+  if (split && advanced && advanced.parentElement !== split) split.appendChild(advanced);
+}
+
+const instructionLayoutObserver = new MutationObserver(() => {
+  document.querySelectorAll('.design-instruction-block').forEach(placeAdvancedInstructionsAfterDesign);
+});
+instructionLayoutObserver.observe(document.body, { childList: true, subtree: true });
+document.querySelectorAll('.design-instruction-block').forEach(placeAdvancedInstructionsAfterDesign);

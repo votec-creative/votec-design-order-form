@@ -2503,6 +2503,33 @@ textarea {
   display: grid;
   gap: 14px;
 }
+.instruction-text-part:first-child {
+  order: 3;
+}
+.instruction-text-part:nth-child(2) {
+  order: 1;
+}
+.instruction-text-split > .advanced-instructions {
+  order: 2;
+}
+.design-label-row .opt {
+  font-size: 0;
+}
+.design-label-row .opt::after {
+  content: '必須';
+  display: inline-block;
+  color: #b42323;
+  font-size: 10px;
+}
+.design-label-row .opt {
+  font-size: 0;
+}
+.design-label-row .opt::after {
+  content: '必須';
+  display: inline-block;
+  color: #b42323;
+  font-size: 10px;
+}
 .instruction-text-part {
   display: grid;
   gap: 6px;
