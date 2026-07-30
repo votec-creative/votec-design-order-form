@@ -2478,7 +2478,7 @@ textarea {
 }
 .instruction-group-tabs.instruction-image-navigation {
   display: grid;
-  gap: 18px;
+  gap: 26px;
   min-height: 0;
   overflow: visible;
   border-bottom: 0;
