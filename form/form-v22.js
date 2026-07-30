@@ -1293,6 +1293,7 @@ function renderCardTemplate(prefix, card, opts) {
         <div class="instruction-text-part">
           <div class="lbl design-label-row">デザイン指示 <span class="opt">任意</span><button type="button" class="all-omakase-button ${card.allOmakase ? 'is-active' : ''}" onclick="setAllOmakase('${prefix}')">${card.allOmakase ? 'おまかせ（選択中）' : 'おまかせ'}</button></div>
           <textarea class="control-w-lg design-instruction-textarea" placeholder="例）デザイン：参考画像①&#10;色合い：参考画像②&#10;フォント：丸みのある可愛らしいフォント&#10;人物：添付の女性2名を使用してください。" oninput="updateInstructionText('${prefix}','designTxt',this.value,this)">${escHtml(card.designTxt || '')}</textarea>
+          ${card.allOmakase ? '<p class="omakase-disclaimer">※おまかせの場合、作成後の要望・修正は追加料金が発生しますので予めご了承ください。</p>' : ''}
         </div>
       </div>
       <div class="err">掲載文言を入力し、デザイン指示または「デザインおまかせ」を選択してください</div>
