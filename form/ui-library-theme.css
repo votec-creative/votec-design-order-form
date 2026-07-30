@@ -2511,7 +2511,7 @@ textarea {
   margin-bottom: 0;
 }
 .instruction-text-part textarea {
-  min-height: 140px;
+  min-height: 128px;
 }
 .instruction-text-part textarea::placeholder,
 .reference-note-textarea::placeholder {
@@ -2521,7 +2521,7 @@ textarea {
   opacity: 1;
 }
 .reference-note-textarea {
-  min-height: 140px;
+  min-height: 128px;
 }
 .all-omakase-bar {
   display: flex;
