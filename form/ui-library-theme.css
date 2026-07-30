@@ -2511,7 +2511,7 @@ textarea {
   margin-bottom: 0;
 }
 .instruction-text-part textarea {
-  min-height: 122px;
+  min-height: 176px;
 }
 .instruction-text-part textarea::placeholder {
   color: #9a9a94;
