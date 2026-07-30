@@ -26,6 +26,22 @@ function stripLegacyDesignInstructionTemplate(value) {
   return text;
 }
 
+function splitLegacyInstructionText(value) {
+  const text = String(value || '').replace(/\r\n?/g, '\n');
+  if (!text) return { copyTxt: '', designTxt: '' };
+  const copyHeading = /\u63b2\u8f09\u6587\u8a00/;
+  const designHeading = /\u30c7\u30b6\u30a4\u30f3\u6307\u793a/;
+  const copyIndex = text.search(copyHeading);
+  const designIndex = text.search(designHeading);
+  if (copyIndex < 0 && designIndex < 0) return { copyTxt: '', designTxt: text };
+  const copyStart = copyIndex >= 0 ? text.indexOf('\n', copyIndex) : -1;
+  const designStart = designIndex >= 0 ? text.indexOf('\n', designIndex) : -1;
+  return {
+    copyTxt: copyStart >= 0 ? text.slice(copyStart + 1, designIndex >= 0 ? designIndex : text.length).trim() : '',
+    designTxt: designStart >= 0 ? text.slice(designStart + 1).trim() : ''
+  };
+}
+
 function hasDesignInstructionContent(value) {
   return String(value || '')
     .replaceAll('■掲載文言', '')
@@ -170,8 +186,8 @@ function applyBulkInstructions({ automatic = false } = {}) {
       (Number(item.imageNumber) || 1) === block.imageNumber
     );
     return card &&
-      hasDesignInstructionContent(card.designTxt) &&
-      card.designTxt !== formatBulkDesignInstruction(block.content);
+      (hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt)) &&
+      `${card.copyTxt || ''}\n${card.designTxt || ''}` !== `${splitLegacyInstructionText(formatBulkDesignInstruction(block.content)).copyTxt}\n${splitLegacyInstructionText(formatBulkDesignInstruction(block.content)).designTxt}`;
   }));
   if (automatic && hasConflicts &&
       !window.confirm('画像ごとに入力済みの指示があります。まとめて入力の内容で上書きしますか？')) {
@@ -217,11 +233,13 @@ function applyBulkInstructions({ automatic = false } = {}) {
           appliedCardKeys.add(getInstructionCardKey(card));
         }
       });
-      if (!overwrite && hasDesignInstructionContent(card.designTxt)) {
+      if (!overwrite && (hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt))) {
         skippedHeadings.push(`${block.heading}（入力済み）`);
         return;
       }
-      card.designTxt = formatBulkDesignInstruction(block.content);
+      const bulkParts = splitLegacyInstructionText(formatBulkDesignInstruction(block.content));
+      card.copyTxt = bulkParts.copyTxt;
+      card.designTxt = bulkParts.designTxt;
       appliedCardKeys.add(getInstructionCardKey(card));
     });
   });
@@ -367,7 +385,7 @@ function makeBlankCard() {
   return {
     targetImage: '',
     personUsage: '', person: '', staffPhotoAllowed: false, personFreeNote: '', personFiles: [],
-    design: '', designTxt: DESIGN_INSTRUCTION_TEMPLATE,
+    design: '', copyTxt: '', designTxt: DESIGN_INSTRUCTION_TEMPLATE,
     refNote: '', refFiles: [],
     assetNote: '', assetFiles: [],
     baseColor: '', mainColor: '', accentColor: '',
@@ -1081,7 +1099,9 @@ function normalizeCardDetails(card) {
   }
   card.personFreeNote = '';
   card.refNote = '';
-  card.designTxt = stripLegacyDesignInstructionTemplate(card.designTxt);
+  const legacyInstruction = splitLegacyInstructionText(card.designTxt);
+  if (!card.copyTxt && legacyInstruction.copyTxt) card.copyTxt = legacyInstruction.copyTxt;
+  card.designTxt = legacyInstruction.designTxt || stripLegacyDesignInstructionTemplate(card.designTxt);
 
   const legacyColors = card.moods.map(normalizeColorName).filter(Boolean);
   card.baseColor = normalizeColorName(card.baseColor);
@@ -1263,8 +1283,16 @@ function renderCardTemplate(prefix, card, opts) {
       <div class="err upload-error" id="af-error-${prefix}"></div>
     </div>
     <div class="field" id="f-designtxt-${prefix}">
-      <div class="lbl">掲載文言・デザイン指示 <span class="req">必須</span></div>
-      <textarea class="control-w-lg design-instruction-textarea" placeholder="例：添付のオープンイベントバナーを参考に、開催日を9/11・9/25へ変更してください。掲載文言は「9月オープンイベント／3000円割引＋10分／70分16,000円」でお願いします。" oninput="updateDesignInstruction('${prefix}',this.value,this)">${escHtml(card.designTxt)}</textarea>
+      <div class="instruction-text-split">
+        <div class="instruction-text-part">
+          <div class="lbl">掲載文言 <span class="opt">任意</span></div>
+          <textarea class="control-w-lg design-instruction-textarea" placeholder="画像に入れる文字・日付・料金・キャッチコピーなど" oninput="updateInstructionText('${prefix}','copyTxt',this.value,this)">${escHtml(card.copyTxt || '')}</textarea>
+        </div>
+        <div class="instruction-text-part">
+          <div class="lbl">デザイン指示 <span class="opt">任意</span></div>
+          <textarea class="control-w-lg design-instruction-textarea" placeholder="色・雰囲気・レイアウト・参考画像に合わせる箇所など" oninput="updateInstructionText('${prefix}','designTxt',this.value,this)">${escHtml(card.designTxt || '')}</textarea>
+        </div>
+      </div>
       <div class="err">掲載文言またはデザイン指示を入力してください</div>
     </div>
     <details class="advanced-instructions" ${card.advancedOpen ? 'open' : ''} ontoggle="setAdvancedInstructionsOpen('${prefix}',this.open)">
@@ -1397,10 +1425,14 @@ function updateCardField(prefix, key, value) {
 }
 
 function updateDesignInstruction(prefix, value, element) {
+  updateInstructionText(prefix, 'designTxt', value, element);
+}
+
+function updateInstructionText(prefix, key, value, element) {
   const card = getCard(prefix);
   if (!card) return;
   const nextValue = ensureDesignInstructionTemplate(value);
-  card.designTxt = nextValue;
+  card[key] = nextValue;
   if (element.value !== nextValue) {
     element.value = nextValue;
     element.setSelectionRange(nextValue.length, nextValue.length);
@@ -1696,7 +1728,7 @@ function getInstructionTargets() {
 
 function cardHasInstruction(card) {
   normalizeCardDetails(card);
-  return !!(card.personUsage || card.design || hasDesignInstructionContent(card.designTxt) || card.assetNote ||
+  return !!(card.personUsage || card.design || hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt) || card.assetNote ||
     card.moods.length || card.atmosphereOther || card.worldviewOther || card.infoDensity || card.baseColor ||
     card.mainColor || card.accentColor || card.baseColorCode || card.mainColorCode ||
     card.accentColorCode || card.colorNote || card.sameAsCardKey);
@@ -2203,6 +2235,7 @@ function cardSummary(card, isIndividual) {
     <div class="prow"><span class="pk">人物写真</span><span class="pv">${personUsage || '—'}</span></div>
     ${personExtra}
     ${assetExtra}
+    <div class="prow"><span class="pk">掲載文言</span><span class="pv">${card.copyTxt || '—'}</span></div>
     <div class="prow"><span class="pk">デザイン指示</span><span class="pv">${card.designTxt || '—'}</span></div>
     <div class="prow"><span class="pk">カラー</span><span class="pv">${colorTxt}</span></div>
     <div class="prow"><span class="pk">カラー補足</span><span class="pv">${card.colorNote || '—'}</span></div>
@@ -2299,7 +2332,7 @@ function validateCard(prefix, card, validationRef, isIndividual) {
     const usage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
     return usage === '使用する' || usage === '使用しない';
   });
-  reqField(`f-designtxt-${prefix}`, () => hasDesignInstructionContent(card.designTxt));
+  reqField(`f-designtxt-${prefix}`, () => hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt));
 }
 
 function validate(step) {

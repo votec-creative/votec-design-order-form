@@ -2469,6 +2469,20 @@ textarea {
   box-shadow: 0 5px 12px rgba(17, 17, 17, .05);
   backdrop-filter: blur(12px);
 }
+.instruction-text-split {
+  display: grid;
+  gap: 14px;
+}
+.instruction-text-part {
+  display: grid;
+  gap: 6px;
+}
+.instruction-text-part .lbl {
+  margin-bottom: 0;
+}
+.instruction-text-part textarea {
+  min-height: 104px;
+}
 .instruction-image-target {
   position: relative;
   display: grid;
