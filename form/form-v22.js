@@ -386,6 +386,7 @@ function makeBlankCard() {
     targetImage: '',
     personUsage: '', person: '', staffPhotoAllowed: false, personFreeNote: '', personFiles: [],
     design: '', copyTxt: '', designTxt: DESIGN_INSTRUCTION_TEMPLATE,
+    allOmakase: false,
     refNote: '', refFiles: [],
     assetNote: '', assetFiles: [],
     baseColor: '', mainColor: '', accentColor: '',
@@ -619,6 +620,22 @@ function renderMediumBlocks() {
     const settingSummary = selectedEntries.length
       ? `${selectedEntries.length}サイズ・${mediumTotal}枚`
       : 'サイズ未設定';
+    const suggestionHtml = suggestions.length ? `
+      <details class="size-suggestion-details" ${mediaEntry.selectedSizes.length ? 'open' : ''}>
+        <summary>よく使うサイズ候補から選ぶ</summary>
+        <div class="size-section">
+          <div class="size-grid">
+            ${suggestions.map(sizeLabel =>
+              renderSizeSuggestion(
+                mediumName,
+                sizeLabel,
+                mediaEntry.selectedSizes.includes(sizeLabel),
+                mediaEntry.sizeQuantities[sizeLabel] || 1
+              )
+            ).join('')}
+          </div>
+        </div>
+      </details>` : `<div class="size-catalog-note">登録済みのサイズ候補はありません。下の入力欄へ直接入力してください。</div>`;
     return `
     <section class="medium-accordion is-selected ${isOpen ? 'is-open' : ''}" id="mb-${cssId(mediumName)}">
       <div class="medium-accordion-head">
@@ -629,6 +646,7 @@ function renderMediumBlocks() {
         </button>
       </div>
       <div class="medium-accordion-body" ${isOpen ? '' : 'hidden'}>
+        ${suggestionHtml}
         <div class="field medium-size-field" id="f-size-${cssId(mediumName)}">
         <div class="lbl">サイズを入力 <span class="req">必須</span></div>
         <div class="hint">画像名を含めても構いません。例：メイン 700×300</div>
@@ -646,22 +664,6 @@ function renderMediumBlocks() {
             </div>`).join('')}
         </div>
         <button type="button" class="size-add-btn" onclick="addCustomSize('${escJs(mediumName)}')"><i class="ti ti-plus"></i>サイズを追加</button>
-        ${suggestions.length ? `
-          <details class="size-suggestion-details" ${mediaEntry.selectedSizes.length ? 'open' : ''}>
-            <summary>よく使うサイズ候補から選ぶ <span>${suggestions.length}件</span></summary>
-            <div class="size-section">
-              <div class="size-grid">
-                ${suggestions.map(sizeLabel =>
-                  renderSizeSuggestion(
-                    mediumName,
-                    sizeLabel,
-                    mediaEntry.selectedSizes.includes(sizeLabel),
-                    mediaEntry.sizeQuantities[sizeLabel] || 1
-                  )
-                ).join('')}
-              </div>
-            </div>
-          </details>` : `<div class="size-catalog-note">登録済みのサイズ候補はありません。上の入力欄へ直接入力してください。</div>`}
         <div class="err">サイズを入力するか、候補から選択してください</div>
         </div>
       </div>
@@ -1285,15 +1287,15 @@ function renderCardTemplate(prefix, card, opts) {
     <div class="field" id="f-designtxt-${prefix}">
       <div class="instruction-text-split">
         <div class="instruction-text-part">
-          <div class="lbl">掲載文言 <span class="opt">任意</span></div>
-          <textarea class="control-w-lg design-instruction-textarea" placeholder="画像に入れる文字・日付・料金・キャッチコピーなど" oninput="updateInstructionText('${prefix}','copyTxt',this.value,this)">${escHtml(card.copyTxt || '')}</textarea>
+          <div class="lbl">掲載文言 <span class="req">必須</span></div>
+          <textarea class="control-w-lg design-instruction-textarea" placeholder="例）○○月限定イベント&#10;ご新規様、会員様どちらも&#10;特別コースフリー　○○分○○○○円！&#10;※必ず受付時に〇〇月限定イベント見たとお伝えください。&#10;※他イベントとの併用はできません。" oninput="updateInstructionText('${prefix}','copyTxt',this.value,this)">${escHtml(card.copyTxt || '')}</textarea>
         </div>
         <div class="instruction-text-part">
-          <div class="lbl">デザイン指示 <span class="opt">任意</span></div>
-          <textarea class="control-w-lg design-instruction-textarea" placeholder="色・雰囲気・レイアウト・参考画像に合わせる箇所など" oninput="updateInstructionText('${prefix}','designTxt',this.value,this)">${escHtml(card.designTxt || '')}</textarea>
+          <div class="lbl design-label-row">デザイン指示 <span class="opt">任意</span><button type="button" class="all-omakase-button ${card.allOmakase ? 'is-active' : ''}" onclick="setAllOmakase('${prefix}')">${card.allOmakase ? 'おまかせ（選択中）' : 'デザインおまかせ'}</button></div>
+          <textarea class="control-w-lg design-instruction-textarea" placeholder="例）デザイン：参考画像①&#10;色合い：参考画像②&#10;フォント：丸みのある可愛らしいフォント&#10;人物：添付の女性2名を使用してください。" oninput="updateInstructionText('${prefix}','designTxt',this.value,this)">${escHtml(card.designTxt || '')}</textarea>
         </div>
       </div>
-      <div class="err">掲載文言またはデザイン指示を入力してください</div>
+      <div class="err">掲載文言を入力し、デザイン指示または「デザインおまかせ」を選択してください</div>
     </div>
     <details class="advanced-instructions" ${card.advancedOpen ? 'open' : ''} ontoggle="setAdvancedInstructionsOpen('${prefix}',this.open)">
       <summary><span>詳しい指示を設定する</span><span class="opt">任意</span></summary>
@@ -1381,6 +1383,7 @@ function setPersonUsage(prefix, usage) {
   const card = getCard(prefix);
   if (!card) return;
   card.personUsage = usage;
+  card.allOmakase = false;
   card.person = usage === '使用する' ? '人物写真を使用する' : '使用しない';
   rerenderDesignInstructions();
 }
@@ -1433,6 +1436,8 @@ function updateInstructionText(prefix, key, value, element) {
   if (!card) return;
   const nextValue = ensureDesignInstructionTemplate(value);
   card[key] = nextValue;
+  card.allOmakase = false;
+  if (key === 'designTxt' && nextValue.trim()) card.design = '';
   if (element.value !== nextValue) {
     element.value = nextValue;
     element.setSelectionRange(nextValue.length, nextValue.length);
@@ -1443,6 +1448,34 @@ function updateInstructionText(prefix, key, value, element) {
     document.querySelector('.instruction-inline-notice')?.remove();
   }
   refreshInstructionCompletionIndicators();
+}
+
+function setDesignOmakase(prefix) {
+  const card = getCard(prefix);
+  if (!card) return;
+  card.design = card.design === 'おまかせ' ? '' : 'おまかせ';
+  card.allOmakase = false;
+  card.designTxt = card.design === 'おまかせ' ? 'デザインおまかせ' : '';
+  rerenderDesignInstructions();
+  saveDraft();
+}
+
+function setAllOmakase(prefix) {
+  const card = getCard(prefix);
+  if (!card) return;
+  card.allOmakase = !card.allOmakase;
+  if (card.allOmakase) {
+    card.person = '';
+    card.staffPhotoAllowed = false;
+    card.design = 'おまかせ';
+    card.designTxt = 'デザインおまかせ';
+  } else {
+    card.personUsage = '';
+    card.design = '';
+    card.designTxt = '';
+  }
+  rerenderDesignInstructions();
+  saveDraft();
 }
 
 function setInfoDensity(prefix, value) {
@@ -2236,7 +2269,7 @@ function cardSummary(card, isIndividual) {
     ${personExtra}
     ${assetExtra}
     <div class="prow"><span class="pk">掲載文言</span><span class="pv">${card.copyTxt || '—'}</span></div>
-    <div class="prow"><span class="pk">デザイン指示</span><span class="pv">${card.designTxt || '—'}</span></div>
+    <div class="prow"><span class="pk">デザイン指示</span><span class="pv">${card.design === 'おまかせ' ? 'デザインおまかせ' : (card.designTxt || '—')}</span></div>
     <div class="prow"><span class="pk">カラー</span><span class="pv">${colorTxt}</span></div>
     <div class="prow"><span class="pk">カラー補足</span><span class="pv">${card.colorNote || '—'}</span></div>
     <div class="prow"><span class="pk">雰囲気</span><span class="pv">${atmosphereTxt}</span></div>
@@ -2332,7 +2365,7 @@ function validateCard(prefix, card, validationRef, isIndividual) {
     const usage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
     return usage === '使用する' || usage === '使用しない';
   });
-  reqField(`f-designtxt-${prefix}`, () => hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt));
+  reqField(`f-designtxt-${prefix}`, () => hasDesignInstructionContent(card.copyTxt) && (hasDesignInstructionContent(card.designTxt) || card.design === 'おまかせ'));
 }
 
 function validate(step) {
