@@ -2854,7 +2854,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: calc(var(--form-group-pad) * -1) calc(var(--form-group-pad) * -1) 24px;
+  margin: calc(var(--form-group-pad) * -1) calc(var(--form-group-pad) * -1) 16px;
   padding: 15px var(--form-group-pad);
   border: 0;
   border-bottom: 1px solid #aebaf0;
@@ -3062,10 +3062,13 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: -4px 0 16px;
+  margin: -4px 0 8px;
   padding: 0;
   border: 0;
   background: transparent;
+}
+.instruction-reuse-entry + .field {
+  padding-top: 0;
 }
 .instruction-reuse-entry.is-active {
   background: transparent;
