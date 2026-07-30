@@ -2582,6 +2582,16 @@ textarea {
   font-size: 10px;
   font-weight: 600;
 }
+.design-label-row .all-omakase-button {
+  font-size: 0;
+}
+.design-label-row .all-omakase-button::after {
+  content: 'おまかせにする';
+  font-size: 10px;
+}
+.design-label-row .all-omakase-button.is-active::after {
+  content: 'おまかせ（選択中）';
+}
 .all-omakase-button {
   padding: 7px 11px;
   border: 1px solid #4657d8;

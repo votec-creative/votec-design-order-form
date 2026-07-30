@@ -1456,7 +1456,7 @@ function setDesignOmakase(prefix) {
   if (!card) return;
   card.design = card.design === 'おまかせ' ? '' : 'おまかせ';
   card.allOmakase = false;
-  card.designTxt = card.design === 'おまかせ' ? 'デザインおまかせ' : '';
+  card.designTxt = card.design === 'おまかせ' ? 'おまかせ' : '';
   rerenderDesignInstructions();
   saveDraft();
 }
@@ -1469,7 +1469,7 @@ function setAllOmakase(prefix) {
     card.person = '';
     card.staffPhotoAllowed = false;
     card.design = 'おまかせ';
-    card.designTxt = 'デザインおまかせ';
+    card.designTxt = 'おまかせ';
   } else {
     card.personUsage = '';
     card.design = '';
@@ -2270,7 +2270,7 @@ function cardSummary(card, isIndividual) {
     ${personExtra}
     ${assetExtra}
     <div class="prow"><span class="pk">掲載文言</span><span class="pv">${card.copyTxt || '—'}</span></div>
-    <div class="prow"><span class="pk">デザイン指示</span><span class="pv">${card.design === 'おまかせ' ? 'デザインおまかせ' : (card.designTxt || '—')}</span></div>
+    <div class="prow"><span class="pk">デザイン指示</span><span class="pv">${card.design === 'おまかせ' ? 'おまかせ' : (card.designTxt || '—')}</span></div>
     <div class="prow"><span class="pk">カラー</span><span class="pv">${colorTxt}</span></div>
     <div class="prow"><span class="pk">カラー補足</span><span class="pv">${card.colorNote || '—'}</span></div>
     <div class="prow"><span class="pk">雰囲気</span><span class="pv">${atmosphereTxt}</span></div>
