@@ -1291,7 +1291,7 @@ function renderCardTemplate(prefix, card, opts) {
           <textarea class="control-w-lg design-instruction-textarea" placeholder="例）○○月限定イベント&#10;ご新規様、会員様どちらも&#10;特別コースフリー　○○分○○○○円！&#10;※必ず受付時に〇〇月限定イベント見たとお伝えください。&#10;※他イベントとの併用はできません。" oninput="updateInstructionText('${prefix}','copyTxt',this.value,this)">${escHtml(card.copyTxt || '')}</textarea>
         </div>
         <div class="instruction-text-part">
-          <div class="lbl design-label-row">デザイン指示 <span class="opt">任意</span><button type="button" class="all-omakase-button ${card.allOmakase ? 'is-active' : ''}" onclick="setAllOmakase('${prefix}')">${card.allOmakase ? 'おまかせ（選択中）' : 'デザインおまかせ'}</button></div>
+          <div class="lbl design-label-row">デザイン指示 <span class="opt">任意</span><button type="button" class="all-omakase-button ${card.allOmakase ? 'is-active' : ''}" onclick="setAllOmakase('${prefix}')">${card.allOmakase ? 'おまかせ（選択中）' : 'おまかせ'}</button></div>
           <textarea class="control-w-lg design-instruction-textarea" placeholder="例）デザイン：参考画像①&#10;色合い：参考画像②&#10;フォント：丸みのある可愛らしいフォント&#10;人物：添付の女性2名を使用してください。" oninput="updateInstructionText('${prefix}','designTxt',this.value,this)">${escHtml(card.designTxt || '')}</textarea>
         </div>
       </div>
