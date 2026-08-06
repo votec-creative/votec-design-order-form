@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="ui-library-theme.css?v=33">
+  <link rel="stylesheet" href="ui-library-theme.css?v=40">
 </head>
 <body>
   <header class="site-header">
@@ -397,6 +397,18 @@
         <button class="btn pri" id="btn-next" onclick="nextStep()">次へ <i class="ti ti-arrow-right"></i></button>
       </div>
 
+      <div class="blank-design-confirm-modal" id="blank-design-confirm-modal" hidden>
+        <div class="blank-design-confirm-backdrop" onclick="resolveBlankDesignModal(false)"></div>
+        <div class="blank-design-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="blank-design-confirm-title">
+          <h2 id="blank-design-confirm-title">デザイン指示が入力されていません。</h2>
+          <p>おまかせでの依頼になりますが、よろしいですか？</p>
+          <div class="blank-design-confirm-actions">
+            <button type="button" class="btn blank-design-confirm-secondary" onclick="resolveBlankDesignModal(false)">入力画面に戻る</button>
+            <button type="button" class="btn pri blank-design-confirm-primary" onclick="resolveBlankDesignModal(true)">おまかせで進む</button>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /.fw -->
 
     <aside class="floating-media-summary" id="floating-media-summary" aria-label="選択中の媒体・サイズ・枚数">
@@ -405,6 +417,6 @@
   </main>
 
   <script src="data.js?v=28"></script>
-  <script src="form-v22.js?v=34"></script>
+  <script src="form-v22.js?v=64"></script>
 </body>
 </html>

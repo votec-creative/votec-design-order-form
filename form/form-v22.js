@@ -261,41 +261,41 @@ function applyBulkInstructions({ automatic = false } = {}) {
   return appliedCardKeys.size > 0;
 }
 
-const COLOR_OPTIONS = ['金色（ゴールド）','銀色（シルバー）','白','黒','灰色（グレー）','赤','オレンジ','黄色','緑','青','紫','ピンク','茶色','ベージュ'];
+const COLOR_OPTIONS = ['赤','ピンク','オレンジ','黄色','緑','青','水色','紫','白','黒','グレー','ゴールド','その他','おまかせ'];
 const COLOR_PRESET_CODES = {
-  '金色（ゴールド）': '#D4AF37',
-  '銀色（シルバー）': '#C0C0C0',
-  '白': '#FFFFFF',
-  '黒': '#111111',
-  '灰色（グレー）': '#808080',
   '赤': '#E53935',
+  'ピンク': '#EC407A',
   'オレンジ': '#FB8C00',
   '黄色': '#FDD835',
   '緑': '#43A047',
   '青': '#1E88E5',
+  '水色': '#4FC3F7',
   '紫': '#8E24AA',
-  'ピンク': '#EC407A',
-  '茶色': '#795548',
-  'ベージュ': '#B08D6A'
+  '白': '#FFFFFF',
+  '黒': '#111111',
+  'グレー': '#808080',
+  'ゴールド': '#D4AF37'
 };
+const COLOR_ROLE_CONFIG = [
+  { key: 'main', label: 'メインカラー', hint: '1色' },
+  { key: 'sub', label: 'サブカラー', hint: '任意' },
+  { key: 'accent', label: 'アクセントカラー', hint: '任意' }
+];
 const COLOR_NAME_ALIASES = {
-  'ゴールド': '金色（ゴールド）', '金色': '金色（ゴールド）',
-  'シルバー': '銀色（シルバー）', '銀色': '銀色（シルバー）',
-  'ホワイト': '白', 'ブラック': '黒', 'グレー': '灰色（グレー）', '灰色': '灰色（グレー）',
+  '金色（ゴールド）': 'ゴールド', '金色': 'ゴールド', 'シルバー': 'グレー', '銀色': 'グレー',
+  'ホワイト': '白', 'ブラック': '黒', '灰色（グレー）': 'グレー', '灰色': 'グレー',
   'レッド': '赤', 'イエロー': '黄色', 'グリーン': '緑', 'ブルー': '青', 'パープル': '紫',
-  'ブラウン・ベージュ': 'ベージュ', 'マルチカラー': ''
+  'ブラウン・ベージュ': 'その他', 'ベージュ': 'その他', 'マルチカラー': 'その他'
 };
 const normalizeColorName = color => COLOR_NAME_ALIASES[color] ?? (COLOR_OPTIONS.includes(color) ? color : '');
 const moodGroups = [
   {
     key: 'atmosphere',
     label: '雰囲気',
-    hint: '近いものを1〜2個選んでください。選ばない場合は原稿内容に合わせて制作します。',
-    maxSelections: 2,
+    hint: '近いものを1つ選んでください。',
+    maxSelections: 1,
     sections: [
-      { label: '上品・落ち着き', options: ['高級・上質', 'ゴージャス', 'エレガント', '清楚', 'モード', '大人っぽい'] },
-      { label: '親しみ・やわらかさ', options: ['かわいい', 'ガーリー', 'ゆめかわ', 'ポップ', 'ナチュラル', '癒し・やさしい', '爽やか・ヘルシー', '韓国風'] },
-      { label: '強さ・色気', options: ['クール', 'スタイリッシュ', 'ダーク', 'ミステリアス', 'セクシー・色っぽい', 'インパクト重視'] }
+      { label: '', options: ['シンプル','かわいい','きれい・上品','高級感','かっこいい','明るい・ポップ','落ち着いた','インパクト重視','おまかせ'] }
     ]
   },
   {
@@ -364,7 +364,7 @@ let state = {
   imgType: 0, imcUrl: '',
   pay: 'ポイント', payUrl: '',
   shop: '', area: '', shopUrl: '', shopUrl2: '', urlMode: 'あり', urlMode2: 'あり',
-  industry: '', industryOther: '',
+  industry: '', industryOther: '', productionType: '',
   selectedMedia: [],       // ['バニラ', '駅ちか', ...]
   openMedia: [],
   mediumOther: '',
@@ -388,10 +388,10 @@ function makeBlankCard() {
     design: '', copyTxt: '', designTxt: DESIGN_INSTRUCTION_TEMPLATE,
     allOmakase: false,
     refNote: '', refFiles: [],
-    assetNote: '', assetFiles: [],
+    assetNote: '', assetFiles: [], fileShareUrl: '',
     baseColor: '', mainColor: '', accentColor: '',
-    baseColorCode: '', mainColorCode: '', accentColorCode: '', colorNote: '',
-    moods: [], infoDensity: '', atmosphereOther: '', worldviewOther: '',
+    baseColorCode: '', mainColorCode: '', accentColorCode: '', colorChoice: '', colorOther: '', colorOtherByRole: {}, colorNote: '',
+    moods: [], atmosphereOther: '', worldviewOther: '',
     worldviewOpen: false,
     targetIds: [],
     imageNumber: 1,
@@ -526,7 +526,7 @@ function setIndustry(name, el) {
   state.openMedia = [];
   state.mediumOther = '';
   state.mediaState = {};
-  renderMediumChips(name);
+  renderMediumChips(state.productionType);
   document.getElementById('inp-medium-other').value = '';
   document.getElementById('medium-blocks').innerHTML = '';
   document.getElementById('f-medium-other').style.display = 'none';
@@ -539,9 +539,81 @@ function setIndustry(name, el) {
   }
 }
 
-function renderMediumChips(industry) {
-  const mediumList = mediaByIndustry[industry] || [];
+function setProductionType(value, el) {
+  // フィルターは同じ項目を再クリックすると解除できる。
+  state.productionType = state.productionType === value ? '' : value;
+  state.selectedMedia = [];
+  state.openMedia = [];
+  state.mediaState = {};
+  state.mediumOther = '';
+  document.getElementById('medium-blocks').innerHTML = '';
+  document.getElementById('inp-medium-other').value = '';
+  document.getElementById('f-medium-other').style.display = 'none';
+  renderMediumChips(state.productionType);
+  document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => btn.classList.toggle('sel', state.productionType && btn === el));
+  document.getElementById('f-production-type')?.classList.remove('inv');
+}
+
+function relocateIndustryAndAddProductionType() {
+  const industry = document.getElementById('f-industry');
+  const p2 = document.getElementById('p2');
+  // The first `.r2` belongs to the image-type cards. Insert the industry
+  // field immediately before the 店舗情報 subhead instead.
+  const p2Headings = p2 ? Array.from(p2.children).filter(el => el.classList.contains('subhead')) : [];
+  const storeHeading = p2Headings.find(el => el.textContent.includes('店舗情報')) || null;
+  if (industry && p2 && storeHeading && industry.parentElement !== p2) p2.insertBefore(industry, storeHeading);
+
+  const p3 = document.getElementById('p3');
+  const medium = document.getElementById('f-medium');
+  if (!p3 || !medium || document.getElementById('f-production-type')) return;
+  const field = document.createElement('div');
+  field.className = 'field';
+  field.id = 'f-production-type';
+  field.innerHTML = `
+    <div class="lbl">制作内容 <span class="req">必須</span></div>
+    <div class="radios" id="production-type-btns">
+      <div class="rbtn" onclick="setProductionType('集客',this)">集客</div>
+      <div class="rbtn" onclick="setProductionType('求人',this)">求人</div>
+      <div class="rbtn" onclick="setProductionType('スタッフ募集',this)">スタッフ募集</div>
+    </div>
+    <div class="err">制作内容を選択してください</div>`;
+  p3.insertBefore(field, medium);
+  const productionBadge = field.querySelector('.req');
+  if (productionBadge) {
+    productionBadge.className = 'opt';
+    productionBadge.textContent = '任意';
+  }
+  const title = p3.querySelector('.ptitle');
+  const sub = p3.querySelector('.psub');
+  if (title) title.textContent = '媒体・サイズ';
+  if (sub) sub.textContent = '媒体を選び、必要な画像サイズを入力してください。';
+  document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => {
+    btn.classList.toggle('sel', btn.textContent.trim() === state.productionType);
+  });
+}
+
+const mediaByProductionType = {
+  '集客': ['駅ちか','風俗じゃぱん','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','デリヘルが呼べるホテル','デリヘルタウン','夜遊びショコラ','爆サイ.com','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','フーコレ','近くのメンズエステランキング','エステ魂','ホスパラ（集客）','風俗エステランキング','リアクションアップ','Erotic Guide','ホスラブ','G1','オリジナルHP','その他'],
+  '求人': ['バニラ','体入エミリー','体入ショコラ','ココア','はじめての風俗アルバイト','体入ホスパラ','メンエスリクルート','Qプリ','エステラブ','R-30','ショコラ','キャバイト','ジャニーズチケット掲示板','その他'],
+  'スタッフ募集': ['メンズバニラ','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','その他']
+};
+
+function renderMediumChips(productionType) {
+  // 業種との紐づけは一旦使わず、登録済みの媒体をすべて表示する。
+  // 重複媒体は1件にまとめ、業種は媒体候補の絞り込みには利用しない。
+  const seen = new Set();
+  const allProductionMedia = [...new Set(Object.values(mediaByProductionType).flat())];
+  const mediumPriority = ['バニラ','駅ちか','体入エミリー','風俗じゃぱん','メンズバニラ','体入ショコラ','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','ココア','はじめての風俗アルバイト','体入ホスパラ','デリヘルが呼べるホテル','デリヘルタウン','メンエスリクルート','夜遊びショコラ','爆サイ.com','Qプリ','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','フーコレ','R-30','エステラブ','近くのメンズエステランキング','ジャニーズチケット掲示板'];
+  const priorityIndex = new Map(mediumPriority.map((name, index) => [name, index]));
+  const mediumList = (mediaByProductionType[productionType] || allProductionMedia)
+    .filter(name => priorityIndex.has(name) || name === 'その他')
+    .slice()
+    .sort((a, b) => (priorityIndex.get(a) ?? 999) - (priorityIndex.get(b) ?? 999));
   const chipsWrap = document.getElementById('medium-chips');
+  if (!mediumList.length) {
+    chipsWrap.innerHTML = '<div style="font-size:13px;color:var(--color-text-muted)">先に制作内容を選択してください</div>';
+    return;
+  }
   if (!mediumList.length) {
     chipsWrap.innerHTML = '<div style="font-size:13px;color:var(--color-text-muted)">先に業種を選択してください</div>';
     return;
@@ -579,7 +651,7 @@ function toggleMedium(mediumName) {
   }
   document.getElementById('f-medium-other').style.display = state.selectedMedia.includes('その他') ? 'block' : 'none';
   document.getElementById('f-medium').classList.remove('inv');
-  renderMediumChips(state.industry);
+  renderMediumChips(state.productionType);
   renderMediumBlocks();
   autoFillImgSize();
 }
@@ -688,6 +760,31 @@ function renderQuantityStepper(quantity, decreaseAction, increaseAction, context
     </div>`;
 }
 
+// Googleスプレッドシート「媒体サイズ」から読み取った新規媒体のサイズ候補。
+// 元シートは変更せず、フォーム側の候補データとして保持する。
+Object.assign(planSizeData, {
+  'リアクションアップ': [{ plan: '基本', sizes: ['正方形 1080×1080', '縦長 1080×1920'] }],
+  '夜遊びショコラ': [{ plan: 'A・B・Cプラン', sizes: ['メイン 1000×428', '上位プラン大画像PC 1920×1080', '上位プラン大画像SP 640×512'] }],
+  'デリヘルタウン': [{ plan: '全プラン共通', sizes: ['集客ヘッダー 1000×560', 'SP一覧用 300×300'] }, { plan: 'SSSプラン', sizes: ['エリアトップ 200×200'] }, { plan: 'オプション', sizes: ['PR広告 300×300'] }],
+  '口コミ風俗情報局': [{ plan: '全プラン', sizes: ['PC 976×211', 'SP 500×180', '求人 700×300'] }, { plan: '特上以上', sizes: ['サムネイルPC 364×286', 'サムネイルSP 441×196'] }],
+  'デリヘルが呼べるホテル': [{ plan: '通常', sizes: ['集客用 750×150'] }, { plan: '都道府県グループバナー', sizes: ['集客用PC 1500×200', '集客用SP 1500×400'] }],
+  'Qプリ': [{ plan: '通常掲載', sizes: ['店舗一覧PC 314×150', '店舗詳細PC 780×213', '店舗一覧SP 500×400', '店舗詳細SP 640×512'] }, { plan: 'プレミアムVIP', sizes: ['SP上部スライダー 560×420', 'SP中部スライダー 640×275', 'PCエリアトップ 500×83', 'PC都道府県トップ 670×112', 'PCサイド 200×80'] }],
+  'フーコレ': [{ plan: '全プラン', sizes: ['アイコン 200×200', '告知バナー 800×260', '求人バナー 600×300'] }, { plan: '極', sizes: ['極バナー 800×350'] }],
+  '俺の風': [{ plan: '全プラン', sizes: ['サブ画像 500×288', '急募コメント用画像 180×180', '一覧用画像 694×400'] }, { plan: 'TOPオプション', sizes: ['一覧オススメ 640×640'] }],
+  'はじめての風俗アルバイト': [{ plan: '各プラン共通', sizes: ['メイン 700×300', 'サブメイン 520×300', 'サムネイル 160×160', 'サブ画像 320×240', '追加サブ画像 260×150'] }, { plan: 'スマホ検索オプション', sizes: ['検索バナー 640×100'] }],
+  '体入エミリー': [{ plan: 'A・Bプラン', sizes: ['メイン 750×600', '未経験サムネ 240×180', 'お店からのメッセージ 700×16000'] }, { plan: 'グループ掲載', sizes: ['グループ掲載 800×450'] }],
+  '体入ショコラ': [{ plan: 'SSS・SS・S・Aプラン', sizes: ['メインSP 640×512', 'メインPC 1920×1536', '背景 1920×16000', 'SHOP GALLERY 640×486'] }, { plan: 'B・Cプラン', sizes: ['メイン 640×512', 'SHOP GALLERY 640×486'] }],
+  'ジョブショコラ': [{ plan: '全プラン', sizes: ['メインSP 640×512', 'メインPC 1920×1536'] }, { plan: 'オプション', sizes: ['オプション 700×300'] }],
+  'メンエスSNS02': [{ plan: '基本', sizes: ['エリアバナー 800×400', 'インフィードバナー 900×1200', '全国版エリアバナー 800×400', 'マイページバナー 500×500'] }],
+  'メンエスリクルート': [{ plan: '基本掲載', sizes: ['基本掲載 600×600', '今月の急募 640×640'] }],
+  'エステラブ': [{ plan: '基本', sizes: ['集客・求人 420×315'] }],
+  'FENIXJOB': [{ plan: '各プラン', sizes: ['背景 2000×500', '企業バナー 400×160', 'メイン 700×340', 'サブ画像 660×420'] }],
+  '野郎WORK': [{ plan: 'プラチナ', sizes: ['メイン 460×270', 'トップ 200×80', 'ヘッダー 890×290', 'サブ画像 320×220'] }, { plan: 'ゴールド・シルバー', sizes: ['メイン 460×270', 'ヘッダー 890×290'] }],
+  'Erotic Guide': [{ plan: '基本', sizes: ['通常枠 630×420', '通常枠 2000×800', 'ライト枠 630×420', 'VIPバナー 500×120', 'BIGバナー 960×350', 'TOPバナー 500×120', 'サイドバナー 336×280'] }],
+  'ホスラブ': [{ plan: '通常・VIP', sizes: ['通常枠 640×200', 'VIP版 600×240', 'A枠 120×75', '板枠 192×53', '入口トップ 880×240', '独占コメント広告 600×500'] }]
+  ,'ジャニーズチケット掲示板': [{ plan: '基本掲載', sizes: ['基本掲載 300×150'] }]
+});
+
 function getSizeSuggestions(mediumName) {
   const sizeGroups = [];
   (planSizeData[mediumName] || []).forEach(plan => {
@@ -750,12 +847,16 @@ function splitSizeSuggestion(sizeLabel) {
     remainder = remainder.slice(tagMatch[0].length);
     tagMatch = remainder.match(/^【([^】]+)】\s*/);
   }
-  const noteMatch = remainder.match(/^(.+?)([（(].*)$/);
+  const dimensionMatch = remainder.match(/^(.*?)(\d+\s*[×xX]\s*\d+)(.*)$/);
+  const labelPrefix = dimensionMatch ? dimensionMatch[1].trim() : remainder;
+  const dimension = dimensionMatch ? dimensionMatch[2].replace(/\s+/g, '') : labelPrefix;
+  const suffix = dimensionMatch ? dimensionMatch[3].trim() : '';
+  const noteMatch = suffix.match(/^([（(].*)$/);
   return {
     plan: tags[0] || '',
-    title: tags.slice(1).join(' / '),
-    dimension: noteMatch ? noteMatch[1].trim() : remainder,
-    note: noteMatch ? noteMatch[2].trim() : ''
+    title: [tags.slice(1).join(' / '), labelPrefix].filter(Boolean).join(' / '),
+    dimension,
+    note: noteMatch ? noteMatch[1].trim() : suffix
   };
 }
 
@@ -864,6 +965,18 @@ function hasMediumSize(mediumName) {
     mediaEntry.selectedSizes.length ||
     mediaEntry.customSizes.some(sizeValue => sizeValue.trim())
   ));
+}
+
+function validateSelectedMediaSizes() {
+  let ok = true;
+  state.selectedMedia.forEach(mediumName => {
+    const field = document.getElementById(`f-size-${cssId(mediumName)}`);
+    if (!field) return;
+    const valid = hasMediumSize(mediumName);
+    field.classList.toggle('inv', !valid);
+    if (!valid) ok = false;
+  });
+  return ok;
 }
 
 function getMediumDisplayName(mediumName) {
@@ -1063,38 +1176,17 @@ function initMoodTagsInto(containerId, cardObj, prefix) {
       <div class="mood-group-hint">${group.hint}</div>
       ${renderMoodSections(group)}
     </div>`;
-  const renderInfoDensity = () => `
-    <div class="mood-group info-density-group">
-      <div class="mood-group-label">情報量・装飾 <span class="opt">未選択でも可</span></div>
-      <div class="info-density-options">
-        ${INFO_DENSITY_OPTIONS.map(option => `
-          <label class="${cardObj.infoDensity === option.label ? 'chk' : ''}">
-            <input type="radio" name="info-density-${prefix}" value="${escAttr(option.label)}" ${cardObj.infoDensity === option.label ? 'checked' : ''} onchange="setInfoDensity('${prefix}',this.value)">
-            <strong>${option.label}</strong><small>${option.description}</small>
-          </label>`).join('')}
-      </div>
-    </div>`;
   tagsWrap.innerHTML = renderMoodGroup(moodGroups[0]) +
     renderOtherInput('atmosphereOther', '雰囲気') +
-    renderInfoDensity() +
     moodGroups.slice(1).map(renderMoodGroup).join('');
 }
 
 function normalizeCardDetails(card) {
   if (!card) return card;
   card.moods = Array.isArray(card.moods) ? card.moods : [];
+  card.personFiles = Array.isArray(card.personFiles) ? card.personFiles : [];
+  card.refFiles = Array.isArray(card.refFiles) ? card.refFiles : [];
   card.assetFiles = Array.isArray(card.assetFiles) ? card.assetFiles : [];
-  const legacyFiles = [
-    ...(Array.isArray(card.personFiles) ? card.personFiles : []),
-    ...(Array.isArray(card.refFiles) ? card.refFiles : [])
-  ];
-  legacyFiles.forEach(file => {
-    if (!card.assetFiles.some(existing => existing.name === file.name && existing.size === file.size)) {
-      card.assetFiles.push(file);
-    }
-  });
-  card.personFiles = [];
-  card.refFiles = [];
 
   if (!card.assetNote) {
     card.assetNote = [card.personFreeNote, card.refNote].filter(Boolean).join('\n');
@@ -1112,6 +1204,12 @@ function normalizeCardDetails(card) {
   if (!card.baseColor) card.baseColor = legacyColors[0] || '';
   if (!card.mainColor) card.mainColor = legacyColors[1] || '';
   if (!card.accentColor) card.accentColor = legacyColors[2] || '';
+  card.colorChoice = normalizeColorName(card.colorChoice) || normalizeColorName(card.mainColor) || normalizeColorName(card.baseColor) || '';
+  if (!COLOR_OPTIONS.includes(card.colorChoice)) card.colorChoice = '';
+  card.colorOther = card.colorOther || '';
+  card.colorOtherByRole = card.colorOtherByRole && typeof card.colorOtherByRole === 'object'
+    ? card.colorOtherByRole : {};
+  if (card.colorOther && !card.colorOtherByRole.main) card.colorOtherByRole.main = card.colorOther;
   if (!card.baseColorCode && card.baseColor) card.baseColorCode = COLOR_PRESET_CODES[card.baseColor] || '';
   if (!card.mainColorCode && card.mainColor) card.mainColorCode = COLOR_PRESET_CODES[card.mainColor] || '';
   if (!card.accentColorCode && card.accentColor) card.accentColorCode = COLOR_PRESET_CODES[card.accentColor] || '';
@@ -1140,7 +1238,7 @@ function normalizeCardDetails(card) {
     }
     return true;
   });
-  card.infoDensity = INFO_DENSITY_OPTIONS.some(option => option.label === card.infoDensity) ? card.infoDensity : '';
+  delete card.infoDensity;
   return card;
 }
 
@@ -1268,22 +1366,49 @@ function renderCardTemplate(prefix, card, opts) {
       <div class="err">人物写真を使用するか選択してください</div>
     </div>
 
-    <div class="field unified-assets-field">
-      <div class="lbl">参考資料・素材 <span class="opt">任意</span></div>
-      <textarea class="control-w-lg reference-note-textarea" placeholder="人物素材や参考画像、参考URL、画像IDなど、制作の参考となる情報をご記入ください。" oninput="updateCardField('${prefix}','assetNote',this.value)">${escHtml(card.assetNote)}</textarea>
-      <div class="upload-box small" onclick="document.getElementById('af-${prefix}').click()" ondragover="handleUploadDragOver(event)" ondragleave="handleUploadDragLeave(event)" ondrop="handleAssetFileDrop(event,'${prefix}')">
+    <div class="field attachment-field person-material-field" style="display:${personUsage === '使用する' || (card.personFiles || []).length ? 'block' : 'none'}">
+      <div class="lbl">人物素材 <span class="opt">任意</span></div>
+      <div class="hint">デザイン内で使用する人物画像を添付してください</div>
+      <div class="upload-box small" onclick="document.getElementById('pf-${prefix}').click()" ondragover="handleUploadDragOver(event)" ondragleave="handleUploadDragLeave(event)" ondrop="handlePersonFileDrop(event,'${prefix}')">
         <svg class="upload-icon upload-icon-prominent" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <path d="M21.5 50H16a14 14 0 1 1 3.2-27.6A17.5 17.5 0 0 1 52.4 29 12 12 0 0 1 48 52H42"></path>
           <path d="M32 51V25"></path>
           <path d="m22 35 10-10 10 10"></path>
         </svg>
-        <div class="upload-main">参考資料・素材をクリックまたはドラッグ＆ドロップ</div>
-        <div class="upload-sub">PNG / JPG / WEBP / PDF / TXT / ZIP など · 各20MBまで</div>
+        <div class="upload-main">人物素材をクリックまたはドラッグ＆ドロップ</div>
+        <div class="upload-sub">PNG / JPG / WEBP / ZIP など・各20MBまで</div>
       </div>
-      <input type="file" id="af-${prefix}" multiple accept="${REFERENCE_FILE_ACCEPT}" style="display:none" onchange="handleAssetFiles('${prefix}',this)">
-      <div class="flist" id="af-list-${prefix}"></div>
-      <div class="err upload-error" id="af-error-${prefix}"></div>
+      <input type="file" id="pf-${prefix}" multiple accept="${PERSON_FILE_ACCEPT}" style="display:none" onchange="handlePersonFiles('${prefix}',this)">
+      <div class="flist" id="pf-list-${prefix}"></div>
+      <div class="err upload-error" id="pf-error-${prefix}"></div>
     </div>
+
+    <div class="field attachment-field reference-image-field">
+      <div class="lbl">参考画像 <span class="opt">任意</span></div>
+      <div class="hint">デザインや雰囲気の参考となる画像を添付してください</div>
+      <div class="upload-box small" onclick="document.getElementById('rf-${prefix}').click()" ondragover="handleUploadDragOver(event)" ondragleave="handleUploadDragLeave(event)" ondrop="handleRefFileDrop(event,'${prefix}')">
+        <svg class="upload-icon upload-icon-prominent" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M21.5 50H16a14 14 0 1 1 3.2-27.6A17.5 17.5 0 0 1 52.4 29 12 12 0 0 1 48 52H42"></path>
+          <path d="M32 51V25"></path>
+          <path d="m22 35 10-10 10 10"></path>
+        </svg>
+        <div class="upload-main">参考画像をクリックまたはドラッグ＆ドロップ</div>
+        <div class="upload-sub">画像 / Excel / PDF / ZIP など・各20MBまで</div>
+      </div>
+      <input type="file" id="rf-${prefix}" multiple accept="${REFERENCE_FILE_ACCEPT}" style="display:none" onchange="handleRefFiles('${prefix}',this)">
+      <div class="flist" id="rf-list-${prefix}"></div>
+      <div class="err upload-error" id="rf-error-${prefix}"></div>
+    </div>
+
+    <div class="field file-share-url-field">
+      <div class="lbl">ファイル共有URL <span class="opt">任意</span></div>
+      <div class="hint">ギガファイル便、Googleドライブなどの共有URLを入力してください</div>
+      <div class="file-share-url-row">
+        <input type="url" id="fs-${prefix}" class="control-w-lg file-share-url-input" placeholder="https://" value="${escAttr(card.fileShareUrl || '')}" oninput="updateCardField('${prefix}','fileShareUrl',this.value)">
+        <button type="button" class="btn file-share-open-button" onclick="window.open('https://gigafile.nu/','_blank','noopener,noreferrer')">ギガファイル便を開く</button>
+      </div>
+    </div>
+
     <div class="field" id="f-designtxt-${prefix}">
       <div class="instruction-text-split">
         <div class="instruction-text-part">
@@ -1306,31 +1431,31 @@ function renderCardTemplate(prefix, card, opts) {
           <button type="button" onclick="resetAdvancedInstructions('${prefix}')"><i class="ti ti-restore"></i>詳細設定をリセット</button>
         </div>
         <div class="lbl">カラーの方向性 <span class="opt">任意</span></div>
-        <div class="color-role-grid">
-          <label class="color-role-field">
-            <span><strong>ベースカラー</strong><small><b class="color-ratio">70%</b>・背景や広い面積</small></span>
-            <select onchange="setColorPreset('${prefix}','baseColor','baseColorCode',this.value)">${renderColorOptions(card.baseColor)}</select>
-            <span class="color-code-control">
-              <input type="color" id="baseColorCode-picker-${prefix}" value="${getColorPickerValue(card, 'baseColor', 'baseColorCode')}" aria-label="ベースカラーのカラーピッカー" onchange="setColorPicker('${prefix}','baseColorCode',this.value)">
-              <input type="text" id="baseColorCode-code-${prefix}" class="color-code-input" value="${escAttr(card.baseColorCode)}" maxlength="7" placeholder="#FFFFFF" aria-label="ベースカラーのカラーコード" oninput="updateColorCode('${prefix}','baseColorCode',this.value)">
-            </span>
-          </label>
-          <label class="color-role-field">
-            <span><strong>メインカラー</strong><small><b class="color-ratio">25%</b>・印象の中心</small></span>
-            <select onchange="setColorPreset('${prefix}','mainColor','mainColorCode',this.value)">${renderColorOptions(card.mainColor)}</select>
-            <span class="color-code-control">
-              <input type="color" id="mainColorCode-picker-${prefix}" value="${getColorPickerValue(card, 'mainColor', 'mainColorCode')}" aria-label="メインカラーのカラーピッカー" onchange="setColorPicker('${prefix}','mainColorCode',this.value)">
-              <input type="text" id="mainColorCode-code-${prefix}" class="color-code-input" value="${escAttr(card.mainColorCode)}" maxlength="7" placeholder="#FFFFFF" aria-label="メインカラーのカラーコード" oninput="updateColorCode('${prefix}','mainColorCode',this.value)">
-            </span>
-          </label>
-          <label class="color-role-field">
-            <span><strong>アクセントカラー</strong><small><b class="color-ratio">5%</b>・強調や差し色</small></span>
-            <select onchange="setColorPreset('${prefix}','accentColor','accentColorCode',this.value)">${renderColorOptions(card.accentColor)}</select>
-            <span class="color-code-control">
-              <input type="color" id="accentColorCode-picker-${prefix}" value="${getColorPickerValue(card, 'accentColor', 'accentColorCode')}" aria-label="アクセントカラーのカラーピッカー" onchange="setColorPicker('${prefix}','accentColorCode',this.value)">
-              <input type="text" id="accentColorCode-code-${prefix}" class="color-code-input" value="${escAttr(card.accentColorCode)}" maxlength="7" placeholder="#FFFFFF" aria-label="アクセントカラーのカラーコード" oninput="updateColorCode('${prefix}','accentColorCode',this.value)">
-            </span>
-          </label>
+        <div class="color-role-list">
+          ${COLOR_ROLE_CONFIG.map(role => {
+            const roleValue = getColorRoleValue(card, role.key);
+            const roleOther = getColorRoleOther(card, role.key);
+            const roleMarkup = `<div class="color-role-field">
+              <div class="color-role-heading"><strong>${role.label}</strong><span class="opt">${role.hint}</span></div>
+              <div class="color-choice-grid" role="radiogroup" aria-label="${role.label}">
+                ${COLOR_OPTIONS.map(color => {
+                  const selected = roleValue === color;
+                  const chip = COLOR_PRESET_CODES[color] || (color === 'その他' ? '#d9d9d4' : 'transparent');
+                  return `<button type="button" class="color-choice ${selected ? 'is-selected' : ''} ${color === '白' ? 'is-white' : ''} ${color === '黒' ? 'is-dark' : ''}" style="--swatch:${chip}" onclick="setColorRole('${prefix}','${role.key}','${escJs(color)}')"><span class="color-chip" aria-hidden="true"></span><span>${escHtml(color)}</span></button>`;
+                }).join('')}
+              </div>
+              <div class="color-other-field" style="display:${roleValue === 'その他' ? 'block' : 'none'}">
+                <div class="hint">色名またはカラーコードを入力してください</div>
+                <input type="text" class="control-w-md" value="${escAttr(roleOther)}" placeholder="例：ベージュ / ネイビー / #FF0000" oninput="updateColorRoleOther('${prefix}','${role.key}',this.value)">
+              </div>
+            </div>`;
+            return role.key === 'main'
+              ? roleMarkup
+              : `<details class="color-role-collapsible">
+                  <summary><strong>${role.label}</strong><span class="opt">${role.hint}</span><span class="color-role-current">${roleValue ? `選択中：${escHtml(roleValue)}` : '未指定'}</span></summary>
+                  ${roleMarkup}
+                </details>`;
+          }).join('')}
         </div>
         <div class="color-direction-hint">
           色名とカラーコードの指定が異なる場合は、カラーコードを優先して制作します。指定した色を参考に、制作側で全体のバランスに合わせて色を選定する場合があります。
@@ -1402,6 +1527,8 @@ function rerenderDesignInstructions() {
 
 function renderCardFileLists(prefix, card) {
   normalizeCardDetails(card);
+  renderFileTags(`pf-list-${prefix}`, card.personFiles, (i) => removeCardFile(prefix, 'personFiles', i, `pf-list-${prefix}`));
+  renderFileTags(`rf-list-${prefix}`, card.refFiles, (i) => removeCardFile(prefix, 'refFiles', i, `rf-list-${prefix}`));
   renderFileTags(`af-list-${prefix}`, card.assetFiles, (i) => removeCardFile(prefix, 'assetFiles', i, `af-list-${prefix}`));
 }
 
@@ -1479,18 +1606,6 @@ function setAllOmakase(prefix) {
   saveDraft();
 }
 
-function setInfoDensity(prefix, value) {
-  const card = getCard(prefix);
-  card.infoDensity = value;
-  const container = document.getElementById(`moodtags-${prefix}`);
-  if (container) {
-    container.querySelectorAll('.info-density-options label').forEach(label => {
-      label.classList.toggle('chk', label.querySelector('input').value === value);
-    });
-  }
-  refreshInstructionCompletionIndicators();
-}
-
 function setColorPreset(prefix, colorKey, codeKey, colorName) {
   const card = getCard(prefix);
   card[colorKey] = colorName;
@@ -1542,9 +1657,11 @@ function resetAdvancedInstructions(prefix) {
   card.baseColorCode = '';
   card.mainColorCode = '';
   card.accentColorCode = '';
+  card.colorChoice = '';
+  card.colorOther = '';
+  card.colorOtherByRole = {};
   card.colorNote = '';
   card.moods = [];
-  card.infoDensity = '';
   card.atmosphereOther = '';
   card.worldviewOther = '';
   card.worldviewOpen = false;
@@ -1762,8 +1879,8 @@ function getInstructionTargets() {
 
 function cardHasInstruction(card) {
   normalizeCardDetails(card);
-  return !!(card.personUsage || card.design || hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt) || card.assetNote ||
-    card.moods.length || card.atmosphereOther || card.worldviewOther || card.infoDensity || card.baseColor ||
+  return !!(card.personUsage || card.design || hasDesignInstructionContent(card.copyTxt) || hasDesignInstructionContent(card.designTxt) || card.assetNote || card.fileShareUrl ||
+    card.moods.length || card.atmosphereOther || card.worldviewOther || card.baseColor ||
     card.mainColor || card.accentColor || card.baseColorCode || card.mainColorCode ||
     card.accentColorCode || card.colorNote || card.sameAsCardKey);
 }
@@ -1835,6 +1952,44 @@ function refreshInstructionCompletionIndicators() {
       ? 'この指示をほかのすべての制作画像に適用'
       : 'この画像の必須項目を入力すると使用できます';
   }
+}
+
+function setColorChoice(prefix, colorName) {
+  setColorRole(prefix, 'main', colorName);
+}
+
+function getColorRoleValue(card, roleKey) {
+  if (roleKey === 'sub') return card.baseColor || '';
+  if (roleKey === 'accent') return card.accentColor || '';
+  return card.mainColor || card.colorChoice || '';
+}
+
+function getColorRoleOther(card, roleKey) {
+  return card.colorOtherByRole?.[roleKey] || (roleKey === 'main' ? card.colorOther || '' : '');
+}
+
+function setColorRole(prefix, roleKey, colorName) {
+  const card = getCard(prefix);
+  if (!card) return;
+  const valueKey = roleKey === 'sub' ? 'baseColor' : roleKey === 'accent' ? 'accentColor' : 'mainColor';
+  const codeKey = roleKey === 'sub' ? 'baseColorCode' : roleKey === 'accent' ? 'accentColorCode' : 'mainColorCode';
+  card[valueKey] = colorName;
+  card[codeKey] = COLOR_PRESET_CODES[colorName] || '';
+  card.colorChoice = roleKey === 'main' ? colorName : card.colorChoice;
+  card.colorOtherByRole = card.colorOtherByRole || {};
+  if (colorName !== 'その他') card.colorOtherByRole[roleKey] = '';
+  if (roleKey === 'main') card.colorOther = colorName === 'その他' ? (card.colorOther || '') : '';
+  rerenderDesignInstructions();
+  saveDraft();
+}
+
+function updateColorRoleOther(prefix, roleKey, value) {
+  const card = getCard(prefix);
+  if (!card) return;
+  card.colorOtherByRole = card.colorOtherByRole || {};
+  card.colorOtherByRole[roleKey] = value;
+  if (roleKey === 'main') card.colorOther = value;
+  saveDraft();
 }
 
 function getInstructionCardLabel(card, targets = getInstructionTargets()) {
@@ -2023,6 +2178,7 @@ function cardHasAnyInput(card) {
     card.staffPhotoAllowed ||
     String(card.personFreeNote || '').trim() ||
     String(card.refNote || '').trim() ||
+    String(card.fileShareUrl || '').trim() ||
     (card.personFiles || []).length ||
     (card.refFiles || []).length ||
     (card.assetFiles || []).length
@@ -2249,15 +2405,22 @@ function cardSummary(card, isIndividual) {
   normalizeCardDetails(card);
   const atmosphereTxt = card.moods.filter(mood => ATMOSPHERE_OPTIONS.includes(mood)).join('・') || '—';
   const worldviewTxt = card.moods.filter(mood => WORLDVIEW_OPTIONS.includes(mood)).join('・') || '—';
-  const colorTxt = [
-    card.baseColor || card.baseColorCode ? `ベース：${card.baseColor || '指定色'}${card.baseColorCode ? `（${card.baseColorCode}）` : ''}` : '',
-    card.mainColor || card.mainColorCode ? `メイン：${card.mainColor || '指定色'}${card.mainColorCode ? `（${card.mainColorCode}）` : ''}` : '',
-    card.accentColor || card.accentColorCode ? `アクセント：${card.accentColor || '指定色'}${card.accentColorCode ? `（${card.accentColorCode}）` : ''}` : ''
-  ].filter(Boolean).join(' / ') || '—';
+  const colorTxt = COLOR_ROLE_CONFIG.map(role => {
+    const value = getColorRoleValue(card, role.key);
+    if (!value) return `${role.label}：—`;
+    if (value === 'その他') return `${role.label}：その他（${getColorRoleOther(card, role.key) || '未入力'}）`;
+    const codeKey = role.key === 'sub' ? 'baseColorCode' : role.key === 'accent' ? 'accentColorCode' : 'mainColorCode';
+    return `${role.label}：${value}${card[codeKey] ? `（${card[codeKey]}）` : ''}`;
+  }).join(' / ');
   const personUsage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
   let assetExtra = '';
-  if (card.assetNote || card.assetFiles.length) {
+  const personFiles = (card.personFiles || []).map(file => file.name).join(', ');
+  const refFiles = (card.refFiles || []).map(file => file.name).join(', ');
+  if (card.assetNote || card.assetFiles.length || personFiles || refFiles || card.fileShareUrl) {
     assetExtra = `<div class="prow"><span class="pk">素材・参考情報</span><span class="pv">${card.assetNote || '—'}</span></div>
+      <div class="prow"><span class="pk">人物素材</span><span class="pv">${personFiles || 'なし'}</span></div>
+      <div class="prow"><span class="pk">参考画像</span><span class="pv">${refFiles || 'なし'}</span></div>
+      <div class="prow"><span class="pk">ファイル共有URL</span><span class="pv">${card.fileShareUrl || 'なし'}</span></div>
       <div class="prow"><span class="pk">添付ファイル</span><span class="pv">${card.assetFiles.length ? card.assetFiles.map(file => file.name).join(', ') : 'なし'}</span></div>`;
   }
   let personExtra = '';
@@ -2276,8 +2439,7 @@ function cardSummary(card, isIndividual) {
     <div class="prow"><span class="pk">雰囲気</span><span class="pv">${atmosphereTxt}</span></div>
     <div class="prow"><span class="pk">雰囲気・その他</span><span class="pv">${card.atmosphereOther || '—'}</span></div>
     <div class="prow"><span class="pk">世界観・モチーフ</span><span class="pv">${worldviewTxt}</span></div>
-    <div class="prow"><span class="pk">世界観・その他</span><span class="pv">${card.worldviewOther || '—'}</span></div>
-    <div class="prow"><span class="pk">情報量・装飾</span><span class="pv">${card.infoDensity || '—'}</span></div>`;
+    <div class="prow"><span class="pk">世界観・その他</span><span class="pv">${card.worldviewOther || '—'}</span></div>`;
 }
 
 function buildPreview() {
@@ -2327,6 +2489,7 @@ function buildPreview() {
     <div class="psec">
       <div class="psec-h">業種・媒体・サイズ</div>
       <div class="prow"><span class="pk">業種</span><span class="pv">${state.industry === 'その他' ? state.industryOther || 'その他' : state.industry || '—'}</span></div>
+      <div class="prow"><span class="pk">制作内容</span><span class="pv">${state.productionType || '—'}</span></div>
       ${mediaDetailHtml || '<div class="prow"><span class="pk">媒体</span><span class="pv">—</span></div>'}
       <div class="prow"><span class="pk">媒体・サイズ（自動まとめ）</span><span class="pv">${fieldValue('inp-imgsize')}</span></div>
       <div class="prow"><span class="pk">画像総枚数</span><span class="pv">${fieldValue('inp-count')}枚</span></div>
@@ -2347,6 +2510,7 @@ function buildPreview() {
 /* ========== VALIDATION ========== */
 function validateCard(prefix, card, validationRef, isIndividual) {
   const reqField = (fieldId, isValid) => {
+    if (fieldId.startsWith('f-designtxt-')) return;
     const fieldEl = document.getElementById(fieldId);
     if (!fieldEl) return;
     if (!isValid()) { fieldEl.classList.add('inv'); validationRef.ok = false; }
@@ -2398,19 +2562,17 @@ function validate(step) {
       req('f-pay-url', () => document.getElementById('inp-pay-url').value.trim());
     req('f-shop',    () => document.getElementById('inp-shop').value.trim());
     req('f-area',    () => document.getElementById('inp-area').value.trim());
+    req('f-industry', () => state.industry);
     if (state.urlMode === 'あり')
       req('f-shopurl', () => document.getElementById('inp-shopurl').value.trim());
   }
   if (step === 3) {
-    req('f-industry', () => state.industry);
     if (state.industry === 'その他')
       req('f-industry-other', () => document.getElementById('inp-industry-other').value.trim());
     req('f-medium',   () => state.selectedMedia.length ? 'ok' : '');
     if (state.selectedMedia.includes('その他'))
       req('f-medium-other', () => document.getElementById('inp-medium-other').value.trim());
-    state.selectedMedia.forEach(mediumName => {
-      req(`f-size-${cssId(mediumName)}`, () => hasMediumSize(mediumName) ? 'ok' : '');
-    });
+    if (!validateSelectedMediaSizes()) ok = false;
   }
   if (step === 4) {
     const validationRef = { ok: true };
@@ -2536,13 +2698,65 @@ function jumpToStep(step) {
   goTo(currentStep);
 }
 
-function nextStep() {
+let blankDesignModalResolver = null;
+
+function getBlankDesignInstructionCards() {
+  const sourceCards = state.imgCards.length ? state.imgCards : (state.common ? [state.common] : []);
+  const seen = new Set();
+  return sourceCards.filter(card => {
+    const effectiveCard = resolveInstructionCard(card) || card;
+    if (!effectiveCard || seen.has(effectiveCard)) return false;
+    seen.add(effectiveCard);
+    return effectiveCard.design !== 'おまかせ' && !hasDesignInstructionContent(effectiveCard.designTxt);
+  }).map(card => resolveInstructionCard(card) || card);
+}
+
+function resolveBlankDesignModal(accept) {
+  const modal = document.getElementById('blank-design-confirm-modal');
+  if (accept) {
+    getBlankDesignInstructionCards().forEach(card => {
+      card.design = 'おまかせ';
+      card.designTxt = 'おまかせ';
+    });
+    saveDraft();
+    rerenderDesignInstructions();
+  }
+  if (modal) modal.hidden = true;
+  const resolver = blankDesignModalResolver;
+  blankDesignModalResolver = null;
+  resolver?.(accept);
+  if (!accept) {
+    currentStep = 4;
+    goTo(4);
+    requestAnimationFrame(() => {
+      document.querySelector('.design-instruction-textarea')?.focus({ preventScroll: true });
+      document.querySelector('.design-instruction-textarea')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+}
+
+function confirmBlankDesignInstructions() {
+  if (!getBlankDesignInstructionCards().length) return Promise.resolve(true);
+  const modal = document.getElementById('blank-design-confirm-modal');
+  if (!modal) return Promise.resolve(true);
+  modal.hidden = false;
+  requestAnimationFrame(() => modal.querySelector('.blank-design-confirm-primary')?.focus());
+  return new Promise(resolve => { blankDesignModalResolver = resolve; });
+}
+
+async function nextStep() {
   if (currentStep === 4) {
     const bulkPanel = document.querySelector('.bulk-instruction-panel');
     if (bulkPanel?.open && !applyBulkInstructions({ automatic: true })) {
       document.getElementById('bulk-instruction-input')?.focus();
       return;
     }
+    if (!(await confirmBlankDesignInstructions())) return;
+  }
+  // サイズ未入力の媒体だけは、テスト用の未完了ナビゲーションでも先へ進ませない。
+  if (currentStep === 3 && !validateSelectedMediaSizes()) {
+    scrollToFirstError();
+    return;
   }
   if (!TEST_MODE_ALLOW_INCOMPLETE_NAVIGATION && !validate(currentStep)) {
     scrollToFirstError();
@@ -2668,11 +2882,14 @@ function restoreDraftUI(draft) {
   document.querySelectorAll('#industry-btns .rbtn').forEach(button => {
     button.classList.toggle('sel', button.textContent.trim() === state.industry);
   });
+  document.querySelectorAll('#production-type-btns .rbtn').forEach(button => {
+    button.classList.toggle('sel', button.textContent.trim() === state.productionType);
+  });
   document.querySelectorAll('.fuzoku-warn').forEach(warning => {
     warning.style.display = state.industry === '風俗' ? 'flex' : 'none';
   });
   document.getElementById('f-industry-other').style.display = state.industry === 'その他' ? 'block' : 'none';
-  renderMediumChips(state.industry);
+  renderMediumChips(state.productionType);
   renderMediumBlocks();
   document.getElementById('f-medium-other').style.display =
     state.selectedMedia.includes('その他') ? 'block' : 'none';
@@ -2732,6 +2949,7 @@ if (restoredDraft) hydrateDraftState(restoredDraft.state);
 initCongestion();
 initNotices();
 initDesigners();
+relocateIndustryAndAddProductionType();
 renderCommonBlock();
 if (restoredDraft) {
   restoreDraftUI(restoredDraft);
@@ -2752,8 +2970,21 @@ function placeAdvancedInstructionsAfterDesign(root) {
   if (split && advanced && advanced.parentElement !== split) split.appendChild(advanced);
 }
 
+function normalizeOptionalInstructionLabels(root) {
+  root.querySelectorAll('.instruction-text-part:first-child .req').forEach(badge => {
+    badge.className = 'opt';
+    badge.textContent = '任意';
+  });
+}
+
 const instructionLayoutObserver = new MutationObserver(() => {
-  document.querySelectorAll('.design-instruction-block').forEach(placeAdvancedInstructionsAfterDesign);
+  document.querySelectorAll('.design-instruction-block').forEach(root => {
+    placeAdvancedInstructionsAfterDesign(root);
+    normalizeOptionalInstructionLabels(root);
+  });
 });
 instructionLayoutObserver.observe(document.body, { childList: true, subtree: true });
-document.querySelectorAll('.design-instruction-block').forEach(placeAdvancedInstructionsAfterDesign);
+document.querySelectorAll('.design-instruction-block').forEach(root => {
+  placeAdvancedInstructionsAfterDesign(root);
+  normalizeOptionalInstructionLabels(root);
+});
