@@ -392,9 +392,27 @@
       </div>
 
       <div class="nav" id="nav-bar">
-        <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 戻る</button>
+        <div class="nav-left-actions">
+          <button class="btn draft-save-button" id="btn-draft-save" type="button" onclick="saveDraft({explicit:true})"><i class="ti ti-device-floppy"></i> 一時保存</button>
+          <button class="draft-delete-button" id="btn-draft-delete" type="button" onclick="deleteDraft()" hidden>一時保存を削除</button>
+          <span class="draft-status" id="draft-status" aria-live="polite"></span>
+          <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 戻る</button>
+        </div>
         <div></div>
         <button class="btn pri" id="btn-next" onclick="nextStep()">次へ <i class="ti ti-arrow-right"></i></button>
+      </div>
+
+      <div class="draft-restore-modal" id="draft-restore-modal" hidden>
+        <div class="draft-restore-backdrop" onclick="resolveDraftRestore(false)"></div>
+        <div class="draft-restore-dialog" role="dialog" aria-modal="true" aria-labelledby="draft-restore-title">
+          <h2 id="draft-restore-title">一時保存した依頼内容があります。</h2>
+          <p>入力内容を復元しますか？</p>
+          <p class="draft-file-notice">添付ファイルは一時保存されません。送信前に再度ご確認ください。</p>
+          <div class="draft-restore-actions">
+            <button type="button" class="btn draft-restore-new" onclick="resolveDraftRestore(false)">新しく入力する</button>
+            <button type="button" class="btn pri draft-restore-primary" onclick="resolveDraftRestore(true)">復元する</button>
+          </div>
+        </div>
       </div>
 
       <div class="blank-design-confirm-modal" id="blank-design-confirm-modal" hidden>
@@ -417,6 +435,6 @@
   </main>
 
   <script src="data.js?v=28"></script>
-  <script src="form-v22.js?v=72"></script>
+  <script src="form-v22.js?v=73"></script>
 </body>
 </html>

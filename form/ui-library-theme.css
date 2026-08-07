@@ -2414,10 +2414,26 @@ textarea {
 .blank-design-confirm-dialog p { margin: 0; color: var(--color-text-muted, #686862); line-height: 1.7; }
 .blank-design-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
 .blank-design-confirm-actions .btn { min-height: 42px; padding-inline: 16px; }
+.nav-left-actions { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.draft-save-button { min-height: 40px; }
+.draft-delete-button { border: 0; background: transparent; color: var(--color-text-muted, #686862); text-decoration: underline; cursor: pointer; padding: 6px 2px; font-size: 12px; }
+.draft-status { color: var(--color-text-muted, #686862); font-size: 12px; }
+.draft-restore-modal[hidden] { display: none; }
+.draft-restore-modal { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 20px; }
+.draft-restore-backdrop { position: absolute; inset: 0; background: rgba(21, 26, 37, .42); }
+.draft-restore-dialog { position: relative; width: min(440px, 100%); padding: 24px; border: 1px solid var(--color-border, #d9d9d2); border-radius: 16px; background: var(--color-surface, #fff); box-shadow: 0 18px 50px rgba(0,0,0,.18); }
+.draft-restore-dialog h2 { margin: 0 0 8px; font-size: 18px; }
+.draft-restore-dialog p { margin: 0; color: var(--color-text-muted, #686862); line-height: 1.7; }
+.draft-file-notice { margin-top: 10px !important; font-size: 12px; }
+.draft-restore-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.draft-restore-actions .btn { min-height: 42px; padding-inline: 16px; }
 @media (max-width: 560px) {
   .blank-design-confirm-dialog { padding: 22px 18px 18px; }
   .blank-design-confirm-actions { flex-direction: column-reverse; }
   .blank-design-confirm-actions .btn { width: 100%; }
+  .draft-restore-dialog { padding: 22px 18px 18px; }
+  .draft-restore-actions { flex-direction: column-reverse; }
+  .draft-restore-actions .btn { width: 100%; }
 }
 @media (max-width: 680px) {
   #medium-chips { grid-template-columns: 1fr; column-gap: 0; }

@@ -2780,11 +2780,12 @@ function prevStep() {
 }
 
 function submit() {
+  deleteDraft({silent: true});
   goTo(totalSteps + 1);
   document.getElementById('req-id').textContent = 'BNR-' + Date.now().toString(36).toUpperCase();
 }
 
-/* ========== DRAFT AUTOSAVE ========== */
+/* ========== 一時保存（明示操作のみ） ========== */
 function getPersistableState() {
   return JSON.parse(JSON.stringify(state, (key, value) => {
     if (key === 'files' || key === 'personFiles' || key === 'refFiles' ||
@@ -2804,18 +2805,45 @@ function collectDraftControls() {
   return controls;
 }
 
-function saveDraft() {
+function formatDraftSavedAt(timestamp) {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  return `一時保存済み：${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+function updateDraftStatus(timestamp = null, message = '') {
+  const status = document.getElementById('draft-status');
+  const deleteButton = document.getElementById('btn-draft-delete');
+  if (status) status.textContent = message || formatDraftSavedAt(timestamp);
+  if (deleteButton) deleteButton.hidden = !timestamp;
+}
+
+function saveDraft({ explicit = false } = {}) {
+  // 入力変更・画面遷移では保存しない。保存ボタンからの明示操作だけを受け付ける。
+  if (!explicit) return false;
+  const savedAt = Date.now();
   try {
     localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({
       state: getPersistableState(),
       controls: collectDraftControls(),
       currentStep: Math.min(Math.max(currentStep, 1), totalSteps),
       maxVisitedStep: Math.min(Math.max(maxVisitedStep, currentStep), totalSteps),
-      savedAt: Date.now()
+      savedAt
     }));
+    updateDraftStatus(savedAt, `${formatDraftSavedAt(savedAt)}　添付ファイルは保存されません。`);
+    return true;
   } catch (error) {
     console.warn('入力内容を保存できませんでした。', error);
+    updateDraftStatus(null, '一時保存できませんでした。');
+    return false;
   }
+}
+
+function deleteDraft({ silent = false } = {}) {
+  if (!silent && !window.confirm('一時保存した依頼内容を削除しますか？')) return false;
+  try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch (error) { console.warn('一時保存を削除できませんでした。', error); }
+  updateDraftStatus(null, silent ? '' : '一時保存を削除しました。');
+  return true;
 }
 
 function readDraft() {
@@ -2921,16 +2949,32 @@ function restoreDraftUI(draft) {
   goTo(currentStep);
 }
 
+let pendingDraft = null;
+function resolveDraftRestore(restore) {
+  const modal = document.getElementById('draft-restore-modal');
+  const draft = pendingDraft;
+  pendingDraft = null;
+  if (modal) modal.hidden = true;
+  if (restore && draft) {
+    hydrateDraftState(draft.state);
+    restoreDraftUI(draft);
+    updateDraftStatus(draft.savedAt);
+  } else {
+    deleteDraft({silent: true});
+    goTo(1);
+  }
+}
+
+function showDraftRestorePrompt(draft) {
+  const modal = document.getElementById('draft-restore-modal');
+  if (!modal) return resolveDraftRestore(false);
+  pendingDraft = draft;
+  modal.hidden = false;
+  requestAnimationFrame(() => modal.querySelector('.draft-restore-primary')?.focus());
+}
+
 function initDraftAutosave() {
-  let saveTimer = null;
-  const scheduleSave = () => {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveDraft, 120);
-  };
-  document.addEventListener('input', scheduleSave);
-  document.addEventListener('change', scheduleSave);
-  document.addEventListener('click', scheduleSave);
-  window.addEventListener('beforeunload', saveDraft);
+  // 仕様上、自動保存・beforeunload保存は行わない。
 }
 
 /* ========== INIT ========== */
@@ -2947,14 +2991,14 @@ function initDesigners() {
 }
 
 const restoredDraft = readDraft();
-if (restoredDraft) hydrateDraftState(restoredDraft.state);
 initCongestion();
 initNotices();
 initDesigners();
 relocateIndustryAndAddProductionType();
 renderCommonBlock();
 if (restoredDraft) {
-  restoreDraftUI(restoredDraft);
+  goTo(1);
+  showDraftRestorePrompt(restoredDraft);
 } else {
   goTo(currentStep);
 }
