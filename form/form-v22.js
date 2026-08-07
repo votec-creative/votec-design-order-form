@@ -1458,7 +1458,7 @@ function renderCardTemplate(prefix, card, opts) {
           }).join('')}
         </div>
         <div class="color-direction-hint">
-          色名とカラーコードの指定が異なる場合は、カラーコードを優先して制作します。指定した色を参考に、制作側で全体のバランスに合わせて色を選定する場合があります。
+          指定した色を参考に、制作側で全体のバランスに合わせて色を選定する場合があります。
         </div>
         <div class="color-direction-note">
           <div class="lbl">カラーについての補足 <span class="opt">任意</span></div>
