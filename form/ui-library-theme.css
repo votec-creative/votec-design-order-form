@@ -840,12 +840,12 @@ input:focus, select:focus, textarea:focus {
   display: none;
 }
 .advanced-instructions > summary::after {
-  content: "＋";
+  content: "\25BE";
   font-size: 16px;
   line-height: 1;
 }
 .advanced-instructions[open] > summary::after {
-  content: "−";
+  content: "\25B4";
 }
 .advanced-instructions > summary:hover {
   text-decoration: underline;
@@ -1011,8 +1011,8 @@ input:focus, select:focus, textarea:focus {
 .color-role-collapsible { border:1px solid #e1e1db; border-radius:12px; background:#fff; overflow:hidden; }
 .color-role-collapsible > summary { display:flex; align-items:center; gap:8px; min-height:44px; padding:10px 12px; cursor:pointer; list-style:none; font-size:13px; }
 .color-role-collapsible > summary::-webkit-details-marker { display:none; }
-.color-role-collapsible > summary::after { content:'＋'; margin-left:auto; color:var(--color-primary); font-size:18px; }
-.color-role-collapsible[open] > summary::after { content:'−'; }
+.color-role-collapsible > summary::after { content:'\25BE'; margin-left:auto; color:var(--color-primary); font-size:18px; }
+.color-role-collapsible[open] > summary::after { content:'\25B4'; }
 .color-role-current { color:#777; font-size:11px; font-weight:500; }
 .color-role-collapsible .color-role-field { border:0; border-top:1px solid #e8e8e2; border-radius:0; }
 .color-choice {
@@ -1056,6 +1056,7 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   gap: 10px;
   margin-top: 8px;
+  width: min(100%, 640px);
 }
 .file-share-url-row .control-w-lg {
   flex: 1 1 auto;
@@ -1069,6 +1070,7 @@ input:focus, select:focus, textarea:focus {
   .file-share-url-row {
     align-items: stretch;
     flex-direction: column;
+    width: 100%;
   }
   .file-share-open-button {
     width: 100%;
@@ -1150,13 +1152,13 @@ input:focus, select:focus, textarea:focus {
   display: none;
 }
 .mood-collapsible > summary::after {
-  content: "＋";
+  content: "\25BE";
   margin-left: auto;
   color: #777771;
   font-size: 14px;
 }
 .mood-collapsible[open] > summary::after {
-  content: "−";
+  content: "\25B4";
 }
 .mood-collapsible-body {
   margin-top: 11px;
@@ -1505,6 +1507,12 @@ textarea {
   line-height: 1.15;
   white-space: nowrap;
 }
+.deadline-today-detail {
+  margin-top: 8px;
+  color: var(--color-text-muted, #686862);
+  font-size: 10px;
+  line-height: 1.45;
+}
 .deadline-today-card.is-disabled {
   background: #f0f0ed;
   opacity: .72;
@@ -1533,9 +1541,40 @@ textarea {
   list-style: none;
 }
 .deadline-calendar-details summary::-webkit-details-marker { display: none; }
-.deadline-calendar-details summary::after { content: '＋'; color: var(--color-primary-deep, #2639d8); font-size: 16px; }
-.deadline-calendar-details[open] summary::after { content: '−'; }
+.deadline-calendar-details summary::after { content: '\25BE'; color: var(--color-primary-deep, #2639d8); font-size: 16px; }
+.deadline-calendar-details[open] summary::after { content: '\25B4'; }
 .deadline-calendar-details-hint { margin: 10px 2px; }
+.delivery-calendar-picker { width: min(100%, 320px); margin-top: 10px; padding: 10px; border: 1px solid var(--color-border, #d8d8d2); border-radius: 10px; background: #fff; }
+.delivery-calendar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.delivery-calendar-head strong { font-size: 13px; }
+.delivery-calendar-nav { width: 30px; height: 30px; border: 0; border-radius: 7px; background: #f3f4ff; color: #4657d8; font-size: 22px; line-height: 1; cursor: pointer; }
+.delivery-calendar-weekdays, .delivery-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.delivery-calendar-weekdays { margin-bottom: 4px; color: #777771; font-size: 10px; font-weight: 700; text-align: center; }
+.delivery-calendar-day { display: grid; place-items: center; min-height: 30px; border: 1px solid transparent; border-radius: 6px; background: #fff; color: #282824; font-size: 12px; cursor: pointer; }
+.delivery-calendar-day:hover:not(:disabled) { border-color: #4657d8; background: #f0f2ff; }
+.delivery-calendar-day.is-today { box-shadow: inset 0 0 0 1px #4657d8; }
+.delivery-calendar-day.is-selected { background: #4657d8; color: #fff; }
+.delivery-calendar-day.is-non-working { background: #f0f0ed; color: #aaa; cursor: not-allowed; }
+.delivery-calendar-day.is-empty { pointer-events: none; }
+.delivery-calendar-help { margin: 8px 0 0; color: #777771; font-size: 10px; }
+.delivery-calendar-picker { width: min(100%, 340px); padding: 12px; border-radius: 14px; box-shadow: 0 8px 22px rgba(30, 35, 70, .08); }
+.delivery-calendar-head { margin-bottom: 10px; }
+.delivery-calendar-head strong { font-size: 14px; letter-spacing: .02em; }
+.delivery-calendar-nav { width: 32px; height: 32px; border: 1px solid #e1e3f5; background: #f5f6ff; }
+.delivery-calendar-nav:hover { background: #e9ebff; }
+.delivery-calendar-weekdays { gap: 4px; margin-bottom: 5px; }
+.delivery-calendar-weekdays span:first-child { color: #d45b68; }
+.delivery-calendar-weekdays span:last-child { color: #5065c9; }
+.delivery-calendar-grid { gap: 4px; }
+.delivery-calendar-day { min-height: 34px; border-radius: 9px; font-size: 13px; font-weight: 700; }
+.delivery-calendar-day.is-today { box-shadow: inset 0 0 0 2px #4657d8; }
+.delivery-calendar-day.is-selected { box-shadow: 0 3px 8px rgba(70, 87, 216, .25); }
+.delivery-calendar-day.is-non-working { background: #f5f5f2; color: #b6b6ae; }
+.delivery-calendar-legend { display: flex; gap: 12px; margin-top: 10px; color: #777771; font-size: 10px; }
+.delivery-calendar-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.delivery-calendar-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 1px solid #4657d8; }
+.delivery-calendar-legend i.is-off { background: #f0f0ed; border-color: #d8d8d2; }
+@media (max-width: 600px) { .delivery-calendar-picker { width: 100%; } .delivery-calendar-day { min-height: 36px; } }
 .deadline-calendar-table {
   min-width: 760px;
 }
@@ -1562,8 +1601,36 @@ textarea {
   font-weight: 700;
 }
 .deadline-guide .deadline-table-wrap {
-  max-height: 430px;
-  overflow: auto;
+  overflow: visible;
+}
+.deadline-day-list {
+  display: grid;
+  gap: 8px;
+}
+.deadline-calendar-more { display: block; width: 100%; margin-top: 10px; padding: 9px 12px; border: 1px solid #c9c9c4; border-radius: 8px; background: #fff; color: #4657d8; font-size: 12px; font-weight: 700; cursor: pointer; }
+.deadline-calendar-more:hover { background: #f0f2ff; border-color: #4657d8; }
+.deadline-day-row {
+  overflow: hidden;
+  border: 1px solid var(--color-border, #d8d8d2);
+  border-radius: 10px;
+  background: #fff;
+}
+.deadline-day-row.is-today { border-color: #4657d8; box-shadow: 0 0 0 1px rgba(70, 87, 216, .12); }
+.deadline-day-request { display: flex; align-items: baseline; gap: 9px; min-height: 40px; padding: 9px 12px; background: #f4f5ff; border-bottom: 1px solid #e1e3fa; }
+.deadline-day-request-label { color: #777771; font-size: 11px; font-weight: 700; }
+.deadline-day-request strong { color: #22221f; font-size: 14px; }
+.deadline-today-badge { padding: 2px 7px; border-radius: 999px; background: #4657d8; color: #fff; font-size: 10px; font-weight: 800; }
+.deadline-day-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.deadline-day-card-item { display: grid; gap: 5px; min-height: 58px; padding: 10px 12px; border-right: 1px solid #e4e4df; }
+.deadline-day-card-item:last-child { border-right: 0; }
+.deadline-day-card-item span { color: #777771; font-size: 11px; font-weight: 700; }
+.deadline-day-card-item strong { color: #25252a; font-size: 14px; }
+.deadline-day-closed { padding: 11px 12px; background: #f0f0ed; color: var(--color-text-muted, #686862); font-size: 12px; font-weight: 700; }
+.deadline-day-row.is-non-working .deadline-day-request { background: #f7f7f4; border-bottom-color: #e8e8e3; }
+@media (max-width: 640px) {
+  .deadline-day-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .deadline-day-card-item:nth-child(2) { border-right: 0; }
+  .deadline-day-card-item:nth-child(-n + 2) { border-bottom: 1px solid #e4e4df; }
 }
 .preview {
   margin-top: 8px;
@@ -2401,6 +2468,11 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
+
+/* Keep the relocated industry filter visually separated from the size cards. */
+#p3 > #f-industry {
+  margin-top: 24px;
+}
 @media (max-width: 600px) {
   .medium-accordion-head {
     min-height: 50px;
@@ -2591,12 +2663,12 @@ textarea {
   flex: 0 0 auto;
   margin-left: 10px;
   color: #4657d8;
-  content: '＋';
+  content: '\25BE';
   font-size: 16px;
   line-height: 1;
 }
 .size-suggestion-details[open] summary::after {
-  content: '−';
+  content: '\25B4';
 }
 .size-suggestion-details summary:hover {
   border-color: #4657d8;

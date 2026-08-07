@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
   <link rel="apple-touch-icon" href="favicon.png?v=blue-20260729">
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
   <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
-  <meta property="og:title" content="デザインオーダー">
+  <meta property="og:title" content="デザインオーダーフォーム | VOTEC">
   <meta property="og:description" content="VOTECデザイン制作依頼フォーム">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://votec-design-order-form.nagataimc.chatgpt.site/og.png">
@@ -19,21 +19,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="ui-library-theme.css?v=46">
+  <link rel="stylesheet" href="ui-library-theme.css?v=55">
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
       <div class="header-logo">
         <i class="ti ti-palette"></i>
-        <span>デザインオーダー</span>
+        <span>繝・じ繧､繝ｳ繧ｪ繝ｼ繝繝ｼ</span>
       </div>
       <div class="header-actions">
         <div class="header-right">
           <span class="header-step-key">STEP</span>
           <span id="header-step-value">1 / 6</span>
         </div>
-        <button type="button" class="mobile-summary-menu-toggle" id="mobile-summary-menu-toggle" aria-controls="floating-media-summary" aria-expanded="false" aria-label="制作画像一覧を開く" onclick="toggleMobileMediaMenu()">
+        <button type="button" class="mobile-summary-menu-toggle" id="mobile-summary-menu-toggle" aria-controls="floating-media-summary" aria-expanded="false" aria-label="蛻ｶ菴懃判蜒丈ｸ隕ｧ繧帝幕縺・ onclick="toggleMobileMediaMenu()">
           <span class="mobile-summary-list-icon" aria-hidden="true">
             <span></span>
             <span></span>
@@ -49,220 +49,220 @@
   <main class="main">
     <div class="fw">
 
-      <!-- お知らせ・混雑状況 -->
+      <!-- 縺顔衍繧峨○繝ｻ豺ｷ髮醍憾豕・-->
       <div class="notice-stack">
         <div class="info-card">
-          <div class="info-card-head"><i class="ti ti-speakerphone"></i>お知らせ</div>
+          <div class="info-card-head"><i class="ti ti-speakerphone"></i>縺顔衍繧峨○</div>
           <div class="info-card-body" id="notice-body">
             <div class="info-entry" data-end-date="2026-05-27">
               <div class="info-entry-date">2026/05/27</div>
-              <div class="info-entry-text">社員総会開催のため、当日の対応が遅れる場合があります。</div>
+          <div class="info-entry-text">遉ｾ蜩｡邱丈ｼ夐幕蛯ｬ縺ｮ縺溘ａ縲∝ｽ捺律縺ｮ蟇ｾ蠢懊′驕・ｌ繧句ｴ蜷医′縺ゅｊ縺ｾ縺吶・</div>
             </div>
             <div class="info-entry" data-end-date="2026-05-10">
               <div class="info-entry-date">2026/04/15</div>
-              <div class="info-entry-text">GW休暇前の納期についてのご案内です。休暇前の依頼は早めにお願いします。</div>
+          <div class="info-entry-text">GW莨第嚊蜑阪・邏肴悄縺ｫ縺､縺・※縺ｮ縺疲｡亥・縺ｧ縺吶ゆｼ第嚊蜑阪・萓晞ｼ縺ｯ譌ｩ繧√↓縺企｡倥＞縺励∪縺吶・</div>
             </div>
           </div>
         </div>
         <div class="info-card congestion">
-          <div class="info-card-head"><i class="ti ti-gauge"></i>現在の混雑状況</div>
+          <div class="info-card-head"><i class="ti ti-gauge"></i>迴ｾ蝨ｨ縺ｮ豺ｷ髮醍憾豕・</div>
           <div class="info-card-body">
             <div class="congestion-row">
               <div class="congestion-icon" id="congestion-icon"><i class="ti ti-clock"></i></div>
               <div>
-                <div class="congestion-label" id="congestion-label">通常稼働</div>
-                <div class="congestion-sub" id="congestion-sub">標準的な対応状況です。</div>
+              <div class="congestion-label" id="congestion-label">騾壼ｸｸ遞ｼ蜒・</div>
+              <div class="congestion-sub" id="congestion-sub">讓呎ｺ也噪縺ｪ蟇ｾ蠢懃憾豕√〒縺吶・</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ステップインジケーター -->
+      <!-- 繧ｹ繝・ャ繝励う繝ｳ繧ｸ繧ｱ繝ｼ繧ｿ繝ｼ -->
       <div class="stepper-glass">
         <div class="steps-circle" id="steps">
-          <div class="sc-item"><div class="sc-dot on" id="d1">1</div><div class="sc-lbl on" id="l1">依頼者</div></div>
+          <div class="sc-item"><div class="sc-dot on" id="d1">1</div><div class="sc-lbl on" id="l1">萓晞ｼ閠・</div></div>
           <div class="sc-line" id="ln1"></div>
-          <div class="sc-item"><div class="sc-dot" id="d2">2</div><div class="sc-lbl" id="l2">画像種別</div></div>
+          <div class="sc-item"><div class="sc-dot" id="d2">2</div><div class="sc-lbl" id="l2">逕ｻ蜒冗ｨｮ蛻･</div></div>
           <div class="sc-line" id="ln2"></div>
-          <div class="sc-item"><div class="sc-dot" id="d3">3</div><div class="sc-lbl" id="l3">媒体・サイズ</div></div>
+          <div class="sc-item"><div class="sc-dot" id="d3">3</div><div class="sc-lbl" id="l3">蟐剃ｽ薙・繧ｵ繧､繧ｺ</div></div>
           <div class="sc-line" id="ln3"></div>
-          <div class="sc-item"><div class="sc-dot" id="d4">4</div><div class="sc-lbl" id="l4">デザイン指示</div></div>
+          <div class="sc-item"><div class="sc-dot" id="d4">4</div><div class="sc-lbl" id="l4">繝・じ繧､繝ｳ謖・､ｺ</div></div>
           <div class="sc-line" id="ln4"></div>
-          <div class="sc-item"><div class="sc-dot" id="d5">5</div><div class="sc-lbl" id="l5">納期・指名</div></div>
+          <div class="sc-item"><div class="sc-dot" id="d5">5</div><div class="sc-lbl" id="l5">邏肴悄繝ｻ謖・錐</div></div>
           <div class="sc-line" id="ln5"></div>
-          <div class="sc-item"><div class="sc-dot" id="d6">6</div><div class="sc-lbl" id="l6">確認・送信</div></div>
+          <div class="sc-item"><div class="sc-dot" id="d6">6</div><div class="sc-lbl" id="l6">遒ｺ隱阪・騾∽ｿ｡</div></div>
         </div>
         <div class="prog-bar"><div class="prog-fill" id="prog" style="width:16.6%"></div></div>
       </div>
 
-      <!-- Step1: 依頼者情報 -->
+      <!-- Step1: 萓晞ｼ閠・ュ蝣ｱ -->
       <div class="panel on" id="p1">
-        <p class="ptitle">依頼者情報</p>
-        <p class="psub">支社・担当者情報を入力してください。支社を選ぶと担当営業者が絞り込まれます。</p>
+        <p class="ptitle">萓晞ｼ閠・ュ蝣ｱ</p>
+        <p class="psub">謾ｯ遉ｾ繝ｻ諡・ｽ楢・ュ蝣ｱ繧貞・蜉帙＠縺ｦ縺上□縺輔＞縲よ髪遉ｾ繧帝∈縺ｶ縺ｨ諡・ｽ灘霧讌ｭ閠・′邨槭ｊ霎ｼ縺ｾ繧後∪吶・</p>
         <div class="r2 select-stack">
           <div class="field" id="f-office">
-            <div class="lbl">支社名 <span class="req">必須</span></div>
+            <div class="lbl">謾ｯ遉ｾ蜷・<span class="req">蠢・・</span></div>
             <select id="sel-office" onchange="onOffice()">
-              <option value="">選択してください</option>
-              <option value="東京本社" data-id="1">東京本社</option>
-              <option value="東京中央支社" data-id="2">東京中央支社</option>
-              <option value="池袋支社" data-id="3">池袋支社</option>
-              <option value="北関東支社" data-id="4">北関東支社</option>
-              <option value="東海支社" data-id="5">東海支社</option>
-              <option value="経営本部" data-id="6">経営本部</option>
-              <option value="北海道支社" data-id="7">北海道支社</option>
-              <option value="関西支社" data-id="8">関西支社</option>
-              <option value="中四国支社" data-id="9">中四国支社</option>
-              <option value="九州支社" data-id="10">九州支社</option>
-              <option value="南九州支部" data-id="11">南九州支部</option>
+              <option value="">驕ｸ謚槭＠縺ｦ縺上□縺輔＞</option>
+              <option value="譚ｱ莠ｬ譛ｬ遉ｾ" data-id="1">譚ｱ莠ｬ譛ｬ遉ｾ</option>
+              <option value="譚ｱ莠ｬ荳ｭ螟ｮ謾ｯ遉ｾ" data-id="2">譚ｱ莠ｬ荳ｭ螟ｮ謾ｯ遉ｾ</option>
+              <option value="豎陲区髪遉ｾ" data-id="3">豎陲区髪遉ｾ</option>
+              <option value="蛹鈴未譚ｱ謾ｯ遉ｾ" data-id="4">蛹鈴未譚ｱ謾ｯ遉ｾ</option>
+              <option value="譚ｱ豬ｷ謾ｯ遉ｾ" data-id="5">譚ｱ豬ｷ謾ｯ遉ｾ</option>
+              <option value="邨悟霧譛ｬ驛ｨ" data-id="6">邨悟霧譛ｬ驛ｨ</option>
+              <option value="蛹玲ｵｷ驕捺髪遉ｾ" data-id="7">蛹玲ｵｷ驕捺髪遉ｾ</option>
+              <option value="髢｢隘ｿ謾ｯ遉ｾ" data-id="8">髢｢隘ｿ謾ｯ遉ｾ</option>
+              <option value="荳ｭ蝗帛嵜謾ｯ遉ｾ" data-id="9">荳ｭ蝗帛嵜謾ｯ遉ｾ</option>
+              <option value="荵晏ｷ樊髪遉ｾ" data-id="10">荵晏ｷ樊髪遉ｾ</option>
+              <option value="蜊嶺ｹ晏ｷ樊髪驛ｨ" data-id="11">蜊嶺ｹ晏ｷ樊髪驛ｨ</option>
               <option value="A-Cloud" data-id="12">A-Cloud</option>
               <option value="VOTEC" data-id="13">VOTEC</option>
-              <option value="その他">その他</option>
+              <option value="縺昴・莉・">縺昴・莉・</option>
             </select>
-            <div class="err">支社名を選択してください</div>
+            <div class="err">謾ｯ遉ｾ蜷阪ｒ驕ｸ謚槭＠縺ｦ縺上□縺輔＞</div>
           </div>
           <div class="field" id="f-staff">
-            <div class="lbl">営業担当者 <span class="req">必須</span></div>
-            <select id="sel-staff"><option value="">先に支社を選択</option></select>
-            <input type="text" id="inp-staff-other" class="control-w-sm" placeholder="担当者名を入力" style="display:none;margin-top:6px">
-            <div class="err">営業担当者を入力してください</div>
+            <div class="lbl">蝟ｶ讌ｭ諡・ｽ楢・<span class="req">蠢・・</span></div>
+            <select id="sel-staff"><option value="">蜈医↓謾ｯ遉ｾ繧帝∈謚・</option></select>
+            <input type="text" id="inp-staff-other" class="control-w-sm" placeholder="諡・ｽ楢・錐繧貞・蜉・" style="display:none;margin-top:6px">
+            <div class="err">蝟ｶ讌ｭ諡・ｽ楢・ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞</div>
           </div>
         </div>
         <div class="field" id="f-client">
-          <div class="lbl">フォーム記入者 <span class="req">必須</span></div>
+          <div class="lbl">繝輔か繝ｼ繝險伜・閠・<span class="req">蠢・・</span></div>
           <div class="radios">
-            <div class="rbtn sel" id="rb-honin" onclick="setClient('本人')"><i class="ti ti-user"></i>本人</div>
-            <div class="rbtn" id="rb-dairi" onclick="setClient('代理')"><i class="ti ti-users"></i>代理</div>
+            <div class="rbtn sel" id="rb-honin" onclick="setClient('譛ｬ莠ｺ')"><i class="ti ti-user"></i>譛ｬ莠ｺ</div>
+            <div class="rbtn" id="rb-dairi" onclick="setClient('莉｣逅・)"><i class="ti ti-users"></i>莉｣逅・</div>
           </div>
         </div>
         <div class="field" id="f-agent" style="display:none">
-          <div class="lbl">代理人名 <span class="req">必須</span></div>
-          <input type="text" id="inp-agent" class="control-w-sm" placeholder="代理入力する方のお名前">
-          <div class="err">代理人名を入力してください</div>
+          <div class="lbl">莉｣逅・ｺｺ蜷・<span class="req">蠢・・</span></div>
+          <input type="text" id="inp-agent" class="control-w-sm" placeholder="莉｣逅・・蜉帙☆繧区婿縺ｮ縺雁錐蜑・">
+          <div class="err">莉｣逅・ｺｺ蜷阪ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞</div>
         </div>
         <div class="field" id="f-email">
-          <div class="lbl">記入者メールアドレス <span class="req">必須</span></div>
+          <div class="lbl">險伜・閠・Γ繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ <span class="req">蠢・・</span></div>
           <input type="email" id="inp-email" class="control-w-md" placeholder="yamada@example.com">
-          <div class="err">有効なメールアドレスを入力してください</div>
+          <div class="err">譛牙柑縺ｪ繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
         </div>
       </div>
 
-      <!-- Step2: 画像種別 -->
+      <!-- Step2: 逕ｻ蜒冗ｨｮ蛻･ -->
       <div class="panel" id="p2">
-        <p class="ptitle">画像種別・依頼内容</p>
-        <p class="psub">画像の種類を選択してください。</p>
-        <div class="subhead"><span class="subhead-num">1</span>依頼内容</div>
+        <p class="ptitle">逕ｻ蜒冗ｨｮ蛻･繝ｻ萓晞ｼ蜀・ｮｹ</p>
+        <p class="psub">逕ｻ蜒上・遞ｮ鬘槭ｒ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・</p>
+        <div class="subhead"><span class="subhead-num">1</span>萓晞ｼ蜀・ｮｹ</div>
         <div class="request-details-grid">
           <div class="field" id="f-imgtype">
-          <div class="lbl">画像について <span class="req">必須</span></div>
+          <div class="lbl">逕ｻ蜒上↓縺､縺・※ <span class="req">蠢・・</span></div>
           <div class="r2" style="margin-bottom:8px">
-            <div class="rcard" id="rc-new" onclick="setImgType(1)"><span class="rcard-billing">ポイント</span><div class="rcard-icon"><i class="ti ti-plus"></i></div><div class="rcard-title">新規作成</div><div class="rcard-sub">新しくデザインを作成する</div></div>
-            <div class="rcard" id="rc-fix" onclick="setImgType(2)"><span class="rcard-billing">ポイント</span><div class="rcard-icon"><i class="ti ti-edit"></i></div><div class="rcard-title">修正</div><div class="rcard-sub">過去に制作した画像の修正・変更・リサイズなど</div></div>
-            <div class="rcard" id="rc-pay" onclick="setImgType(3)"><span class="rcard-billing">有料</span><div class="rcard-icon"><i class="ti ti-currency-yen"></i></div><div class="rcard-title">有料案件</div><div class="rcard-sub">有料での制作</div></div>
+            <div class="rcard" id="rc-new" onclick="setImgType(1)"><span class="rcard-billing">繝昴う繝ｳ繝・</span><div class="rcard-icon"><i class="ti ti-plus"></i></div><div class="rcard-title">譁ｰ隕丈ｽ懈・</div><div class="rcard-sub">譁ｰ縺励￥繝・じ繧､繝ｳ繧剃ｽ懈・縺吶ｋ</div></div>
+            <div class="rcard" id="rc-fix" onclick="setImgType(2)"><span class="rcard-billing">繝昴う繝ｳ繝・</span><div class="rcard-icon"><i class="ti ti-edit"></i></div><div class="rcard-title">菫ｮ豁｣</div><div class="rcard-sub">驕主悉縺ｫ蛻ｶ菴懊＠縺溽判蜒上・菫ｮ豁｣繝ｻ螟画峩繝ｻ繝ｪ繧ｵ繧､繧ｺ縺ｪ縺ｩ</div></div>
+            <div class="rcard" id="rc-pay" onclick="setImgType(3)"><span class="rcard-billing">譛画侭</span><div class="rcard-icon"><i class="ti ti-currency-yen"></i></div><div class="rcard-title">譛画侭譯井ｻｶ</div><div class="rcard-sub">譛画侭縺ｧ縺ｮ蛻ｶ菴・</div></div>
           </div>
           <div class="imgtype-followup" id="imgtype-followup" aria-live="polite">
             <div class="imgtype-followup-head">
-              <span class="imgtype-followup-kicker">追加設定</span>
-              <strong>有料案件の追加情報</strong>
+              <span class="imgtype-followup-kicker">霑ｽ蜉險ｭ螳・</span>
+              <strong>譛画侭譯井ｻｶ縺ｮ霑ｽ蜉諠・ｱ</strong>
             </div>
             <div id="f-pay-url" class="field" style="display:none">
-              <div class="lbl">入稿URL <span class="req">必須</span></div>
+              <div class="lbl">蜈･遞ｿURL <span class="req">蠢・・</span></div>
               <input type="url" id="inp-pay-url" class="control-w-lg" placeholder="https://example.com/submission">
-              <div class="hint">有料案件の入稿先URLを入力してください</div>
-              <div class="err">入稿URLを入力してください</div>
+              <div class="hint">譛画侭譯井ｻｶ縺ｮ蜈･遞ｿ蜈・RL繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
+              <div class="err">蜈･遞ｿURL繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
             </div>
           </div>
-          <div class="err">画像種別を選択してください</div>
+          <div class="err">逕ｻ蜒冗ｨｮ蛻･繧帝∈謚槭＠縺ｦ縺上□縺輔＞</div>
           </div>
         </div>
-        <div class="subhead"><span class="subhead-num">2</span>店舗情報</div>
+        <div class="subhead"><span class="subhead-num">2</span>蠎苓・諠・ｱ</div>
         <div class="r2">
           <div class="field" id="f-shop">
-            <div class="lbl">店舗名 <span class="req">必須</span></div>
-            <input type="text" id="inp-shop" class="control-w-md" placeholder="〇〇エステ 渋谷店">
-            <div class="err">店舗名を入力してください</div>
+            <div class="lbl">蠎苓・蜷・<span class="req">蠢・・</span></div>
+            <input type="text" id="inp-shop" class="control-w-md" placeholder="縲・・お繧ｹ繝・貂玖ｰｷ蠎・">
+            <div class="err">蠎苓・蜷阪ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞</div>
           </div>
           <div class="field" id="f-area">
-            <div class="lbl">エリア(都道府県・市町村) <span class="req">必須</span></div>
-            <input type="text" id="inp-area" class="control-w-sm" placeholder="例：東京都・渋谷">
-            <div class="err">エリアを入力してください</div>
+            <div class="lbl">繧ｨ繝ｪ繧｢(驛ｽ驕灘ｺ懃恁繝ｻ蟶ら伴譚・ <span class="req">蠢・・</span></div>
+            <input type="text" id="inp-area" class="control-w-sm" placeholder="萓具ｼ壽擲莠ｬ驛ｽ繝ｻ貂玖ｰｷ">
+            <div class="err">繧ｨ繝ｪ繧｢繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
           </div>
         </div>
-        <div class="subhead"><span class="subhead-num">3</span>掲載URL</div>
+        <div class="subhead"><span class="subhead-num">3</span>謗ｲ霈蔚RL</div>
         <div class="field" id="f-shopurl">
-          <div class="lbl">掲載URL <span class="req">必須</span></div>
+          <div class="lbl">謗ｲ霈蔚RL <span class="req">蠢・・</span></div>
           <div class="url-entry-row">
-            <input type="url" id="inp-shopurl" class="control-w-md" placeholder="例：https://example.com/shop">
+            <input type="url" id="inp-shopurl" class="control-w-md" placeholder="萓具ｼ喇ttps://example.com/shop">
             <label class="url-none-check">
               <input type="checkbox" id="chk-urlnone" onchange="setUrlMode(1, this.checked)">
-              <span>URLなし</span>
+              <span>URL縺ｪ縺・</span>
             </label>
           </div>
           <div class="url-entry-row url-entry-secondary">
-            <input type="url" id="inp-shopurl2" class="control-w-md" placeholder="ホームページURL（任意）">
+            <input type="url" id="inp-shopurl2" class="control-w-md" placeholder="繝帙・繝繝壹・繧ｸURL・井ｻｻ諢擾ｼ・">
             <label class="url-none-check">
               <input type="checkbox" id="chk-urlnone2" onchange="setUrlMode(2, this.checked)">
-              <span>URLなし</span>
+              <span>URL縺ｪ縺・</span>
             </label>
           </div>
-          <div class="err">掲載URLを入力してください</div>
+          <div class="err">謗ｲ霈蔚RL繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
         </div>
       </div>
 
-      <!-- Step3: 業種・媒体・サイズ -->
+      <!-- Step3: 讌ｭ遞ｮ繝ｻ蟐剃ｽ薙・繧ｵ繧､繧ｺ -->
       <div class="panel" id="p3">
-        <p class="ptitle">業種・媒体・サイズ</p>
-        <p class="psub">業種・媒体を選び、必要な画像サイズを入力してください。</p>
+        <p class="ptitle">讌ｭ遞ｮ繝ｻ蟐剃ｽ薙・繧ｵ繧､繧ｺ</p>
+        <p class="psub">讌ｭ遞ｮ繝ｻ蟐剃ｽ薙ｒ驕ｸ縺ｳ縲∝ｿ・ｦ√↑逕ｻ蜒上し繧､繧ｺ繧貞・蜉帙＠縺ｦ縺上□縺輔＞縲・</p>
         <div class="field" id="f-industry">
-          <div class="lbl">業種 <span class="req">必須</span></div>
+          <div class="lbl">讌ｭ遞ｮ <span class="req">蠢・・</span></div>
           <div class="radios" id="industry-btns">
-            <div class="rbtn" onclick="setIndustry('風俗',this)">風俗</div>
-            <div class="rbtn" onclick="setIndustry('一般メンズエステ',this)">一般メンズエステ</div>
-            <div class="rbtn" onclick="setIndustry('カンパイワーク（女性）',this)">カンパイワーク（女性）</div>
-            <div class="rbtn" onclick="setIndustry('カンパイワーク（男性）',this)">カンパイワーク（男性）</div>
-            <div class="rbtn" onclick="setIndustry('その他',this)">その他</div>
+            <div class="rbtn" onclick="setIndustry('鬚ｨ菫・,this)">鬚ｨ菫・</div>
+            <div class="rbtn" onclick="setIndustry('荳闊ｬ繝｡繝ｳ繧ｺ繧ｨ繧ｹ繝・,this)">荳闊ｬ繝｡繝ｳ繧ｺ繧ｨ繧ｹ繝・</div>
+            <div class="rbtn" onclick="setIndustry('繧ｫ繝ｳ繝代う繝ｯ繝ｼ繧ｯ・亥･ｳ諤ｧ・・,this)">繧ｫ繝ｳ繝代う繝ｯ繝ｼ繧ｯ・亥･ｳ諤ｧ・・</div>
+            <div class="rbtn" onclick="setIndustry('繧ｫ繝ｳ繝代う繝ｯ繝ｼ繧ｯ・育塙諤ｧ・・,this)">繧ｫ繝ｳ繝代う繝ｯ繝ｼ繧ｯ・育塙諤ｧ・・</div>
+            <div class="rbtn" onclick="setIndustry('縺昴・莉・,this)">縺昴・莉・</div>
             <div class="industry-other-wrap" id="f-industry-other">
-              <input type="text" id="inp-industry-other" class="control-w-sm" placeholder="業種名を入力" oninput="state.industryOther=this.value;this.parentElement.classList.remove('inv')">
-              <div class="err">業種名を入力してください</div>
+              <input type="text" id="inp-industry-other" class="control-w-sm" placeholder="讌ｭ遞ｮ蜷阪ｒ蜈･蜉・" oninput="state.industryOther=this.value;this.parentElement.classList.remove('inv')">
+              <div class="err">讌ｭ遞ｮ蜷阪ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞</div>
             </div>
           </div>
-          <div class="err">業種を選択してください</div>
+          <div class="err">讌ｭ遞ｮ繧帝∈謚槭＠縺ｦ縺上□縺輔＞</div>
         </div>
         <div class="field" id="f-medium">
-          <div class="lbl">媒体名 <span class="req">必須</span>　<span class="opt">複数選択可</span></div>
-          <div class="hint" style="margin-bottom:8px">掲載する媒体をすべて選んでください。サイズは下の欄で設定します。</div>
-          <div class="radios" id="medium-chips"><div style="font-size:13px;color:var(--color-text-muted)">先に業種を選択してください</div></div>
-          <div class="err">媒体名を選択してください</div>
+          <div class="lbl">蟐剃ｽ灘錐 <span class="req">蠢・・</span>縲<span class="opt">隍・焚驕ｸ謚槫庄</span></div>
+          <div class="hint" style="margin-bottom:8px">謗ｲ霈峨☆繧句ｪ剃ｽ薙ｒ縺吶∋縺ｦ驕ｸ繧薙〒縺上□縺輔＞縲ゅし繧､繧ｺ縺ｯ荳九・谺・〒險ｭ螳壹＠縺ｾ縺吶・</div>
+          <div class="radios" id="medium-chips"></div>
+          <div class="err">蟐剃ｽ灘錐繧帝∈謚槭＠縺ｦ縺上□縺輔＞</div>
         </div>
-        <!-- その他媒体名入力欄 -->
+        <!-- 縺昴・莉門ｪ剃ｽ灘錐蜈･蜉帶ｬ・-->
         <div class="field" id="f-medium-other" style="display:none">
-          <div class="lbl">媒体名（その他）<span class="req">必須</span></div>
-          <input type="text" id="inp-medium-other" class="control-w-md" placeholder="例：〇〇メディア、△△サイト" oninput="state.mediumOther=this.value;autoFillImgSize()">
-          <div class="hint">「その他」を選んだ場合、掲載媒体名を直接入力してください</div>
-          <div class="err">媒体名を入力してください</div>
+          <div class="lbl">蟐剃ｽ灘錐・医◎縺ｮ莉厄ｼ・span class="req">蠢・・</span></div>
+          <input type="text" id="inp-medium-other" class="control-w-md" placeholder="萓具ｼ壹・・Γ繝・ぅ繧｢縲≫無笆ｳ繧ｵ繧､繝・" oninput="state.mediumOther=this.value;autoFillImgSize()">
+          <div class="hint">縲後◎縺ｮ莉悶阪ｒ驕ｸ繧薙□蝣ｴ蜷医∵軸霈牙ｪ剃ｽ灘錐繧堤峩謗･蜈･蜉帙＠縺ｦ縺上□縺輔＞</div>
+          <div class="err">蟐剃ｽ灘錐繧貞・蜉帙＠縺ｦ縺上□縺輔＞</div>
         </div>
 
-        <!-- 媒体ごとのサイズブロック -->
+        <!-- 蟐剃ｽ薙＃縺ｨ縺ｮ繧ｵ繧､繧ｺ繝悶Ο繝・け -->
         <div id="medium-blocks"></div>
 
         <input type="hidden" id="inp-imgsize">
         <input type="hidden" id="inp-count">
       </div>
 
-      <!-- Step4: デザイン指示 -->
+      <!-- Step4: 繝・じ繧､繝ｳ謖・､ｺ -->
       <div class="panel" id="p4">
-        <p class="ptitle">デザイン指示</p>
-        <p class="psub">媒体・サイズの内容を確認し、デザインの指示を入力してください。</p>
+        <p class="ptitle">繝・じ繧､繝ｳ謖・､ｺ</p>
+        <p class="psub">蟐剃ｽ薙・繧ｵ繧､繧ｺ縺ｮ蜀・ｮｹ繧堤｢ｺ隱阪＠縲√ョ繧ｶ繧､繝ｳ縺ｮ謖・､ｺ繧貞・蜉帙＠縺ｦ縺上□縺輔＞縲・</p>
 
         <div class="instruction-group-toolbar">
           <div class="instruction-section-heading">
             <div>
-              <div class="lbl">画像ごとの制作指示 <span class="req">必須</span></div>
-              <div class="hint">媒体・サイズを選び、制作画像ごとに指示を入力してください。同じ内容は入力後にほかの画像へ適用できます。</div>
+              <div class="lbl">逕ｻ蜒上＃縺ｨ縺ｮ蛻ｶ菴懈欠遉ｺ <span class="req">蠢・・</span></div>
+              <div class="hint">蟐剃ｽ薙・繧ｵ繧､繧ｺ繧帝∈縺ｳ縲∝宛菴懃判蜒上＃縺ｨ縺ｫ謖・､ｺ繧貞・蜉帙＠縺ｦ縺上□縺輔＞縲ょ酔縺伜・螳ｹ縺ｯ蜈･蜉帛ｾ後↓縺ｻ縺九・逕ｻ蜒上∈驕ｩ逕ｨ縺ｧ縺阪∪縺吶・</div>
             </div>
             <button type="button" class="instruction-reset-card instruction-reset-card-footer instruction-reset-all" onclick="resetAllInstructionCards()">
-              すべての画像の指示をリセット
+              縺吶∋縺ｦ縺ｮ逕ｻ蜒上・謖・､ｺ繧偵Μ繧ｻ繝・ヨ
             </button>
           </div>
         </div>
@@ -276,95 +276,90 @@
         </div>
       </div>
 
-      <!-- Step5: 納期・デザイナー指名 -->
+      <!-- Step5: 邏肴悄繝ｻ繝・じ繧､繝翫・謖・錐 -->
       <div class="panel" id="p5">
-        <p class="ptitle">納期・デザイナー指名</p>
-        <p class="psub">納期の希望と、希望するデザイナーを選択してください。</p>
+        <p class="ptitle">邏肴悄繝ｻ繝・じ繧､繝翫・謖・錐</p>
+        <p class="psub">邏肴悄縺ｮ蟶梧悍縺ｨ縲∝ｸ梧悍縺吶ｋ繝・じ繧､繝翫・繧帝∈謚槭＠縺ｦ縺上□縺輔＞縲・</p>
         <div class="field" id="f-delivery">
-          <div class="lbl">納期希望 <span class="req">必須</span></div>
+          <div class="lbl">邏肴悄蟶梧悍 <span class="req">蠢・・</span></div>
           <div class="radios">
-            <div class="rbtn" id="rb-d1" onclick="setDelivery('希望なし')"><i class="ti ti-calendar-off"></i>希望なし（通常納期）</div>
-            <div class="rbtn" id="rb-d2" onclick="setDelivery('事前予約')"><i class="ti ti-calendar-check"></i>事前予約分（通常納期）</div>
-            <div class="rbtn" id="rb-d3" onclick="setDelivery('納期指定')"><i class="ti ti-calendar-event"></i>納期指定</div>
+            <div class="rbtn" id="rb-d1" onclick="setDelivery('蟶梧悍縺ｪ縺・)"><i class="ti ti-calendar-off"></i>蟶梧悍縺ｪ縺暦ｼ磯壼ｸｸ邏肴悄・・</div>
+            <div class="rbtn" id="rb-d2" onclick="setDelivery('莠句燕莠育ｴ・)"><i class="ti ti-calendar-check"></i>莠句燕莠育ｴ・・・磯壼ｸｸ邏肴悄・・</div>
+            <div class="rbtn" id="rb-d3" onclick="setDelivery('邏肴悄謖・ｮ・)"><i class="ti ti-calendar-event"></i>邏肴悄謖・ｮ・</div>
           </div>
           <div id="date-input" style="display:none;margin-top:10px">
-            <input type="date" id="inp-date" class="input-sm control-w-xs" onchange="handleDeliveryDateChange(this)">
-            <div class="hint">社内稼働カレンダーを参照しています。稼働日外を避けて選択してください。</div>
+            <input type="text" id="inp-date" class="input-sm control-w-xs" placeholder="年月日" readonly autocomplete="off" onclick="toggleDeliveryCalendar()">
+            <div id="delivery-calendar-picker" class="delivery-calendar-picker" hidden aria-label="納期指定カレンダー"></div>
           </div>
-          <div class="err">納期希望を選択してください</div>
+          <div class="err">邏肴悄蟶梧悍繧帝∈謚槭＠縺ｦ縺上□縺輔＞</div>
         </div>
 
-        <!-- 納期カレンダー（社内稼働カレンダー参照） -->
+        <!-- 邏肴悄繧ｫ繝ｬ繝ｳ繝繝ｼ・育､ｾ蜀・ｨｼ蜒阪き繝ｬ繝ｳ繝繝ｼ蜿ら・・・-->
         <div class="deadline-guide">
-          <div class="deadline-guide-title"><i class="ti ti-calendar-time"></i>納期カレンダー</div>
-          <div class="hint deadline-calendar-intro">今日依頼した場合の通常納期です。土日・祝日・会社休日を除いた営業日で計算しています。</div>
+          <div class="deadline-guide-title"><i class="ti ti-calendar-time"></i>邏肴悄繧ｫ繝ｬ繝ｳ繝繝ｼ</div>
+          <div class="hint deadline-calendar-intro">莉頑律萓晞ｼ縺励◆蝣ｴ蜷医・騾壼ｸｸ邏肴悄縺ｧ縺吶ょ悄譌･繝ｻ逾晄律繝ｻ莨夂､ｾ莨第律繧帝勁縺・◆蝟ｶ讌ｭ譌･縺ｧ險育ｮ励＠縺ｦ縺・∪縺吶・</div>
           <div class="deadline-today" id="deadline-today"></div>
           <details class="deadline-calendar-details">
-            <summary><span>今後の納期を確認</span><span class="opt">別の日に依頼する場合</span></summary>
-            <p class="hint deadline-calendar-details-hint">別の日に依頼する場合の納期はこちらから確認できます。</p>
+            <summary><span>莉雁ｾ後・邏肴悄繧堤｢ｺ隱・</span></summary>
             <div class="deadline-table-wrap">
-              <table class="deadline-table deadline-calendar-table">
-                <thead>
-                  <tr><th>依頼日</th><th>簡単な修正<br>2営業日</th><th>新規作成・大幅な修正<br>5営業日</th><th>重い案件<br>7営業日</th><th>急募<br>10営業日</th></tr>
-                </thead>
-                <tbody id="deadline-calendar-body"></tbody>
-              </table>
+              <div id="deadline-calendar-body" class="deadline-day-list"></div>
+              <button type="button" id="deadline-calendar-more" class="deadline-calendar-more" onclick="toggleDeadlineCalendar()">今後の日程をさらに表示</button>
             </div>
           </details>
           <ul class="deadline-note-list">
-            <li>納期目安は依頼日を含む営業日計算です。内容や稼働状況によって希望に添えない場合があります</li>
-            <li>イレギュラーや依頼側での不備による修正が発生した場合、担当者が直接連絡します</li>
-            <li>事前予約は130％期間のみの適用となります</li>
+            <li>邏肴悄逶ｮ螳峨・萓晞ｼ譌･繧貞性繧√★縲∫ｿ悟霧讌ｭ譌･縺九ｉ謨ｰ縺医※險育ｮ励＠縺ｦ縺・∪縺吶ょ・螳ｹ繧・ｨｼ蜒咲憾豕√↓繧医▲縺ｦ蟶梧悍縺ｫ豺ｻ縺医↑縺・ｴ蜷医′縺ゅｊ縺ｾ縺・</li>
+            <li>繧､繝ｬ繧ｮ繝･繝ｩ繝ｼ繧・ｾ晞ｼ蛛ｴ縺ｧ縺ｮ荳榊ｙ縺ｫ繧医ｋ菫ｮ豁｣縺檎匱逕溘＠縺溷ｴ蜷医∵球蠖楢・′逶ｴ謗･騾｣邨｡縺励∪縺・</li>
+            <li>莠句燕莠育ｴ・・130・・悄髢薙・縺ｿ縺ｮ驕ｩ逕ｨ縺ｨ縺ｪ繧翫∪縺・</li>
           </ul>
         </div>
 
         <div class="field" style="margin-top:1.25rem">
-          <div class="lbl">デザイナー指名 <span class="opt">任意</span></div>
-          <div class="hint" style="margin-bottom:8px">指名料 4pt が加算されます。状況によってお受けできない可能性があります。第一希望のみの場合、状況により指名なしとして進める場合があります。</div>
+          <div class="lbl">繝・じ繧､繝翫・謖・錐 <span class="opt">莉ｻ諢・</span></div>
+          <div class="hint" style="margin-bottom:8px">謖・錐譁・4pt 縺悟刈邂励＆繧後∪縺吶ら憾豕√↓繧医▲縺ｦ縺雁女縺代〒縺阪↑縺・庄閭ｽ諤ｧ縺後≠繧翫∪縺吶らｬｬ荳蟶梧悍縺ｮ縺ｿ縺ｮ蝣ｴ蜷医∫憾豕√↓繧医ｊ謖・錐縺ｪ縺励→縺励※騾ｲ繧√ｋ蝣ｴ蜷医′縺ゅｊ縺ｾ縺吶・</div>
           <div class="r3 select-stack">
-            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">第1希望</div><select id="sel-des1" onchange="syncDes(1)"><option value="">選択しない</option></select></div>
-            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">第2希望</div><select id="sel-des2" onchange="syncDes(2)"><option value="">選択しない</option></select></div>
-            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">第3希望</div><select id="sel-des3" onchange="syncDes(3)"><option value="">選択しない</option></select></div>
+            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">隨ｬ1蟶梧悍</div><select id="sel-des1" onchange="syncDes(1)"><option value="">驕ｸ謚槭＠縺ｪ縺・</option></select></div>
+            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">隨ｬ2蟶梧悍</div><select id="sel-des2" onchange="syncDes(2)"><option value="">驕ｸ謚槭＠縺ｪ縺・</option></select></div>
+            <div><div class="lbl" style="font-size:12px;margin-bottom:4px">隨ｬ3蟶梧悍</div><select id="sel-des3" onchange="syncDes(3)"><option value="">驕ｸ謚槭＠縺ｪ縺・</option></select></div>
           </div>
         </div>
       </div>
 
-      <!-- Step6: 確認・送信 -->
+      <!-- Step6: 遒ｺ隱阪・騾∽ｿ｡ -->
       <div class="panel" id="p6">
-        <p class="ptitle">内容確認・送信</p>
-        <p class="psub">送信前に入力内容をご確認ください。</p>
+        <p class="ptitle">蜀・ｮｹ遒ｺ隱阪・騾∽ｿ｡</p>
+        <p class="psub">騾∽ｿ｡蜑阪↓蜈･蜉帛・螳ｹ繧偵＃遒ｺ隱阪￥縺縺輔＞縲・</p>
         <div class="preview" id="preview-content"></div>
-        <div class="submit-notice"><i class="ti ti-info-circle"></i><span>送信することで利用規約に同意したものとみなします。</span><a class="terms-link" href="terms.html" target="_blank" rel="noopener">利用規約を確認</a></div>
+        <div class="submit-notice"><i class="ti ti-info-circle"></i><span>騾∽ｿ｡縺吶ｋ縺薙→縺ｧ蛻ｩ逕ｨ隕冗ｴ・↓蜷梧э縺励◆繧ゅ・縺ｨ縺ｿ縺ｪ縺励∪縺吶・</span><a class="terms-link" href="terms.html" target="_blank" rel="noopener">蛻ｩ逕ｨ隕冗ｴ・ｒ遒ｺ隱・</a></div>
       </div>
 
       <!-- Success -->
       <div class="panel" id="p-success">
         <div class="success">
           <i class="ti ti-circle-check sicon"></i>
-          <div class="stitle">依頼を送信しました</div>
-          <div class="ssub">バックログに課題として登録されました。<br>デザイナーから確認の連絡がある場合はご対応をお願いします。<br><br>依頼ID：<strong id="req-id"></strong></div>
+          <div class="stitle">萓晞ｼ繧帝∽ｿ｡縺励∪縺励◆</div>
+          <div class="ssub">繝舌ャ繧ｯ繝ｭ繧ｰ縺ｫ隱ｲ鬘後→縺励※逋ｻ骭ｲ縺輔ｌ縺ｾ縺励◆縲・br>繝・じ繧､繝翫・縺九ｉ遒ｺ隱阪・騾｣邨｡縺後≠繧句ｴ蜷医・縺泌ｯｾ蠢懊ｒ縺企｡倥＞縺励∪縺吶・br><br>萓晞ｼID・・strong id="req-id"></strong></div>
         </div>
       </div>
 
       <div class="nav" id="nav-bar">
-        <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 戻る</button>
+        <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 謌ｻ繧・</button>
         <div class="nav-right-actions">
-          <button class="btn draft-save-button" id="btn-draft-save" type="button" onclick="saveDraft({explicit:true})"><i class="ti ti-device-floppy"></i> 一時保存</button>
-          <button class="draft-delete-button" id="btn-draft-delete" type="button" onclick="deleteDraft()" hidden>一時保存を削除</button>
+          <button class="btn draft-save-button" id="btn-draft-save" type="button" onclick="saveDraft({explicit:true})"><i class="ti ti-device-floppy"></i> 荳譎ゆｿ晏ｭ・</button>
+          <button class="draft-delete-button" id="btn-draft-delete" type="button" onclick="deleteDraft()" hidden>荳譎ゆｿ晏ｭ倥ｒ蜑企勁</button>
           <span class="draft-status" id="draft-status" aria-live="polite"></span>
-          <button class="btn pri" id="btn-next" onclick="nextStep()">次へ <i class="ti ti-arrow-right"></i></button>
+          <button class="btn pri" id="btn-next" onclick="nextStep()">谺｡縺ｸ <i class="ti ti-arrow-right"></i></button>
         </div>
       </div>
 
       <div class="draft-restore-modal" id="draft-restore-modal" hidden>
         <div class="draft-restore-backdrop" onclick="resolveDraftRestore(false)"></div>
         <div class="draft-restore-dialog" role="dialog" aria-modal="true" aria-labelledby="draft-restore-title">
-          <h2 id="draft-restore-title">一時保存した依頼内容があります。</h2>
-          <p>入力内容を復元しますか？</p>
-          <p class="draft-file-notice">添付ファイルは一時保存されません。送信前に再度ご確認ください。</p>
+          <h2 id="draft-restore-title">荳譎ゆｿ晏ｭ倥＠縺滉ｾ晞ｼ蜀・ｮｹ縺後≠繧翫∪縺吶・</h2>
+          <p>蜈･蜉帛・螳ｹ繧貞ｾｩ蜈・＠縺ｾ縺吶°・・</p>
+          <p class="draft-file-notice">豺ｻ莉倥ヵ繧｡繧､繝ｫ縺ｯ荳譎ゆｿ晏ｭ倥＆繧後∪縺帙ｓ縲る∽ｿ｡蜑阪↓蜀榊ｺｦ縺皮｢ｺ隱阪￥縺縺輔＞縲・</p>
           <div class="draft-restore-actions">
-            <button type="button" class="btn draft-restore-new" onclick="resolveDraftRestore(false)">新しく入力する</button>
-            <button type="button" class="btn pri draft-restore-primary" onclick="resolveDraftRestore(true)">復元する</button>
+            <button type="button" class="btn draft-restore-new" onclick="resolveDraftRestore(false)">譁ｰ縺励￥蜈･蜉帙☆繧・</button>
+            <button type="button" class="btn pri draft-restore-primary" onclick="resolveDraftRestore(true)">蠕ｩ蜈・☆繧・</button>
           </div>
         </div>
       </div>
@@ -372,23 +367,26 @@
       <div class="blank-design-confirm-modal" id="blank-design-confirm-modal" hidden>
         <div class="blank-design-confirm-backdrop" onclick="resolveBlankDesignModal(false)"></div>
         <div class="blank-design-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="blank-design-confirm-title">
-          <h2 id="blank-design-confirm-title">デザイン指示が入力されていません。</h2>
-          <p>おまかせでの依頼になりますが、よろしいですか？</p>
+          <h2 id="blank-design-confirm-title">繝・じ繧､繝ｳ謖・､ｺ縺悟・蜉帙＆繧後※縺・∪縺帙ｓ縲・</h2>
+          <p>縺翫∪縺九○縺ｧ縺ｮ萓晞ｼ縺ｫ縺ｪ繧翫∪縺吶′縲√ｈ繧阪＠縺・〒縺吶°・・</p>
           <div class="blank-design-confirm-actions">
-            <button type="button" class="btn blank-design-confirm-secondary" onclick="resolveBlankDesignModal(false)">入力画面に戻る</button>
-            <button type="button" class="btn pri blank-design-confirm-primary" onclick="resolveBlankDesignModal(true)">おまかせで進む</button>
+            <button type="button" class="btn blank-design-confirm-secondary" onclick="resolveBlankDesignModal(false)">蜈･蜉帷判髱｢縺ｫ謌ｻ繧・</button>
+            <button type="button" class="btn pri blank-design-confirm-primary" onclick="resolveBlankDesignModal(true)">縺翫∪縺九○縺ｧ騾ｲ繧</button>
           </div>
         </div>
       </div>
 
     </div><!-- /.fw -->
 
-    <aside class="floating-media-summary" id="floating-media-summary" aria-label="選択中の媒体・サイズ・枚数">
+    <aside class="floating-media-summary" id="floating-media-summary" aria-label="驕ｸ謚樔ｸｭ縺ｮ蟐剃ｽ薙・繧ｵ繧､繧ｺ繝ｻ譫壽焚">
       <div class="floating-media-summary-body" id="floating-media-summary-body" aria-live="polite"></div>
     </aside>
   </main>
 
   <script src="data.js?v=28"></script>
-  <script src="form-v22.js?v=79"></script>
+  <script src="form-v22.js?v=112"></script>
 </body>
 </html>
+
+
+

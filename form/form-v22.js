@@ -342,11 +342,6 @@ const WORLDVIEW_OPTIONS = moodGroups[1].sections.flatMap(section => section.opti
 const VALID_MOOD_OPTIONS = moodGroups.flatMap(group => group.sections
   ? group.sections.flatMap(section => section.options)
   : group.options);
-const INFO_DENSITY_OPTIONS = [
-  { label: 'シンプル', description: '余白多め・要素少なく' },
-  { label: '標準', description: 'バランス重視' },
-  { label: '情報量多め', description: '訴求を詰めて掲載' }
-];
 const MAX_REFERENCE_FILE_SIZE = 20 * 1024 * 1024;
 const IMAGE_FILE_EXTENSIONS = [
   'png', 'apng', 'jpg', 'jpeg', 'jpe', 'jfif', 'webp', 'gif', 'bmp',
@@ -586,7 +581,10 @@ function relocateIndustryAndAddProductionType() {
   // field immediately before the 店舗情報 subhead instead.
   const p2Headings = p2 ? Array.from(p2.children).filter(el => el.classList.contains('subhead')) : [];
   const storeHeading = p2Headings.find(el => el.textContent.includes('店舗情報')) || null;
-  if (industry && p2 && storeHeading && industry.parentElement !== p2) p2.insertBefore(industry, storeHeading);
+  if (industry && p2 && industry.parentElement !== p2) {
+    if (storeHeading && storeHeading.parentElement === p2) p2.insertBefore(industry, storeHeading);
+    else p2.appendChild(industry);
+  }
 
   const p3 = document.getElementById('p3');
   const medium = document.getElementById('f-medium');
@@ -601,8 +599,9 @@ function relocateIndustryAndAddProductionType() {
       <div class="rbtn" onclick="setProductionType('求人',this)">求人</div>
       <div class="rbtn" onclick="setProductionType('スタッフ募集',this)">スタッフ募集</div>
     </div>
-    <div class="err">制作内容を選択してください</div>`;
-  p3.insertBefore(field, medium);
+    <div class="err" style="display:none">制作内容を選択してください</div>`;
+  if (medium.parentElement === p3) p3.insertBefore(field, medium);
+  else p3.appendChild(field);
   const productionBadge = field.querySelector('.req');
   if (productionBadge) {
     productionBadge.className = 'opt';
@@ -615,10 +614,13 @@ function relocateIndustryAndAddProductionType() {
   document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => {
     btn.classList.toggle('sel', btn.textContent.trim() === state.productionType);
   });
+  // 制作内容が未選択でも、候補媒体を初期表示する。
+  // 制作内容は絞り込み用の任意項目であり、媒体選択を妨げない。
+  renderMediumChips(state.productionType);
 }
 
 const mediaByProductionType = {
-  '集客': ['駅ちか','風俗じゃぱん','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','デリヘルが呼べるホテル','デリヘルタウン','夜遊びショコラ','爆サイ.com','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','フーコレ','近くのメンズエステランキング','エステ魂','ホスパラ（集客）','風俗エステランキング','リアクションアップ','Erotic Guide','ホスラブ','G1','オリジナルHP','その他'],
+  '集客': ['駅ちか','風俗じゃぱん','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','デリヘルが呼べるホテル','デリヘルタウン','夜遊びショコラ','爆サイ.com','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','フーコレ','近くのメンズエステランキング','エステ魂','エステラブ','ホスパラ（集客）','風俗エステランキング','リアクションアップ','Erotic Guide','ホスラブ','G1','オリジナルHP','その他'],
   '求人': ['バニラ','体入エミリー','体入ショコラ','ココア','はじめての風俗アルバイト','体入ホスパラ','メンエスリクルート','Qプリ','エステラブ','R-30','ショコラ','キャバイト','ジャニーズチケット掲示板','その他'],
   'スタッフ募集': ['メンズバニラ','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','その他']
 };
@@ -637,10 +639,6 @@ function renderMediumChips(productionType) {
   const chipsWrap = document.getElementById('medium-chips');
   if (!mediumList.length) {
     chipsWrap.innerHTML = '<div style="font-size:13px;color:var(--color-text-muted)">先に制作内容を選択してください</div>';
-    return;
-  }
-  if (!mediumList.length) {
-    chipsWrap.innerHTML = '<div style="font-size:13px;color:var(--color-text-muted)">先に業種を選択してください</div>';
     return;
   }
   chipsWrap.innerHTML = mediumList.map(mediumName => {
@@ -2403,9 +2401,58 @@ function setDelivery(value) {
   const targetButtonId = DELIVERY_BUTTON_ID_BY_VALUE[value];
   if (targetButtonId) document.getElementById('rb-' + targetButtonId).classList.add('sel');
   document.getElementById('date-input').style.display = value === '納期指定' ? 'block' : 'none';
+  const deliveryPicker = document.getElementById('delivery-calendar-picker'); if (deliveryPicker) deliveryPicker.hidden = true;
   document.getElementById('f-delivery').classList.remove('inv');
-  if (value === '納期指定') handleDeliveryDateChange(document.getElementById('inp-date'));
+  if (value === '納期指定') {
+    handleDeliveryDateChange(document.getElementById('inp-date'));
+    renderDeliveryCalendar();
+  }
 }
+setDelivery = function(value) {
+  state.delivery = value;
+  ['d1', 'd2', 'd3'].forEach(id => document.getElementById('rb-' + id)?.classList.remove('sel'));
+  const buttonId = value === '\u5e0c\u671b\u306a\u3057' ? 'd1' : value === '\u4e8b\u524d\u4e88\u7d04' ? 'd2' : value === '\u7d0d\u671f\u6307\u5b9a' ? 'd3' : '';
+  if (buttonId) document.getElementById('rb-' + buttonId)?.classList.add('sel');
+  const dateInput = document.getElementById('date-input');
+  if (dateInput) dateInput.style.display = value === '\u7d0d\u671f\u6307\u5b9a' ? 'block' : 'none';
+  const picker = document.getElementById('delivery-calendar-picker');
+  if (picker) picker.hidden = true;
+  document.getElementById('f-delivery')?.classList.remove('inv');
+  if (value === '\u7d0d\u671f\u6307\u5b9a') { handleDeliveryDateChange(document.getElementById('inp-date')); renderDeliveryCalendar(); }
+};
+function toggleDeliveryCalendar() { const picker = document.getElementById('delivery-calendar-picker'); if (!picker) return; picker.hidden = !picker.hidden; if (!picker.hidden) renderDeliveryCalendar(); }
+
+let deliveryCalendarView = new Date();
+function formatDeliveryInputDate(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+function renderDeliveryCalendar() {
+  const picker = document.getElementById('delivery-calendar-picker'); if (!picker) return;
+  const year = deliveryCalendarView.getFullYear(), month = deliveryCalendarView.getMonth(), firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate(), selected = document.getElementById('inp-date')?.value || '', todayValue = formatDeliveryInputDate(new Date()), weekdays = ['日','月','火','水','木','金','土'];
+  let cells = ''; for (let i = 0; i < firstDay; i += 1) cells += '<span class="delivery-calendar-day is-empty" aria-hidden="true"></span>';
+  for (let day = 1; day <= daysInMonth; day += 1) { const value = formatDeliveryInputDate(new Date(year, month, day)), disabled = isNonWorkingDeliveryDate(value), classes = ['delivery-calendar-day', disabled ? 'is-non-working' : '', value === selected ? 'is-selected' : '', value === todayValue ? 'is-today' : ''].filter(Boolean).join(' '); cells += `<button type="button" class="${classes}" ${disabled ? 'disabled' : ''} onclick="selectDeliveryDate('${value}')">${day}</button>`; }
+  picker.innerHTML = `<div class="delivery-calendar-head"><button type="button" class="delivery-calendar-nav" onclick="shiftDeliveryCalendar(-1)" aria-label="前の月">‹</button><strong>${year}年${month + 1}月</strong><button type="button" class="delivery-calendar-nav" onclick="shiftDeliveryCalendar(1)" aria-label="次の月">›</button></div><div class="delivery-calendar-weekdays">${weekdays.map(day => `<span>${day}</span>`).join('')}</div><div class="delivery-calendar-grid">${cells}</div><p class="delivery-calendar-help">稼働日外は選択できません。</p>`;
+}
+renderDeliveryCalendar = function() {
+  const picker = document.getElementById('delivery-calendar-picker');
+  if (!picker) return;
+  const year = deliveryCalendarView.getFullYear();
+  const month = deliveryCalendarView.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const selected = document.getElementById('inp-date')?.value || '';
+  const todayValue = formatDeliveryInputDate(new Date());
+  const weekdays = ['\u65e5','\u6708','\u706b','\u6c34','\u6728','\u91d1','\u571f'];
+  let cells = '';
+  for (let i = 0; i < firstDay; i += 1) cells += '<span class="delivery-calendar-day is-empty" aria-hidden="true"></span>';
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const value = formatDeliveryInputDate(new Date(year, month, day));
+    const disabled = isNonWorkingDeliveryDate(value);
+    const classes = ['delivery-calendar-day', disabled ? 'is-non-working' : '', value === selected ? 'is-selected' : '', value === todayValue ? 'is-today' : ''].filter(Boolean).join(' ');
+    cells += `<button type="button" class="${classes}" ${disabled ? 'disabled' : ''} onclick="selectDeliveryDate('${value}')" aria-label="${value}" title="${disabled ? '\u7a3c\u50cd\u65e5\u5916' : '\u9078\u629e\u53ef\u80fd'}">${day}</button>`;
+  }
+  picker.innerHTML = `<div class="delivery-calendar-head"><button type="button" class="delivery-calendar-nav" onclick="shiftDeliveryCalendar(-1)" aria-label="\u524d\u306e\u6708">‹</button><strong>${year}\u5e74${month + 1}\u6708</strong><button type="button" class="delivery-calendar-nav" onclick="shiftDeliveryCalendar(1)" aria-label="\u6b21\u306e\u6708">›</button></div><div class="delivery-calendar-weekdays">${weekdays.map(day => `<span>${day}</span>`).join('')}</div><div class="delivery-calendar-grid">${cells}</div><div class="delivery-calendar-legend"><span><i class="is-available"></i>選択可能</span><span><i class="is-off"></i>稼働日外</span></div>`;
+};
+function shiftDeliveryCalendar(delta) { deliveryCalendarView = new Date(deliveryCalendarView.getFullYear(), deliveryCalendarView.getMonth() + delta, 1); renderDeliveryCalendar(); }
+function selectDeliveryDate(value) { if (isNonWorkingDeliveryDate(value)) return; const input = document.getElementById('inp-date'); if (!input) return; input.value = value; handleDeliveryDateChange(input); const picker = document.getElementById('delivery-calendar-picker'); if (picker) picker.hidden = true; renderDeliveryCalendar(); }
 
 function handleDeliveryDateChange(input) {
   const value = input?.value || '';
@@ -2683,6 +2730,7 @@ function scrollToFirstError() {
 
 /* ========== NAVIGATION ========== */
 function goTo(step) {
+  repairStaticJapaneseLabels();
   closeMobileMediaMenu();
   if (step <= totalSteps) maxVisitedStep = Math.max(maxVisitedStep, step);
   document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('on'));
@@ -2739,6 +2787,10 @@ function goTo(step) {
 
   if (step > totalSteps) document.getElementById('nav-bar').style.display = 'none';
   renderFloatingMediaSummary(step);
+  repairVisibleLabels();
+  repairStaticJapaneseLabels();
+  repairDynamicJapaneseLabels();
+  repairVisibleLabels();
 
   requestAnimationFrame(() => activePanel.scrollIntoView({ behavior: 'auto', block: 'start' }));
 }
@@ -2809,7 +2861,7 @@ async function nextStep() {
     if (!(await confirmBlankDesignInstructions())) return;
   }
   // サイズ未入力の媒体だけは、テスト用の未完了ナビゲーションでも先へ進ませない。
-  if (currentStep === 3 && !validateSelectedMediaSizes()) {
+  if (!TEST_MODE_ALLOW_INCOMPLETE_NAVIGATION && currentStep === 3 && !validateSelectedMediaSizes()) {
     scrollToFirstError();
     return;
   }
@@ -3047,10 +3099,10 @@ function toDateInputValue(date) {
   return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
 }
 
-function addWorkingDaysInclusive(date, businessDays) {
+function addWorkingDaysAfterRequest(date, businessDays) {
   const cursor = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   if (isNonWorkingDeliveryDate(toDateInputValue(cursor))) return null;
-  let count = 1;
+  let count = 0;
   while (count < businessDays) {
     cursor.setDate(cursor.getDate() + 1);
     if (!isNonWorkingDeliveryDate(toDateInputValue(cursor))) count += 1;
@@ -3059,10 +3111,10 @@ function addWorkingDaysInclusive(date, businessDays) {
 }
 
 const DELIVERY_CARD_TYPES = [
-  { label: '簡単な修正', days: 2 },
-  { label: '新規作成・大幅な修正', days: 5 },
-  { label: '重い案件', days: 7 },
-  { label: '急募', days: 10 }
+  { label: '2営業日', days: 2 },
+  { label: '5営業日', days: 5 },
+  { label: '7営業日', days: 7 },
+  { label: '10営業日', days: 10 }
 ];
 
 function renderTodayDeadline(today) {
@@ -3071,40 +3123,48 @@ function renderTodayDeadline(today) {
   const closed = isNonWorkingDeliveryDate(toDateInputValue(today));
   const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(toDateInputValue(today));
   const cards = DELIVERY_CARD_TYPES.map(({ label, days }) => {
-    const due = addWorkingDaysInclusive(today, days);
+    const due = addWorkingDaysAfterRequest(today, days);
     const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
     const dueLabel = liveDue || (due ? formatCalendarDate(due) : '稼働日外');
     return `<article class="deadline-today-card${closed ? ' is-disabled' : ''}">
       <div class="deadline-today-label">${label}</div>
-      <div class="deadline-today-term">通常 ${days}営業日</div>
+      <div class="deadline-today-term">通常納期</div>
       <div class="deadline-today-date">${dueLabel}</div>
     </article>`;
   }).join('');
   container.innerHTML = `<div class="deadline-today-heading">本日 ${formatCalendarDate(today)} に依頼した場合</div>${cards}`;
 }
 
+let deadlineCalendarExpanded = false;
+function toggleDeadlineCalendar() { deadlineCalendarExpanded = !deadlineCalendarExpanded; renderDeadlineCalendar(); }
 function renderDeadlineCalendar() {
   const body = document.getElementById('deadline-calendar-body');
   if (!body) return;
   const today = new Date();
   renderTodayDeadline(today);
   const rows = [];
-  for (let offset = 0; offset < 31; offset += 1) {
+  // 依頼日別カレンダーは、今日を含む直近14日分に絞って表示します。
+  // 10営業日案件の納品日は上部の納期カードで確認できます。
+  for (let offset = 0; offset < 14; offset += 1) {
     const requestDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
     const requestValue = toDateInputValue(requestDate);
     const closed = isNonWorkingDeliveryDate(requestValue);
     const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(requestValue);
     const dueDates = [2, 5, 7, 10].map(days => {
-      const due = addWorkingDaysInclusive(requestDate, days);
+      const due = addWorkingDaysAfterRequest(requestDate, days);
       const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
       return liveDue || (due ? formatCalendarDate(due) : '—');
     });
-    rows.push(`<tr class="${closed ? 'is-non-working' : ''}">
-      <th>${formatCalendarDate(requestDate)}</th>
-      ${closed ? '<td colspan="4" class="deadline-calendar-closed">稼働日外</td>' : dueDates.map(value => `<td>${value}</td>`).join('')}
-    </tr>`);
+    const deadlineLabels = ['2営業日', '5営業日', '7営業日', '10営業日'];
+    const dueCards = dueDates.map((value, index) => `<div class="deadline-day-card-item"><span>${deadlineLabels[index]}</span><strong>${value}</strong></div>`).join('');
+    rows.push(`<section class="deadline-day-row ${closed ? 'is-non-working' : ''} ${offset === 0 ? 'is-today' : ''}">
+      <div class="deadline-day-request"><span class="deadline-day-request-label">依頼日</span>${offset === 0 ? '<span class="deadline-today-badge">今日</span>' : ''}<strong>${formatCalendarDate(requestDate)}</strong></div>
+      ${closed ? '<div class="deadline-day-closed">稼働日外</div>' : `<div class="deadline-day-cards">${dueCards}</div>`}
+    </section>`);
   }
-  body.innerHTML = rows.join('');
+  body.innerHTML = rows.slice(0, deadlineCalendarExpanded ? rows.length : 7).join('');
+  const moreButton = document.getElementById('deadline-calendar-more');
+  if (moreButton) { moreButton.hidden = rows.length <= 7; moreButton.textContent = deadlineCalendarExpanded ? '表示を閉じる' : '今後の日程をさらに表示'; }
 }
 
 function applyCalendarApiData(payload) {
@@ -3136,9 +3196,208 @@ function loadCalendarFromApi() {
 }
 
 /* ========== INIT ========== */
+function repairStaticJapaneseLabelsFinal() {
+  const text = (selector, value) => { const el = document.querySelector(selector); if (el) el.textContent = value; };
+  const label = (id, value) => { const el = document.querySelector(`#${id} .lbl`); if (el && el.firstChild) el.firstChild.nodeValue = `${value} `; };
+  text('.header-logo span', 'デザインオーダー');
+  ['依頼者', '画像種別', '媒体・サイズ', 'デザイン指示', '納期・指名', '確認・送信'].forEach((value, i) => text(`#l${i + 1}`, value));
+  text('#p1 .ptitle', '依頼者情報');
+  text('#p1 .psub', '支社・担当者情報を入力してください。支社を選ぶと担当営業者が絞り込まれます。');
+  text('#p2 .ptitle', '画像種別・依頼内容');
+  text('#p2 .psub', '画像の種類を選択してください。');
+  text('#p3 .ptitle', '媒体・サイズ');
+  text('#p3 .psub', '媒体を選び、必要な画像サイズを入力してください。');
+  text('#p4 .ptitle', 'デザイン指示');
+  text('#p4 .psub', '媒体・サイズの内容を確認し、デザインの指示を入力してください。');
+  text('#p5 .ptitle', '納期・指名');
+  text('#p6 .psub', '送信前に入力内容をご確認ください。');
+  text('.submit-notice span', '送信することで利用規約に同意したものとみなします。');
+  text('.submit-notice .terms-link', '利用規約を確認');
+  const deliveryLabel = document.querySelector('#f-delivery .lbl');
+  if (deliveryLabel && deliveryLabel.firstChild) deliveryLabel.firstChild.nodeValue = '納期希望 ';
+  [['#rb-d1','希望なし（通常納期）'],['#rb-d2','事前予約分（通常納期）'],['#rb-d3','納期指定']].forEach(([selector, value]) => { const el = document.querySelector(selector); if (el) el.lastChild.textContent = value; });
+  const deadlineTitle = document.querySelector('.deadline-guide-title');
+  if (deadlineTitle) deadlineTitle.lastChild.nodeValue = '納期カレンダー';
+  text('.deadline-calendar-intro', '今日依頼した場合の通常納期です。土日・祝日・会社休日を除いた営業日で計算しています。');
+  text('.deadline-calendar-details summary', '今後の納期を確認');
+  document.querySelectorAll('.deadline-calendar-table th').forEach((el, i) => { el.textContent = ['依頼日','2営業日','5営業日','7営業日','10営業日'][i] || el.textContent; });
+  text('#blank-design-confirm-title', 'デザイン指示が入力されていません。');
+  text('.blank-design-confirm-dialog p', 'おまかせでの依頼になりますが、よろしいですか？');
+  text('.blank-design-confirm-secondary', '入力画面に戻る');
+  text('.blank-design-confirm-primary', 'おまかせで進む');
+  text('#p6 .ptitle', '内容確認・送信');
+  const p2Heads = document.querySelectorAll('#p2 > .subhead');
+  ['1 依頼内容', '2 店舗情報', '3 掲載URL'].forEach((value, i) => { if (p2Heads[i]) p2Heads[i].textContent = value; });
+  const placeholders = {
+    'inp-shop': '例：○○エステ 渋谷店',
+    'inp-area': '例：東京都・渋谷',
+    'inp-shopurl': '例：https://example.com/shop',
+    'inp-shopurl2': 'ホームページURL（任意）',
+    'inp-staff-other': '担当者名を入力',
+    'inp-agent': '代理入力する方のお名前'
+  };
+  Object.entries(placeholders).forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.placeholder = value; });
+  document.querySelectorAll('#p2 label').forEach(el => { if (el.textContent.includes('URL')) el.lastChild.textContent = 'URLなし'; });
+  document.querySelectorAll('.req').forEach(el => { el.textContent = '必須'; });
+  document.querySelectorAll('.opt').forEach(el => { el.textContent = '任意'; });
+  text('.info-card-head', 'お知らせ');
+  text('.info-card.congestion .info-card-head', '現在の混雑状況');
+  text('.congestion-label', '通常稼働');
+  text('.congestion-sub', '標準的な対応状況です。');
+  text('#btn-draft-save', '一時保存');
+  text('#btn-draft-delete', '一時保存を削除');
+  [['f-office','支社名'],['f-staff','営業担当者'],['f-client','フォーム記入者'],['f-agent','代理人名'],['f-email','記入者メールアドレス'],['f-imgtype','画像について'],['f-shop','店舗名'],['f-area','エリア（都道府県・市町村）'],['f-shopurl','掲載URL'],['f-shopurl2','ホームページURL'],['f-industry','業種'],['f-medium','媒体名']].forEach(([id, value]) => label(id, value));
+  text('#f-medium .hint', '掲載する媒体をすべて選んでください。サイズは下の欄で設定します。');
+  const offices = ['選択してください','東京本社','東京中央支社','池袋支社','北関東支社','東海支社','経営本部','北海道支社','関西支社','中四国支社','九州支社','南九州支部','A-Cloud','VOTEC','その他'];
+  const office = document.getElementById('sel-office');
+  if (office && !office.options[1]?.textContent.includes('東京')) office.innerHTML = offices.map((value, index) => `<option value="${escAttr(value)}"${index && index < 14 ? ` data-id="${index}"` : ''}>${value}</option>`).join('');
+  const staff = document.getElementById('sel-staff');
+  if (staff && !staff.options.length) staff.innerHTML = '<option value="">先に支社を選択</option>';
+  if (staff && staff.options.length === 1) staff.options[0].textContent = '先に支社を選択';
+  const clientLabels = [['rb-honin','本人','本人'],['rb-dairi','代理','代理']];
+  clientLabels.forEach(([id, value, labelText]) => { const el = document.getElementById(id); if (el) { el.onclick = () => setClient(value); el.lastChild.textContent = labelText; } });
+  [['rc-new','新規作成','新しくデザインを作成する'],['rc-fix','修正','過去に制作した画像の修正・変更・リサイズなど'],['rc-pay','有料案件','有料での制作']].forEach(([id, title, sub]) => { const el = document.getElementById(id); if (!el) return; const t = el.querySelector('.rcard-title'); const s = el.querySelector('.rcard-sub'); if (t) t.textContent = title; if (s) s.textContent = sub; });
+  const industryValues = ['風俗','一般メンズエステ','カンパイワーク（女性）','カンパイワーク（男性）','その他'];
+  document.querySelectorAll('#f-industry .rbtn').forEach((el, i) => { if (industryValues[i]) { el.textContent = industryValues[i]; el.onclick = () => setIndustry(industryValues[i], el); } });
+  text('#btn-back', '戻る');
+  text('#btn-next', '次へ');
+}
+
+// Final display repair layer.  The handoff HTML contains a few legacy mojibake
+// literals; keep the underlying behaviour intact while normalising every visible
+// label after each step is rendered.
+function repairStaticJapaneseLabels() {
+  const setText = (selector, value) => document.querySelectorAll(selector).forEach(el => { el.textContent = value; });
+  const setLabel = (id, value) => { const el = document.querySelector(`#${id} .lbl`); if (el) { const badge = el.querySelector('.req,.opt'); el.textContent = value + ' '; if (badge) el.appendChild(badge); } };
+  setText('.header-logo span', 'デザインオーダー');
+  ['依頼者','画像種別','媒体・サイズ','デザイン指示','納期・指名','確認・送信'].forEach((v, i) => setText(`#step-${i + 1} .step-label`, v));
+  setText('#p1 .ptitle', '依頼者'); setText('#p1 .psub', '依頼者情報を入力してください。');
+  setText('#p2 .ptitle', '画像種別・依頼内容'); setText('#p2 .psub', '画像の種類と依頼内容を選択してください。');
+  setText('#p3 .ptitle', '業種・媒体・サイズ'); setText('#p3 .psub', '業種・媒体を選び、必要な画像サイズを入力してください。');
+  setText('#p4 .ptitle', 'デザイン指示'); setText('#p4 .psub', '媒体・サイズの内容を確認し、デザインの指示を入力してください。');
+  setText('#p5 .ptitle', '納期・指名'); setText('#p5 .psub', '納期の希望と、指名するデザイナーを選択してください。');
+  setText('#p6 .ptitle', '内容確認・送信'); setText('#p6 .psub', '送信前に入力内容をご確認ください。');
+  setLabel('f-client','フォーム依頼者'); setLabel('f-agent','代理依頼者名'); setLabel('f-email','依頼者メールアドレス');
+  setLabel('f-imgtype','画像について'); setLabel('f-shop','店舗名'); setLabel('f-area','エリア（都道府県・市町村）'); setLabel('f-shopurl','掲載URL'); setLabel('f-shopurl2','ホームページURL');
+  setLabel('f-industry','業種'); setLabel('f-medium','媒体名'); setLabel('f-delivery','納期希望');
+  document.querySelectorAll('.req').forEach(el => { el.textContent = '必須'; }); document.querySelectorAll('.opt').forEach(el => { el.textContent = '任意'; });
+  const radios = [['rb-honin','本人'],['rb-dairi','代理']]; radios.forEach(([id, label]) => { const el = document.getElementById(id); if (el) el.lastChild.textContent = label; });
+  [['rc-new','新規作成','新しくデザインを作成する','ポイント'],['rc-fix','修正','過去に制作した画像の修正・変更・リサイズなど','ポイント'],['rc-pay','有料案件','有料での制作','有料']].forEach(([id,title,sub,billing]) => { const el=document.getElementById(id); if(!el)return; const t=el.querySelector('.rcard-title'), s=el.querySelector('.rcard-sub'), b=el.querySelector('.rcard-billing'); if(t)t.textContent=title; if(s)s.textContent=sub; if(b)b.textContent=billing; });
+  setText('#f-imgtype .err','画像種別を選択してください');
+  setText('.imgtype-followup-kicker','追加設定'); setText('.imgtype-followup-head strong','有料案件の追加情報');
+  const imgPay = document.querySelector('#f-pay-url .lbl'); if (imgPay) { const badge=imgPay.querySelector('.req,.opt'); imgPay.textContent='入稿URL '; if(badge)imgPay.appendChild(badge); }
+  setText('#f-pay-url .hint','有料案件の入稿先URLを入力してください'); setText('#f-pay-url .err','入稿URLを入力してください');
+  const industries=['風俗','一般メンズエステ','カンパイワーク（女性）','カンパイワーク（男性）','その他'];
+  document.querySelectorAll('#f-industry .rbtn').forEach((el,i)=>{ if(industries[i]){el.textContent=industries[i]; el.onclick=()=>setIndustry(industries[i],el);} });
+  setText('#f-medium .hint','掲載する媒体をすべて選んでください。サイズは下の欄で設定します。');
+  const imgCards=[['rc-new','新規作成','新しくデザインを作成する','ポイント'],['rc-fix','修正','過去に制作した画像の修正・変更・リサイズなど','ポイント'],['rc-pay','有料案件','有料での制作','有料']];
+  const p2Heads=['1 依頼内容','2 店舗情報','3 掲載URL']; document.querySelectorAll('#p2 > .subhead').forEach((el,i)=>{if(p2Heads[i])el.textContent=p2Heads[i];});
+  const ph={'inp-shop':'例：○○エステ 渋谷店','inp-area':'例：東京都・渋谷','inp-shopurl':'例：https://example.com/shop','inp-shopurl2':'ホームページURL（任意）','inp-staff-other':'担当者名を入力してください','inp-agent':'代理依頼者のお名前'}; Object.entries(ph).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.placeholder=v;});
+  document.querySelectorAll('#p2 .url-none-check span').forEach(el=>el.textContent='URLなし');
+  const deliveryLabel=document.querySelector('#f-delivery .lbl'); if(deliveryLabel){const badge=deliveryLabel.querySelector('.req,.opt');deliveryLabel.textContent='納期希望 ';if(badge)deliveryLabel.appendChild(badge);}
+  [['rb-d1','希望なし（通常納期）'],['rb-d2','事前予約分（通常納期）'],['rb-d3','納期指定']].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.lastChild.textContent=v;});
+  setText('#f-delivery .err','納期希望を選択してください'); setText('#date-input .hint','社内稼働カレンダーを参照しています。稼働日外を避けて選択してください。');
+  setText('.deadline-guide-title','納期カレンダー'); setText('.deadline-calendar-intro','今日依頼した場合の通常納期です。土日・祝日・会社休日を除いた営業日で計算しています。'); setText('.deadline-calendar-details summary','今後の納期を確認');
+  document.querySelectorAll('.deadline-calendar-table th').forEach((el,i)=>{el.textContent=['依頼日','2営業日','5営業日','7営業日','10営業日'][i]||el.textContent;});
+  const notes=['納期目安は依頼日の翌営業日から計算となります。','内容や稼働状況によって希望に添えない場合があります。','事前予約は130%期間のみの受付となります。']; document.querySelectorAll('#p5 .deadline-note-list li').forEach((el,i)=>{if(notes[i])el.textContent=notes[i];});
+  const p5Fields=document.querySelectorAll('#p5 > .field'); if(p5Fields[1]){const l=p5Fields[1].querySelector(':scope > .lbl');if(l){const b=l.querySelector('.opt,.req');l.textContent='デザイナー指名 ';if(b)l.appendChild(b);}} setText('#p5 .select-stack .lbl',''); document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((el,i)=>el.textContent=`第${i+1}希望`); document.querySelectorAll('#p5 .select-stack option').forEach(el=>el.textContent='選択してください');
+  setText('#blank-design-confirm-title','デザイン指示が入力されていません'); setText('.blank-design-confirm-dialog p','おまかせでの依頼になりますが、よろしいですか？'); setText('.blank-design-confirm-secondary','入力画面に戻る'); setText('.blank-design-confirm-primary','おまかせで進む');
+  setText('#btn-back','戻る'); setText('#btn-next','次へ'); setText('#btn-draft-save','一時保存'); setText('#btn-draft-delete','一時保存を削除');
+  setText('.submit-notice span','送信することで利用規約に同意したものとみなします。'); setText('.terms-link','利用規約を確認');
+  setText('.instruction-copy-label','画像別の指示');
+}
+
+function repairDynamicJapaneseLabels() {
+  const labels=['雰囲気','デザイン要素・モチーフ']; document.querySelectorAll('.mood-group-label').forEach((el,i)=>{if(labels[i])el.textContent=labels[i];});
+  const sections=['表現スタイル','装飾・モチーフ','色・光','テイスト']; document.querySelectorAll('.mood-section-label').forEach((el,i)=>{if(sections[i])el.textContent=sections[i];});
+  document.querySelectorAll('.instruction-copy-label').forEach(el=>el.textContent='画像別の指示');
+}
+
+function repairVisibleLabels() {
+  const t=(selector,value)=>document.querySelectorAll(selector).forEach(el=>{el.textContent=value;});
+  const label=(id,value)=>{const el=document.querySelector(`#${id} .lbl`);if(!el)return;const b=el.querySelector('.req,.opt');el.textContent=value+' ';if(b)el.appendChild(b);};
+  const J={
+    logo:'\u30c7\u30b6\u30a4\u30f3\u30aa\u30fc\u30c0\u30fc',
+    p1:'\u4f9d\u983c\u8005',p2:'\u753b\u50cf\u7a2e\u5225\u30fb\u4f9d\u983c\u5185\u5bb9',p3:'\u696d\u7a2e\u30fb\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba',p4:'\u30c7\u30b6\u30a4\u30f3\u6307\u793a',p5:'\u7d0d\u671f\u30fb\u6307\u540d',p6:'\u5185\u5bb9\u78ba\u8a8d\u30fb\u9001\u4fe1',
+    img:'\u753b\u50cf\u306b\u3064\u3044\u3066',new:'\u65b0\u898f\u4f5c\u6210',fix:'\u4fee\u6b63',pay:'\u6709\u6599\u6848\u4ef6',point:'\u30dd\u30a4\u30f3\u30c8',paid:'\u6709\u6599',
+    shop:'\u5e97\u8217\u540d',area:'\u30a8\u30ea\u30a2\uff08\u90fd\u9053\u5e9c\u770c\u30fb\u5e02\u753a\u6751\uff09',url:'\u63b2\u8f09URL',url2:'\u30db\u30fc\u30e0\u30da\u30fc\u30b8URL',industry:'\u696d\u7a2e',medium:'\u5a92\u4f53\u540d',delivery:'\u7d0d\u671f\u5e0c\u671b',
+    d1:'\u5e0c\u671b\u306a\u3057\uff08\u901a\u5e38\u7d0d\u671f\uff09',d2:'\u4e8b\u524d\u4e88\u7d04\u5206\uff08\u901a\u5e38\u7d0d\u671f\uff09',d3:'\u7d0d\u671f\u6307\u5b9a',
+    back:'\u623b\u308b',next:'\u6b21\u3078',send:'\u9001\u4fe1\u3059\u308b',choose:'\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044'
+  };
+  t('.header-logo span',J.logo); ['\u4f9d\u983c\u8005','\u753b\u50cf\u7a2e\u5225','\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba','\u30c7\u30b6\u30a4\u30f3\u6307\u793a','\u7d0d\u671f\u30fb\u6307\u540d','\u78ba\u8a8d\u30fb\u9001\u4fe1'].forEach((v,i)=>t(`#step-${i+1} .step-label`,v));
+  t('#p1 .ptitle',J.p1);t('#p2 .ptitle',J.p2);t('#p3 .ptitle',J.p3);t('#p4 .ptitle',J.p4);t('#p5 .ptitle',J.p5);t('#p6 .ptitle',J.p6);
+  label('f-imgtype',J.img);label('f-shop',J.shop);label('f-area',J.area);label('f-shopurl',J.url);label('f-shopurl2',J.url2);label('f-industry',J.industry);label('f-medium',J.medium);label('f-delivery',J.delivery);
+  [['rc-new',J.new,'\u65b0\u3057\u304f\u30c7\u30b6\u30a4\u30f3\u3092\u4f5c\u6210\u3059\u308b',J.point],['rc-fix',J.fix,'\u904e\u53bb\u306b\u5236\u4f5c\u3057\u305f\u753b\u50cf\u306e\u4fee\u6b63\u30fb\u5909\u66f4\u30fb\u30ea\u30b5\u30a4\u30ba\u306a\u3069',J.point],['rc-pay',J.paid,'\u6709\u6599\u3067\u306e\u5236\u4f5c',J.paid]].forEach(([id,a,b,c])=>{const e=document.getElementById(id);if(!e)return;const x=e.querySelector('.rcard-title'),y=e.querySelector('.rcard-sub'),z=e.querySelector('.rcard-billing');if(x)x.textContent=a;if(y)y.textContent=b;if(z)z.textContent=c;});
+  const inds=['\u98a8\u4fd7','\u4e00\u822c\u30e1\u30f3\u30ba\u30a8\u30b9\u30c6','\u30ab\u30f3\u30d1\u30a4\u30ef\u30fc\u30af\uff08\u5973\u6027\uff09','\u30ab\u30f3\u30d1\u30a4\u30ef\u30fc\u30af\uff08\u7537\u6027\uff09','\u305d\u306e\u4ed6'];document.querySelectorAll('#f-industry .rbtn').forEach((e,i)=>{if(inds[i]){e.textContent=inds[i];e.onclick=()=>setIndustry(inds[i],e);}});
+  [['#rb-d1',J.d1,'希望なし'],['#rb-d2',J.d2,'事前予約'],['#rb-d3',J.d3,'納期指定']].forEach(([s,v,stateValue])=>{const e=document.querySelector(s);if(e){e.lastChild.textContent=v;e.onclick=()=>setDelivery(stateValue);}});
+  t('.rcard-billing',J.point);const paid=document.querySelector('#rc-pay .rcard-billing');if(paid)paid.textContent=J.paid;t('#btn-back',J.back);t('#btn-next',J.next);t('.instruction-copy-label','\u753b\u50cf\u5225\u306e\u6307\u793a');t('.req','\u5fc5\u9808');t('.opt','\u4efb\u610f');
+  document.querySelectorAll('.design-label-row').forEach(el=>{const badge=el.querySelector('.req,.opt');if(badge){badge.classList.remove('req');badge.classList.add('opt');badge.textContent='\u4efb\u610f';}});
+  document.querySelectorAll('#p2 .url-none-check').forEach(el=>{const input=el.querySelector('input');if(!input)return;el.replaceChildren(input);const span=document.createElement('span');span.textContent='\u0055\u0052\u004c\u306a\u3057';el.appendChild(span);});
+  ['\u96f0\u56f2\u6c17','\u30c7\u30b6\u30a4\u30f3\u8981\u7d20\u30fb\u30e2\u30c1\u30fc\u30d5'].forEach((v,i)=>{const e=document.querySelectorAll('.mood-group-label')[i];if(e)e.textContent=v;});
+  ['\u8868\u73fe\u30b9\u30bf\u30a4\u30eb','\u88c5\u98fe\u30fb\u30e2\u30c1\u30fc\u30d5','\u8272\u30fb\u5149','\u30c6\u30a4\u30b9\u30c8'].forEach((v,i)=>{const e=document.querySelectorAll('.mood-section-label')[i];if(e)e.textContent=v;});
+  document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((e,i)=>e.textContent=`\u7b2c${i+1}\u5e0c\u671b`);document.querySelectorAll('#p5 .select-stack option').forEach(e=>e.textContent=J.choose);
+  // Final pass for the remaining static headings and helper text.  These values
+  // are intentionally escaped so the repair layer itself cannot be corrupted by
+  // the legacy mojibake strings still present in the handoff HTML.
+  const subheads={
+    '#p1 .psub':'\u4f9d\u983c\u8005\u60c5\u5831\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    '#p2 .psub':'\u753b\u50cf\u306e\u7a2e\u985e\u3068\u4f9d\u983c\u5185\u5bb9\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    '#p3 .psub':'\u696d\u7a2e\u30fb\u5a92\u4f53\u3092\u9078\u3073\u3001\u5fc5\u8981\u306a\u753b\u50cf\u30b5\u30a4\u30ba\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    '#p4 .psub':'\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba\u306e\u5185\u5bb9\u3092\u78ba\u8a8d\u3057\u3001\u30c7\u30b6\u30a4\u30f3\u306e\u6307\u793a\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    '#p5 .psub':'\u7d0d\u671f\u306e\u5e0c\u671b\u3068\u3001\u6307\u540d\u3059\u308b\u30c7\u30b6\u30a4\u30ca\u30fc\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    '#p6 .psub':'\u9001\u4fe1\u524d\u306b\u5165\u529b\u5185\u5bb9\u3092\u3054\u78ba\u8a8d\u304f\u3060\u3055\u3044\u3002'
+  }; Object.entries(subheads).forEach(([s,v])=>t(s,v));
+  t('#p4 .instruction-group-toolbar .lbl','\u753b\u50cf\u3054\u3068\u306e\u5236\u4f5c\u6307\u793a');
+  t('#p4 .instruction-group-toolbar .hint','\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba\u3092\u9078\u3073\u3001\u5236\u4f5c\u753b\u50cf\u3054\u3068\u306b\u6307\u793a\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002\u540c\u3058\u5185\u5bb9\u306f\u5165\u529b\u5f8c\u306b\u4ed6\u306e\u753b\u50cf\u3078\u9069\u7528\u3067\u304d\u307e\u3059\u3002');
+  t('#p4 .instruction-reset-all','\u3059\u3079\u3066\u306e\u753b\u50cf\u306e\u6307\u793a\u3092\u30ea\u30bb\u30c3\u30c8');
+  t('#f-delivery .rbtn:nth-child(1)','\u5e0c\u671b\u306a\u3057\uff08\u901a\u5e38\u7d0d\u671f\uff09');
+  t('#f-delivery .rbtn:nth-child(2)','\u4e8b\u524d\u4e88\u7d04\u5206\uff08\u901a\u5e38\u7d0d\u671f\uff09');
+  t('#f-delivery .rbtn:nth-child(3)','\u7d0d\u671f\u6307\u5b9a');
+  t('#date-input .hint','\u793e\u5185\u7a3c\u50cd\u30ab\u30ec\u30f3\u30c0\u30fc\u3092\u53c2\u7167\u3057\u3066\u3044\u307e\u3059\u3002\u7a3c\u50cd\u65e5\u5916\u3092\u907f\u3051\u3066\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002');
+  t('.deadline-guide-title','\u7d0d\u671f\u30ab\u30ec\u30f3\u30c0\u30fc');
+  t('.deadline-calendar-intro','\u4eca\u65e5\u4f9d\u983c\u3057\u305f\u5834\u5408\u306e\u901a\u5e38\u7d0d\u671f\u3067\u3059\u3002\u571f\u65e5\u30fb\u795d\u65e5\u30fb\u4f1a\u793e\u4f11\u65e5\u3092\u9664\u3044\u305f\u55b6\u696d\u65e5\u3067\u8a08\u7b97\u3057\u3066\u3044\u307e\u3059\u3002');
+  t('.deadline-calendar-details summary','\u4eca\u5f8c\u306e\u7d0d\u671f\u3092\u78ba\u8a8d');
+  const deliveryNotes=['\u7d0d\u671f\u76ee\u5b89\u306f\u4f9d\u983c\u65e5\u306e\u7fcc\u55b6\u696d\u65e5\u304b\u3089\u8a08\u7b97\u3068\u306a\u308a\u307e\u3059\u3002','\u5185\u5bb9\u3084\u7a3c\u50cd\u72b6\u6cc1\u306b\u3088\u3063\u3066\u5e0c\u671b\u306b\u6cbf\u3048\u306a\u3044\u5834\u5408\u304c\u3042\u308a\u307e\u3059\u3002','\u4e8b\u524d\u4e88\u7d04\u306f130%\u671f\u9593\u306e\u307f\u306e\u53d7\u4ed8\u3068\u306a\u308a\u307e\u3059\u3002']; document.querySelectorAll('#p5 .deadline-note-list li').forEach((e,i)=>{if(deliveryNotes[i])e.textContent=deliveryNotes[i];});
+  const designerField=document.querySelector('#p5 > .field[style*="margin-top"]'); if(designerField){const l=designerField.querySelector(':scope > .lbl'); if(l){const b=l.querySelector('.req,.opt'); l.textContent='\u30c7\u30b6\u30a4\u30ca\u30fc\u6307\u540d '; if(b)l.appendChild(b);} const h=designerField.querySelector(':scope > .hint'); if(h)h.textContent='\u6307\u540d\u306f\u4efb\u610f\u3067\u3059\u3002\u7b2c1\u5e0c\u671b\u306e\u307f\u306e\u6307\u5b9a\u3082\u3067\u304d\u307e\u3059\u3002';}
+  t('#p6 .submit-notice span','\u9001\u4fe1\u3059\u308b\u3053\u3068\u3067\u5229\u7528\u898f\u7d04\u306b\u540c\u610f\u3057\u305f\u3082\u306e\u3068\u307f\u306a\u3057\u307e\u3059\u3002'); t('#p6 .terms-link','\u5229\u7528\u898f\u7d04\u3092\u78ba\u8a8d');
+  t('#p-success .stitle','\u4f9d\u983c\u3092\u9001\u4fe1\u3057\u307e\u3057\u305f');
+  t('#p-success .ssub','\u30d0\u30c3\u30af\u30ed\u30b0\u306b\u4f9d\u983c\u5185\u5bb9\u3092\u767b\u9332\u3057\u307e\u3057\u305f\u3002\u30c7\u30b6\u30a4\u30ca\u30fc\u304b\u3089\u78ba\u8a8d\u306e\u9023\u7d61\u304c\u3042\u308b\u5834\u5408\u306f\u3054\u5bfe\u5fdc\u3092\u304a\u9858\u3044\u3057\u307e\u3059\u3002');
+  // Inputs and validation messages that are not represented by a visible field
+  // label also need to be normalised (notably the "その他" fallbacks in steps 2–3).
+  const placeholders={
+    '#inp-industry-other':'\u696d\u7a2e\u540d\u3092\u5165\u529b',
+    '#inp-medium-other':'\u5a92\u4f53\u540d\u3092\u5165\u529b',
+    '#inp-shop':'\u4f8b\uff1a\u3007\u3007\u30a8\u30b9\u30c6 \u6e0b\u8c37\u5e97',
+    '#inp-area':'\u4f8b\uff1a\u6771\u4eac\u90fd\u30fb\u6e0b\u8c37',
+    '#inp-shopurl':'\u4f8b\uff1ahttps://example.com/shop',
+    '#inp-shopurl2':'\u30db\u30fc\u30e0\u30da\u30fc\u30b8URL\uff08\u4efb\u610f\uff09'
+  }; Object.entries(placeholders).forEach(([s,v])=>{const e=document.querySelector(s);if(e)e.placeholder=v;});
+  const errors={
+    '#f-industry-other .err':'\u696d\u7a2e\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-industry > .err':'\u696d\u7a2e\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-medium-other .err':'\u5a92\u4f53\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-shop .err':'\u5e97\u8217\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-area .err':'\u30a8\u30ea\u30a2\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-shopurl .err':'\u63b2\u8f09URL\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044',
+    '#f-medium .err':'\u5a92\u4f53\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044'
+  }; Object.entries(errors).forEach(([s,v])=>t(s,v));
+  label('f-medium-other','\u5a92\u4f53\u540d\uff08\u305d\u306e\u4ed6\uff09');
+  t('#f-medium-other .hint','\u300c\u305d\u306e\u4ed6\u300d\u3092\u9078\u3093\u3060\u5834\u5408\u306f\u3001\u5a92\u4f53\u540d\u3092\u76f4\u63a5\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
+  t('#f-office .err','\u652f\u793e\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044');
+  t('#f-staff .err','\u55b6\u696d\u62c5\u5f53\u8005\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
+  t('#f-agent .err','\u4ee3\u7406\u8005\u540d\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
+  t('#f-email .err','\u6709\u52b9\u306a\u30e1\u30fc\u30eb\u30a2\u30c9\u30ec\u30b9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');
+  t('#draft-restore-title','\u4e00\u6642\u4fdd\u5b58\u3057\u305f\u4f9d\u983c\u5185\u5bb9\u304c\u3042\u308a\u307e\u3059\u3002');
+  t('#draft-restore-modal .draft-restore-dialog > p','\u5165\u529b\u5185\u5bb9\u3092\u5fa9\u5143\u3057\u307e\u3059\u304b\uff1f');
+  t('#draft-restore-modal .draft-file-notice','\u6dfb\u4ed8\u30d5\u30a1\u30a4\u30eb\u306f\u4e00\u6642\u4fdd\u5b58\u3055\u308c\u307e\u305b\u3093\u3002\u9001\u4fe1\u524d\u306b\u518d\u5ea6\u3054\u78ba\u8a8d\u304f\u3060\u3055\u3044\u3002');
+  t('#draft-restore-modal .draft-restore-new','\u65b0\u3057\u304f\u5165\u529b\u3059\u308b');
+  t('#draft-restore-modal .draft-restore-primary','\u5fa9\u5143\u3059\u308b');
+}
+
 function initDesigners() {
   ['sel-des1', 'sel-des2', 'sel-des3'].forEach(id => {
     const select = document.getElementById(id);
+    if (!select) return;
     select.innerHTML = '<option value="">選択しない</option>' +
       Object.entries(designerGroups).map(([areaName, designers]) => `
         <optgroup label="${areaName}">
@@ -3149,6 +3408,8 @@ function initDesigners() {
 }
 
 const restoredDraft = readDraft();
+  repairStaticJapaneseLabelsFinal();
+repairVisibleLabels();
 initCongestion();
 initNotices();
 initDesigners();
@@ -3157,6 +3418,21 @@ renderDeadlineCalendar();
 loadCalendarFromApi();
 relocateIndustryAndAddProductionType();
 renderCommonBlock();
+// 新規入力時は「希望なし」を初期選択にし、保存済みの指定は復元時に優先する。
+if (!restoredDraft && !state.delivery) {
+  state.delivery = '希望なし';
+  ['d1', 'd2', 'd3'].forEach(id => document.getElementById('rb-' + id)?.classList.remove('sel'));
+  document.getElementById('rb-d1')?.classList.add('sel');
+  const dateInput = document.getElementById('date-input');
+  if (dateInput) dateInput.style.display = 'none';
+}
+if (!restoredDraft) {
+  state.delivery = '\u5e0c\u671b\u306a\u3057';
+  ['d1', 'd2', 'd3'].forEach(id => document.getElementById('rb-' + id)?.classList.remove('sel'));
+  document.getElementById('rb-d1')?.classList.add('sel');
+  const defaultDateInput = document.getElementById('date-input');
+  if (defaultDateInput) defaultDateInput.style.display = 'none';
+}
 if (restoredDraft) {
   goTo(1);
   showDraftRestorePrompt(restoredDraft);
