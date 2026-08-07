@@ -2391,10 +2391,12 @@ textarea {
 .blank-design-confirm-modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 2000;
   display: grid;
   place-items: center;
   padding: 20px;
+  overflow: auto;
+  isolation: isolate;
 }
 .blank-design-confirm-backdrop {
   position: absolute;
@@ -2403,7 +2405,10 @@ textarea {
 }
 .blank-design-confirm-dialog {
   position: relative;
+  z-index: 1;
   width: min(440px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
   padding: 26px 26px 22px;
   border: 1px solid var(--color-border, #d8d8d2);
   border-radius: 16px;
