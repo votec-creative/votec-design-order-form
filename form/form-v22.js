@@ -1428,7 +1428,7 @@ function renderCardTemplate(prefix, card, opts) {
       <summary><span>詳しい指示を設定する</span><span class="opt">任意</span></summary>
       <div class="advanced-instructions-body">
         <div class="advanced-instructions-toolbar">
-          <span>カラー・雰囲気・世界観などの詳細設定</span>
+          <span>カラー・雰囲気・デザイン要素の詳細設定</span>
           <button type="button" onclick="resetAdvancedInstructions('${prefix}')"><i class="ti ti-restore"></i>詳細設定をリセット</button>
         </div>
         <div class="lbl">カラーの方向性 <span class="opt">任意</span></div>
