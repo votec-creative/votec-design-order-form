@@ -1463,6 +1463,76 @@ textarea {
 .deadline-calendar-intro {
   margin: -4px 0 12px;
 }
+.deadline-today {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 16px;
+}
+.deadline-today-heading {
+  grid-column: 1 / -1;
+  color: var(--color-text-sub, #44443f);
+  font-size: 13px;
+  font-weight: 700;
+}
+.deadline-today-card {
+  min-width: 0;
+  padding: 14px 12px 13px;
+  border: 1px solid var(--color-border, #d8d8d2);
+  border-radius: 12px;
+  background: #fff;
+}
+.deadline-today-label {
+  min-height: 2.8em;
+  color: var(--color-text, #22221f);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.deadline-today-term {
+  margin-top: 6px;
+  color: var(--color-text-muted, #686862);
+  font-size: 11px;
+}
+.deadline-today-date {
+  margin-top: 8px;
+  color: var(--color-primary-deep, #2639d8);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.deadline-today-card.is-disabled {
+  background: #f0f0ed;
+  opacity: .72;
+}
+.deadline-today-card.is-disabled .deadline-today-date {
+  color: var(--color-text-muted, #686862);
+  font-size: 14px;
+}
+.deadline-calendar-details {
+  margin-top: 8px;
+}
+.deadline-calendar-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #d8d8d2);
+  border-radius: 9px;
+  background: #fafaf8;
+  color: var(--color-text-sub, #44443f);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.deadline-calendar-details summary::-webkit-details-marker { display: none; }
+.deadline-calendar-details summary::after { content: '＋'; color: var(--color-primary-deep, #2639d8); font-size: 16px; }
+.deadline-calendar-details[open] summary::after { content: '−'; }
+.deadline-calendar-details-hint { margin: 10px 2px; }
 .deadline-calendar-table {
   min-width: 760px;
 }
@@ -1552,6 +1622,9 @@ textarea {
   }
   .deadline-guide {
     margin-bottom: 30px;
+  }
+  .deadline-today {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .prog-bar {
     margin-bottom: 34px;
@@ -2007,6 +2080,21 @@ textarea {
   align-items: stretch;
   column-gap: 24px;
   row-gap: 1px;
+}
+
+@media (max-width: 460px) {
+  .deadline-today {
+    grid-template-columns: 1fr;
+  }
+  .deadline-today-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+  }
+  .deadline-today-label { min-height: 0; }
+  .deadline-today-term { margin-top: 2px; }
+  .deadline-today-date { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
 }
 .medium-select-row {
   display: flex;

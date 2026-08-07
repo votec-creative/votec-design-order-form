@@ -3032,10 +3032,33 @@ function addWorkingDaysInclusive(date, businessDays) {
   return cursor;
 }
 
+const DELIVERY_CARD_TYPES = [
+  { label: '簡単な修正', days: 2 },
+  { label: '新規作成・大幅な修正', days: 5 },
+  { label: '重い案件', days: 7 },
+  { label: '急募', days: 10 }
+];
+
+function renderTodayDeadline(today) {
+  const container = document.getElementById('deadline-today');
+  if (!container) return;
+  const closed = isNonWorkingDeliveryDate(toDateInputValue(today));
+  const cards = DELIVERY_CARD_TYPES.map(({ label, days }) => {
+    const due = addWorkingDaysInclusive(today, days);
+    return `<article class="deadline-today-card${closed ? ' is-disabled' : ''}">
+      <div class="deadline-today-label">${label}</div>
+      <div class="deadline-today-term">通常 ${days}営業日</div>
+      <div class="deadline-today-date">${due ? formatCalendarDate(due) : '稼働日外'}</div>
+    </article>`;
+  }).join('');
+  container.innerHTML = `<div class="deadline-today-heading">本日 ${formatCalendarDate(today)} に依頼した場合</div>${cards}`;
+}
+
 function renderDeadlineCalendar() {
   const body = document.getElementById('deadline-calendar-body');
   if (!body) return;
   const today = new Date();
+  renderTodayDeadline(today);
   const rows = [];
   for (let offset = 0; offset < 31; offset += 1) {
     const requestDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);

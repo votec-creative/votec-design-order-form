@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="ui-library-theme.css?v=44">
+  <link rel="stylesheet" href="ui-library-theme.css?v=45">
 </head>
 <body>
   <header class="site-header">
@@ -297,15 +297,20 @@
         <!-- 納期カレンダー（社内稼働カレンダー参照） -->
         <div class="deadline-guide">
           <div class="deadline-guide-title"><i class="ti ti-calendar-time"></i>納期カレンダー</div>
-          <div class="hint deadline-calendar-intro">依頼日ごとの納期目安です。稼働日外を避けて、日別にご確認ください。</div>
-          <div class="deadline-table-wrap">
-            <table class="deadline-table deadline-calendar-table">
-              <thead>
-                <tr><th>依頼日</th><th>簡単な修正<br>2営業日</th><th>新規作成・大幅な修正<br>5営業日</th><th>重い案件<br>7営業日</th><th>急募<br>10営業日</th></tr>
-              </thead>
-              <tbody id="deadline-calendar-body"></tbody>
-            </table>
-          </div>
+          <div class="hint deadline-calendar-intro">今日依頼した場合の通常納期です。土日・祝日・会社休日を除いた営業日で計算しています。</div>
+          <div class="deadline-today" id="deadline-today"></div>
+          <details class="deadline-calendar-details">
+            <summary><span>今後の納期を確認</span><span class="opt">別の日に依頼する場合</span></summary>
+            <p class="hint deadline-calendar-details-hint">別の日に依頼する場合の納期はこちらから確認できます。</p>
+            <div class="deadline-table-wrap">
+              <table class="deadline-table deadline-calendar-table">
+                <thead>
+                  <tr><th>依頼日</th><th>簡単な修正<br>2営業日</th><th>新規作成・大幅な修正<br>5営業日</th><th>重い案件<br>7営業日</th><th>急募<br>10営業日</th></tr>
+                </thead>
+                <tbody id="deadline-calendar-body"></tbody>
+              </table>
+            </div>
+          </details>
           <ul class="deadline-note-list">
             <li>納期目安は依頼日を含む営業日計算です。内容や稼働状況によって希望に添えない場合があります</li>
             <li>イレギュラーや依頼側での不備による修正が発生した場合、担当者が直接連絡します</li>
@@ -384,6 +389,6 @@
   </main>
 
   <script src="data.js?v=28"></script>
-  <script src="form-v22.js?v=75"></script>
+  <script src="form-v22.js?v=76"></script>
 </body>
 </html>
