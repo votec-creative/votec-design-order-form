@@ -300,8 +300,9 @@ const moodGroups = [
   },
   {
     key: 'worldview',
-    label: '世界観・モチーフ',
-    hint: '複数選択可・任意',
+    label: 'デザイン要素・モチーフ',
+    hint: '3つまで選べます（任意）',
+    maxSelections: 3,
     collapsible: true,
     openKey: 'worldviewOpen',
     sections: [
@@ -2438,8 +2439,8 @@ function cardSummary(card, isIndividual) {
     <div class="prow"><span class="pk">カラー補足</span><span class="pv">${card.colorNote || '—'}</span></div>
     <div class="prow"><span class="pk">雰囲気</span><span class="pv">${atmosphereTxt}</span></div>
     <div class="prow"><span class="pk">雰囲気・その他</span><span class="pv">${card.atmosphereOther || '—'}</span></div>
-    <div class="prow"><span class="pk">世界観・モチーフ</span><span class="pv">${worldviewTxt}</span></div>
-    <div class="prow"><span class="pk">世界観・その他</span><span class="pv">${card.worldviewOther || '—'}</span></div>`;
+    <div class="prow"><span class="pk">デザイン要素・モチーフ</span><span class="pv">${worldviewTxt}</span></div>
+    <div class="prow"><span class="pk">デザイン要素・その他</span><span class="pv">${card.worldviewOther || '—'}</span></div>`;
 }
 
 function buildPreview() {
