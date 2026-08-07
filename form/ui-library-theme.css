@@ -297,10 +297,10 @@ body {
   height: 2px;
   background: #111;
 }
-.psub { max-width: 720px; margin-bottom: 42px; color: #666660; font-size: 13px; }
+.psub { max-width: 720px; margin-bottom: 34px; color: #666660; font-size: 13px; }
 
 .subhead {
-  margin: 34px 0 17px;
+  margin: 24px 0 14px;
   padding: 0 0 10px;
   border-bottom: 1px solid #bfbfba;
   color: #111;
@@ -316,7 +316,10 @@ body {
   color: #111;
 }
 
-.field { margin-bottom: 30px; }
+.field { margin-bottom: 26px; }
+
+/* Dynamically moved industry field and the following 店舗情報 section share one rhythm. */
+#p2 > #f-industry + .subhead { margin-top: 16px; }
 .lbl {
   margin-bottom: 10px;
   color: #242421;
@@ -626,7 +629,7 @@ input:focus, select:focus, textarea:focus {
   .ptitle { padding-top: 11px; font-size: 23px; }
   .ptitle::before { width: 40px; }
   .psub { margin-bottom: 30px; font-size: 12px; }
-  .subhead { margin-top: 30px; }
+  .subhead { margin-top: 22px; margin-bottom: 14px; }
   .field { margin-bottom: 26px; }
   .r2, .r3 { gap: 0; }
   .rbtn { min-height: 42px; padding: 9px 13px; }
