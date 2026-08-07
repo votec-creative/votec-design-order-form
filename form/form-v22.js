@@ -10,6 +10,9 @@ const totalSteps = 6;
 // テスト中のみ true。false に戻すと通常の必須入力チェックが有効になります。
 const TEST_MODE_ALLOW_INCOMPLETE_NAVIGATION = true;
 const DRAFT_STORAGE_KEY = 'votec-design-order-form-draft-v1';
+// Google Apps Scriptをデプロイ後、このURLを設定すると起動時に最新カレンダーを取得します。
+const CALENDAR_API_URL = '';
+const DELIVERY_SCHEDULE_BY_DATE = new Map();
 const LEGACY_DESIGN_INSTRUCTION_TEMPLATE = '■掲載文言\n\n■デザイン指示\n';
 const DESIGN_INSTRUCTION_TEMPLATE = '';
 
@@ -28,6 +31,8 @@ const DELIVERY_NON_WORKING_DATES = new Set([
 
 function isNonWorkingDeliveryDate(value) {
   if (!value) return false;
+  const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(value);
+  if (liveSchedule) return String(liveSchedule.doWork || '').includes('稼働日外');
   const date = new Date(`${value}T00:00:00`);
   return date.getDay() === 0 || date.getDay() === 6 || DELIVERY_NON_WORKING_DATES.has(value);
 }
@@ -3064,12 +3069,15 @@ function renderTodayDeadline(today) {
   const container = document.getElementById('deadline-today');
   if (!container) return;
   const closed = isNonWorkingDeliveryDate(toDateInputValue(today));
+  const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(toDateInputValue(today));
   const cards = DELIVERY_CARD_TYPES.map(({ label, days }) => {
     const due = addWorkingDaysInclusive(today, days);
+    const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
+    const dueLabel = liveDue || (due ? formatCalendarDate(due) : '稼働日外');
     return `<article class="deadline-today-card${closed ? ' is-disabled' : ''}">
       <div class="deadline-today-label">${label}</div>
       <div class="deadline-today-term">通常 ${days}営業日</div>
-      <div class="deadline-today-date">${due ? formatCalendarDate(due) : '稼働日外'}</div>
+      <div class="deadline-today-date">${dueLabel}</div>
     </article>`;
   }).join('');
   container.innerHTML = `<div class="deadline-today-heading">本日 ${formatCalendarDate(today)} に依頼した場合</div>${cards}`;
@@ -3085,9 +3093,11 @@ function renderDeadlineCalendar() {
     const requestDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
     const requestValue = toDateInputValue(requestDate);
     const closed = isNonWorkingDeliveryDate(requestValue);
+    const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(requestValue);
     const dueDates = [2, 5, 7, 10].map(days => {
       const due = addWorkingDaysInclusive(requestDate, days);
-      return due ? formatCalendarDate(due) : '—';
+      const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
+      return liveDue || (due ? formatCalendarDate(due) : '—');
     });
     rows.push(`<tr class="${closed ? 'is-non-working' : ''}">
       <th>${formatCalendarDate(requestDate)}</th>
@@ -3095,6 +3105,34 @@ function renderDeadlineCalendar() {
     </tr>`);
   }
   body.innerHTML = rows.join('');
+}
+
+function applyCalendarApiData(payload) {
+  if (!payload || !Array.isArray(payload.rows)) return;
+  DELIVERY_SCHEDULE_BY_DATE.clear();
+  payload.rows.forEach(row => {
+    if (row?.date) DELIVERY_SCHEDULE_BY_DATE.set(row.date, row);
+  });
+  renderDeadlineCalendar();
+}
+
+function loadCalendarFromApi() {
+  if (!CALENDAR_API_URL) return;
+  const callbackName = `votecCalendarCallback_${Date.now()}`;
+  const script = document.createElement('script');
+  const separator = CALENDAR_API_URL.includes('?') ? '&' : '?';
+  window[callbackName] = payload => {
+    applyCalendarApiData(payload);
+    delete window[callbackName];
+    script.remove();
+  };
+  script.onerror = () => {
+    delete window[callbackName];
+    script.remove();
+    console.warn('納期カレンダーAPIを取得できなかったため、内蔵カレンダーを使用します。');
+  };
+  script.src = `${CALENDAR_API_URL}${separator}callback=${callbackName}`;
+  document.head.appendChild(script);
 }
 
 /* ========== INIT ========== */
@@ -3116,6 +3154,7 @@ initNotices();
 initDesigners();
 initDeliveryCalendar();
 renderDeadlineCalendar();
+loadCalendarFromApi();
 relocateIndustryAndAddProductionType();
 renderCommonBlock();
 if (restoredDraft) {
