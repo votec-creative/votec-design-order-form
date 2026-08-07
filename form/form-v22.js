@@ -13,6 +13,25 @@ const DRAFT_STORAGE_KEY = 'votec-design-order-form-draft-v1';
 const LEGACY_DESIGN_INSTRUCTION_TEMPLATE = '■掲載文言\n\n■デザイン指示\n';
 const DESIGN_INSTRUCTION_TEMPLATE = '';
 
+// 「パーセンテージの変動」シートの DO用稼働列（I列）を参照した納期指定用の休業日。
+// フォーム単体で動作するよう、現行シートの2026年8月〜2027年3月分をスナップショットしています。
+const DELIVERY_NON_WORKING_DATES = new Set([
+  '2026-08-08','2026-08-09','2026-08-10','2026-08-11','2026-08-12','2026-08-13','2026-08-14','2026-08-15','2026-08-16','2026-08-22','2026-08-23','2026-08-29','2026-08-30',
+  '2026-09-05','2026-09-06','2026-09-12','2026-09-13','2026-09-19','2026-09-20','2026-09-21','2026-09-22','2026-09-23','2026-09-26','2026-09-27',
+  '2026-10-03','2026-10-04','2026-10-07','2026-10-08','2026-10-09','2026-10-10','2026-10-11','2026-10-12','2026-10-17','2026-10-18','2026-10-24','2026-10-25','2026-10-31',
+  '2026-11-01','2026-11-03','2026-11-07','2026-11-08','2026-11-11','2026-11-12','2026-11-13','2026-11-14','2026-11-15','2026-11-21','2026-11-22','2026-11-23','2026-11-28','2026-11-29',
+  '2026-12-04','2026-12-05','2026-12-06','2026-12-12','2026-12-13','2026-12-19','2026-12-20','2026-12-26','2026-12-27','2026-12-28','2026-12-29','2026-12-30','2026-12-31',
+  '2027-01-01','2027-01-02','2027-01-03','2027-01-04','2027-01-09','2027-01-10','2027-01-11','2027-01-16','2027-01-17','2027-01-23','2027-01-24','2027-01-30','2027-01-31',
+  '2027-02-06','2027-02-07','2027-02-11','2027-02-13','2027-02-14','2027-02-20','2027-02-21','2027-02-23','2027-02-27','2027-02-28',
+  '2027-03-06','2027-03-07','2027-03-13','2027-03-14','2027-03-20','2027-03-21','2027-03-27','2027-03-28'
+]);
+
+function isNonWorkingDeliveryDate(value) {
+  if (!value) return false;
+  const date = new Date(`${value}T00:00:00`);
+  return date.getDay() === 0 || date.getDay() === 6 || DELIVERY_NON_WORKING_DATES.has(value);
+}
+
 function ensureDesignInstructionTemplate(value) {
   return String(value || '');
 }
@@ -2604,8 +2623,16 @@ function validate(step) {
   if (step === 5) {
     req('f-delivery', () => state.delivery);
     if (state.delivery === '納期指定') {
-      if (!document.getElementById('inp-date').value) {
+      const deliveryDateInput = document.getElementById('inp-date');
+      const deliveryDate = deliveryDateInput.value;
+      const error = document.querySelector('#f-delivery .err');
+      if (error) error.textContent = '納期希望を選択してください';
+      if (!deliveryDate) {
         document.getElementById('f-delivery').classList.add('inv');
+        ok = false;
+      } else if (isNonWorkingDeliveryDate(deliveryDate)) {
+        document.getElementById('f-delivery').classList.add('inv');
+        if (error) error.textContent = '稼働日外は指定できません。社内稼働カレンダーを確認してください';
         ok = false;
       }
     }
@@ -2977,6 +3004,14 @@ function initDraftAutosave() {
   // 仕様上、自動保存・beforeunload保存は行わない。
 }
 
+function initDeliveryCalendar() {
+  const input = document.getElementById('inp-date');
+  if (!input) return;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  input.min = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
+}
+
 /* ========== INIT ========== */
 function initDesigners() {
   ['sel-des1', 'sel-des2', 'sel-des3'].forEach(id => {
@@ -2994,6 +3029,7 @@ const restoredDraft = readDraft();
 initCongestion();
 initNotices();
 initDesigners();
+initDeliveryCalendar();
 relocateIndustryAndAddProductionType();
 renderCommonBlock();
 if (restoredDraft) {
