@@ -3012,6 +3012,47 @@ function initDeliveryCalendar() {
   input.min = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0'), String(today.getDate()).padStart(2, '0')].join('-');
 }
 
+function formatCalendarDate(date) {
+  const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+  return `${date.getMonth() + 1}/${date.getDate()}（${weekdays[date.getDay()]}）`;
+}
+
+function toDateInputValue(date) {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+}
+
+function addWorkingDaysInclusive(date, businessDays) {
+  const cursor = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  if (isNonWorkingDeliveryDate(toDateInputValue(cursor))) return null;
+  let count = 1;
+  while (count < businessDays) {
+    cursor.setDate(cursor.getDate() + 1);
+    if (!isNonWorkingDeliveryDate(toDateInputValue(cursor))) count += 1;
+  }
+  return cursor;
+}
+
+function renderDeadlineCalendar() {
+  const body = document.getElementById('deadline-calendar-body');
+  if (!body) return;
+  const today = new Date();
+  const rows = [];
+  for (let offset = 0; offset < 31; offset += 1) {
+    const requestDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+    const requestValue = toDateInputValue(requestDate);
+    const closed = isNonWorkingDeliveryDate(requestValue);
+    const dueDates = [2, 5, 7, 10].map(days => {
+      const due = addWorkingDaysInclusive(requestDate, days);
+      return due ? formatCalendarDate(due) : '—';
+    });
+    rows.push(`<tr class="${closed ? 'is-non-working' : ''}">
+      <th>${formatCalendarDate(requestDate)}</th>
+      ${closed ? '<td colspan="4" class="deadline-calendar-closed">稼働日外</td>' : dueDates.map(value => `<td>${value}</td>`).join('')}
+    </tr>`);
+  }
+  body.innerHTML = rows.join('');
+}
+
 /* ========== INIT ========== */
 function initDesigners() {
   ['sel-des1', 'sel-des2', 'sel-des3'].forEach(id => {
@@ -3030,6 +3071,7 @@ initCongestion();
 initNotices();
 initDesigners();
 initDeliveryCalendar();
+renderDeadlineCalendar();
 relocateIndustryAndAddProductionType();
 renderCommonBlock();
 if (restoredDraft) {

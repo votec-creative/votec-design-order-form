@@ -1460,6 +1460,38 @@ textarea {
   margin: 10px 0 34px;
   padding: var(--form-group-pad);
 }
+.deadline-calendar-intro {
+  margin: -4px 0 12px;
+}
+.deadline-calendar-table {
+  min-width: 760px;
+}
+.deadline-calendar-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+}
+.deadline-calendar-table th:first-child {
+  min-width: 94px;
+}
+.deadline-calendar-table td,
+.deadline-calendar-table th {
+  white-space: nowrap;
+}
+.deadline-calendar-table tbody tr.is-non-working th,
+.deadline-calendar-table tbody tr.is-non-working td {
+  background: #f0f0ed;
+  color: var(--color-text-muted, #686862);
+}
+.deadline-calendar-closed {
+  text-align: center;
+  font-weight: 700;
+}
+.deadline-guide .deadline-table-wrap {
+  max-height: 430px;
+  overflow: auto;
+}
 .preview {
   margin-top: 8px;
 }
