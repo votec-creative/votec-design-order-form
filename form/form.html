@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="ui-library-theme.css?v=41">
+  <link rel="stylesheet" href="ui-library-theme.css?v=42">
 </head>
 <body>
   <header class="site-header">
@@ -392,14 +392,13 @@
       </div>
 
       <div class="nav" id="nav-bar">
-        <div class="nav-left-actions">
+        <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 戻る</button>
+        <div class="nav-right-actions">
           <button class="btn draft-save-button" id="btn-draft-save" type="button" onclick="saveDraft({explicit:true})"><i class="ti ti-device-floppy"></i> 一時保存</button>
           <button class="draft-delete-button" id="btn-draft-delete" type="button" onclick="deleteDraft()" hidden>一時保存を削除</button>
           <span class="draft-status" id="draft-status" aria-live="polite"></span>
-          <button class="btn" id="btn-back" onclick="prevStep()" style="display:none"><i class="ti ti-arrow-left"></i> 戻る</button>
+          <button class="btn pri" id="btn-next" onclick="nextStep()">次へ <i class="ti ti-arrow-right"></i></button>
         </div>
-        <div></div>
-        <button class="btn pri" id="btn-next" onclick="nextStep()">次へ <i class="ti ti-arrow-right"></i></button>
       </div>
 
       <div class="draft-restore-modal" id="draft-restore-modal" hidden>
