@@ -2399,6 +2399,27 @@ function setDelivery(value) {
   if (targetButtonId) document.getElementById('rb-' + targetButtonId).classList.add('sel');
   document.getElementById('date-input').style.display = value === '納期指定' ? 'block' : 'none';
   document.getElementById('f-delivery').classList.remove('inv');
+  if (value === '納期指定') handleDeliveryDateChange(document.getElementById('inp-date'));
+}
+
+function handleDeliveryDateChange(input) {
+  const value = input?.value || '';
+  state.deliveryDate = value;
+  const field = document.getElementById('f-delivery');
+  const error = field?.querySelector('.err');
+  if (!field || !error) return;
+  if (!value) {
+    field.classList.remove('inv');
+    error.textContent = '納期希望を選択してください';
+    return;
+  }
+  if (isNonWorkingDeliveryDate(value)) {
+    field.classList.add('inv');
+    error.textContent = '稼働日外です。別の営業日を選択してください';
+    return;
+  }
+  field.classList.remove('inv');
+  error.textContent = '納期希望を選択してください';
 }
 
 function syncDes(changed) {

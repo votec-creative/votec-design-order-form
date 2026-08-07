@@ -288,7 +288,7 @@
             <div class="rbtn" id="rb-d3" onclick="setDelivery('納期指定')"><i class="ti ti-calendar-event"></i>納期指定</div>
           </div>
           <div id="date-input" style="display:none;margin-top:10px">
-            <input type="date" id="inp-date" class="input-sm control-w-xs" onchange="state.deliveryDate=this.value">
+            <input type="date" id="inp-date" class="input-sm control-w-xs" onchange="handleDeliveryDateChange(this)">
             <div class="hint">社内稼働カレンダーを参照しています。稼働日外を避けて選択してください。</div>
           </div>
           <div class="err">納期希望を選択してください</div>
@@ -389,6 +389,6 @@
   </main>
 
   <script src="data.js?v=28"></script>
-  <script src="form-v22.js?v=76"></script>
+  <script src="form-v22.js?v=77"></script>
 </body>
 </html>
