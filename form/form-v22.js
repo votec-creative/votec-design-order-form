@@ -1463,7 +1463,7 @@ function renderCardTemplate(prefix, card, opts) {
         </div>
         <div class="color-direction-note">
           <div class="lbl">カラーについての補足 <span class="opt">任意</span></div>
-          <textarea class="control-w-lg" placeholder="例：全体は落ち着いた色味、赤は使用しない、指定色に近い範囲で調整可能など" oninput="updateCardField('${prefix}','colorNote',this.value)">${escHtml(card.colorNote)}</textarea>
+          <textarea class="control-w-md color-note-textarea" rows="2" placeholder="例：全体は落ち着いた色味、赤は使用しない、指定色に近い範囲で調整可能など" oninput="updateCardField('${prefix}','colorNote',this.value)">${escHtml(card.colorNote)}</textarea>
         </div>
         <div class="advanced-instructions-divider"></div>
         <div class="tag-chk" id="moodtags-${prefix}"></div>
