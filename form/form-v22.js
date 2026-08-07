@@ -292,8 +292,8 @@ const moodGroups = [
   {
     key: 'atmosphere',
     label: '雰囲気',
-    hint: '近いものを1つ選んでください。',
-    maxSelections: 1,
+    hint: '近いものを2つまで選べます。',
+    maxSelections: 2,
     sections: [
       { label: '', options: ['シンプル','かわいい','きれい・上品','高級感','かっこいい','明るい・ポップ','落ち着いた','インパクト重視','おまかせ'] }
     ]
