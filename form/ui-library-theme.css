@@ -998,6 +998,33 @@ input:focus, select:focus, textarea:focus {
   margin: 0 auto 9px;
   color: #343c45;
 }
+.attachment-field .upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 128px;
+  padding: 16px 14px;
+  text-align: center;
+  line-height: 1.45;
+}
+.attachment-field .upload-icon {
+  display: block;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  margin: 0 0 4px;
+}
+.attachment-field .upload-main,
+.attachment-field .upload-sub { display: block; }
+.attachment-field .upload-main { font-size: 12px; font-weight: 700; }
+.attachment-field .upload-sub { font-size: 11px; color: #888881; }
+@media (max-width: 600px) {
+  .attachment-field .upload-box { min-height: 112px; padding: 13px 10px; }
+  .attachment-field .upload-icon { width: 42px; height: 42px; margin-bottom: 3px; }
+  .attachment-field .upload-main { font-size: 11px; }
+  .attachment-field .upload-sub { font-size: 10px; }
+}
 .color-choice-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1627,6 +1654,23 @@ textarea {
 .deadline-day-card-item strong { color: #25252a; font-size: 14px; }
 .deadline-day-closed { padding: 11px 12px; background: #f0f0ed; color: var(--color-text-muted, #686862); font-size: 12px; font-weight: 700; }
 .deadline-day-row.is-non-working .deadline-day-request { background: #f7f7f4; border-bottom-color: #e8e8e3; }
+/* 納期一覧を縦に詰め、日付の視認性を保ったままスクロール量を抑える */
+.deadline-guide { padding: 16px; margin-bottom: 24px; }
+.deadline-calendar-intro { margin-bottom: 8px; }
+.deadline-today { gap: 8px; margin: 10px 0 12px; }
+.deadline-today-card { padding: 10px 11px 9px; border-radius: 10px; }
+.deadline-today-label { min-height: 1.45em; font-size: 11px; line-height: 1.3; }
+.deadline-today-term { margin-top: 4px; font-size: 10px; }
+.deadline-today-date { margin-top: 5px; font-size: 18px; }
+.deadline-day-list { gap: 6px; }
+.deadline-day-request { min-height: 32px; padding: 6px 10px; gap: 7px; }
+.deadline-day-request-label { font-size: 10px; }
+.deadline-day-request strong { font-size: 13px; }
+.deadline-today-badge { padding: 1px 6px; font-size: 9px; }
+.deadline-day-card-item { min-height: 46px; padding: 7px 10px; gap: 3px; }
+.deadline-day-card-item span { font-size: 10px; }
+.deadline-day-card-item strong { font-size: 13px; }
+.deadline-day-closed { padding: 8px 10px; font-size: 11px; }
 @media (max-width: 640px) {
   .deadline-day-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .deadline-day-card-item:nth-child(2) { border-right: 0; }
