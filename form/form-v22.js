@@ -721,7 +721,7 @@ function renderMediumBlocks() {
       <div class="medium-accordion-body" ${isOpen ? '' : 'hidden'}>
         ${suggestionHtml}
         <div class="field medium-size-field" id="f-size-${cssId(mediumName)}">
-        <div class="lbl">サイズを入力 <span class="opt">任意</span></div>
+        <div class="lbl">サイズを入力 <span class="req">必須</span></div>
         <div class="hint">画像名を含めても構いません。例：メイン 700×300</div>
         <div class="size-input-list">
           ${mediaEntry.customSizes.map((sizeValue, sizeIndex) => `
@@ -1413,7 +1413,7 @@ function renderCardTemplate(prefix, card, opts) {
     <div class="field" id="f-designtxt-${prefix}">
       <div class="instruction-text-split">
         <div class="instruction-text-part">
-          <div class="lbl">掲載文言 <span class="req">必須</span></div>
+          <div class="lbl">掲載文言 <span class="opt">任意</span></div>
           <textarea class="control-w-lg design-instruction-textarea" placeholder="例）○○月限定イベント&#10;ご新規様、会員様どちらも&#10;特別コースフリー　○○分○○○○円！&#10;※必ず受付時に〇〇月限定イベント見たとお伝えください。&#10;※他イベントとの併用はできません。" oninput="updateInstructionText('${prefix}','copyTxt',this.value,this)">${escHtml(card.copyTxt || '')}</textarea>
         </div>
         <div class="instruction-text-part">
@@ -1422,7 +1422,7 @@ function renderCardTemplate(prefix, card, opts) {
           ${card.allOmakase ? '<p class="omakase-disclaimer">※おまかせの場合、作成後の要望・修正は追加料金が発生しますので予めご了承ください。</p>' : ''}
         </div>
       </div>
-      <div class="err">掲載文言を入力し、デザイン指示または「デザインおまかせ」を選択してください</div>
+      <div class="err">デザイン指示を入力するか、「おまかせ」を選択してください</div>
     </div>
     <details class="advanced-instructions" ${card.advancedOpen ? 'open' : ''} ontoggle="setAdvancedInstructionsOpen('${prefix}',this.open)">
       <summary><span>詳しい指示を設定する</span><span class="opt">任意</span></summary>
@@ -2531,7 +2531,8 @@ function validateCard(prefix, card, validationRef, isIndividual) {
     const usage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
     return usage === '使用する' || usage === '使用しない';
   });
-  reqField(`f-designtxt-${prefix}`, () => hasDesignInstructionContent(card.copyTxt) && (hasDesignInstructionContent(card.designTxt) || card.design === 'おまかせ'));
+  // デザイン指示が空欄の場合は次のステップでおまかせ確認モーダルを表示するため、ここでは阻止しない。
+  reqField(`f-designtxt-${prefix}`, () => true);
 }
 
 function validate(step) {
