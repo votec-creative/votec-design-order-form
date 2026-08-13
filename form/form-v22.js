@@ -2629,7 +2629,7 @@ function buildPreview() {
     <div class="psec">
       <div class="psec-h">納期・指名</div>
       <div class="prow"><span class="pk">納期希望</span><span class="pv">${state.delivery || '—'}${state.delivery === '納期指定' ? ' (' + fieldValue('inp-date') + ')' : ''}</span></div>
-      <div class="prow"><span class="pk">デザイナー</span><span class="pv">${[state.des1, state.des2, state.des3].filter(Boolean).join(' / ') || '指名なし'}</span></div>
+      <div class="prow"><span class="pk">デザイナー指名</span><span class="pv">${[state.des1, state.des2, state.des3].filter(Boolean).join(' / ') || '指名なし'}</span></div>
     </div>`;
 }
 

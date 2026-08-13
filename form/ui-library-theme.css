@@ -615,7 +615,18 @@ input:focus, select:focus, textarea:focus {
   .header-logo::before, .header-logo::after { inset: 1px 0; }
   .header-logo::before { right: 9px; }
   .header-logo::after { left: 9px; }
-  .header-right { max-width: 44vw; padding: 6px 10px; font-size: 9px; }
+  .header-right {
+    max-width: none;
+    flex: 0 0 auto;
+    gap: 3px;
+    padding: 5px 6px;
+    font-size: 8.5px;
+    letter-spacing: .03em;
+  }
+  .header-step-key {
+    min-height: 18px;
+    padding: 2px 4px;
+  }
   .main { padding: 14px 10px 40px; }
   .fw {
     padding: 24px 17px 26px;
