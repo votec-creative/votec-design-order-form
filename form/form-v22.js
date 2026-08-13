@@ -384,7 +384,7 @@ let state = {
   imgType: 0, imcUrl: '',
   pay: 'ポイント', payUrl: '',
   shop: '', area: '', shopUrl: '', shopUrl2: '', urlMode: 'あり', urlMode2: 'あり',
-  industry: '', industryOther: '', productionType: '',
+  industry: '', industryOther: '', productionType: '', productionTypes: [],
   selectedMedia: [],       // ['バニラ', '駅ちか', ...]
   openMedia: [],
   mediumOther: '',
@@ -546,7 +546,7 @@ function setIndustry(name, el) {
   state.openMedia = [];
   state.mediumOther = '';
   state.mediaState = {};
-  renderMediumChips(state.productionType);
+  renderMediumChips(getProductionTypeSelections());
   document.getElementById('inp-medium-other').value = '';
   document.getElementById('medium-blocks').innerHTML = '';
   document.getElementById('f-medium-other').style.display = 'none';
@@ -560,18 +560,20 @@ function setIndustry(name, el) {
 }
 
 function setProductionType(value, el) {
-  // フィルターは同じ項目を再クリックすると解除できる。
-  state.productionType = state.productionType === value ? '' : value;
-  state.selectedMedia = [];
-  state.openMedia = [];
-  state.mediaState = {};
-  state.mediumOther = '';
-  document.getElementById('medium-blocks').innerHTML = '';
-  document.getElementById('inp-medium-other').value = '';
-  document.getElementById('f-medium-other').style.display = 'none';
-  renderMediumChips(state.productionType);
-  document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => btn.classList.toggle('sel', state.productionType && btn === el));
+  const selected = getProductionTypeSelections();
+  const index = selected.indexOf(value);
+  if (index >= 0) selected.splice(index, 1);
+  else selected.push(value);
+  state.productionTypes = selected;
+  state.productionType = selected.join('・');
+  renderMediumChips(selected);
+  document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => btn.classList.toggle('sel', selected.includes(btn.textContent.trim())));
   document.getElementById('f-production-type')?.classList.remove('inv');
+}
+
+function getProductionTypeSelections() {
+  if (Array.isArray(state.productionTypes) && state.productionTypes.length) return state.productionTypes.filter(Boolean);
+  return state.productionType ? state.productionType.split('・').filter(Boolean) : [];
 }
 
 function relocateIndustryAndAddProductionType() {
@@ -582,7 +584,10 @@ function relocateIndustryAndAddProductionType() {
   const p2Headings = p2 ? Array.from(p2.children).filter(el => el.classList.contains('subhead')) : [];
   const storeHeading = p2Headings.find(el => el.textContent.includes('店舗情報')) || null;
   if (industry && p2 && industry.parentElement !== p2) {
-    if (storeHeading && storeHeading.parentElement === p2) p2.insertBefore(industry, storeHeading);
+    if (storeHeading && storeHeading.parentElement === p2) {
+      const storeFields = storeHeading.nextElementSibling;
+      p2.insertBefore(industry, storeFields || storeHeading.nextSibling);
+    }
     else p2.appendChild(industry);
   }
 
@@ -605,22 +610,22 @@ function relocateIndustryAndAddProductionType() {
   const productionBadge = field.querySelector('.req');
   if (productionBadge) {
     productionBadge.className = 'opt';
-    productionBadge.textContent = '任意';
+    productionBadge.textContent = '任意・複数選択可';
   }
   const title = p3.querySelector('.ptitle');
   const sub = p3.querySelector('.psub');
   if (title) title.textContent = '媒体・サイズ';
   if (sub) sub.textContent = '媒体を選び、必要な画像サイズを入力してください。';
   document.querySelectorAll('#production-type-btns .rbtn').forEach(btn => {
-    btn.classList.toggle('sel', btn.textContent.trim() === state.productionType);
+    btn.classList.toggle('sel', getProductionTypeSelections().includes(btn.textContent.trim()));
   });
   // 制作内容が未選択でも、候補媒体を初期表示する。
   // 制作内容は絞り込み用の任意項目であり、媒体選択を妨げない。
-  renderMediumChips(state.productionType);
+  renderMediumChips(getProductionTypeSelections());
 }
 
 const mediaByProductionType = {
-  '集客': ['駅ちか','風俗じゃぱん','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','デリヘルが呼べるホテル','デリヘルタウン','夜遊びショコラ','爆サイ.com','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','フーコレ','近くのメンズエステランキング','エステ魂','エステラブ','ホスパラ（集客）','風俗エステランキング','リアクションアップ','Erotic Guide','ホスラブ','G1','オリジナルHP','その他'],
+  '集客': ['駅ちか','風俗じゃぱん','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','デリヘルが呼べるホテル','デリヘルタウン','夜遊びショコラ','エステ魂','爆サイ.com','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','フーコレ','エステラブ','ホスパラ（集客）','風俗エステランキング','リアクションアップ','Erotic Guide','ホスラブ','G1','オリジナルHP','その他'],
   '求人': ['バニラ','体入エミリー','体入ショコラ','ココア','はじめての風俗アルバイト','体入ホスパラ','メンエスリクルート','Qプリ','エステラブ','R-30','ショコラ','キャバイト','ジャニーズチケット掲示板','その他'],
   'スタッフ募集': ['メンズバニラ','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','その他']
 };
@@ -630,9 +635,13 @@ function renderMediumChips(productionType) {
   // 重複媒体は1件にまとめ、業種は媒体候補の絞り込みには利用しない。
   const seen = new Set();
   const allProductionMedia = [...new Set(Object.values(mediaByProductionType).flat())];
-  const mediumPriority = ['バニラ','駅ちか','体入エミリー','風俗じゃぱん','メンズバニラ','体入ショコラ','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','ココア','はじめての風俗アルバイト','体入ホスパラ','デリヘルが呼べるホテル','デリヘルタウン','メンエスリクルート','夜遊びショコラ','爆サイ.com','Qプリ','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','フーコレ','R-30','エステラブ','近くのメンズエステランキング','ジャニーズチケット掲示板'];
+  const mediumPriority = ['バニラ','駅ちか','体入エミリー','風俗じゃぱん','メンズバニラ','体入ショコラ','メンズエステランキング','デリヘルじゃぱん','メンエスじゃぱん','ココア','はじめての風俗アルバイト','体入ホスパラ','デリヘルが呼べるホテル','デリヘルタウン','メンエスリクルート','夜遊びショコラ','エステ魂','爆サイ.com','Qプリ','メンエスSNS02','駅ちか!パラダイス','口コミ風俗情報局','ジョブショコラ','野郎WORK','俺の風','FENIXJOB','フーコレ','R-30','エステラブ','ジャニーズチケット掲示板'];
   const priorityIndex = new Map(mediumPriority.map((name, index) => [name, index]));
-  const mediumList = (mediaByProductionType[productionType] || allProductionMedia)
+  const selectedTypes = Array.isArray(productionType) ? productionType : (productionType ? [productionType] : []);
+  const filteredMedia = selectedTypes.length
+    ? [...new Set(selectedTypes.flatMap(type => mediaByProductionType[type] || []))]
+    : allProductionMedia;
+  const mediumList = (filteredMedia || allProductionMedia)
     .filter(name => priorityIndex.has(name) || name === 'その他')
     .slice()
     .sort((a, b) => (priorityIndex.get(a) ?? 999) - (priorityIndex.get(b) ?? 999));
@@ -674,7 +683,7 @@ function toggleMedium(mediumName) {
   }
   document.getElementById('f-medium-other').style.display = state.selectedMedia.includes('その他') ? 'block' : 'none';
   document.getElementById('f-medium').classList.remove('inv');
-  renderMediumChips(state.productionType);
+  renderMediumChips(getProductionTypeSelections());
   renderMediumBlocks();
   autoFillImgSize();
 }
@@ -705,7 +714,7 @@ function renderMediumBlocks() {
       <span>選択した媒体ごとに設定してください</span>
     </div>
   ` + state.selectedMedia.map(mediumName => {
-    const isOpen = state.openMedia.includes(mediumName);
+    const isOpen = true;
     const mediaEntry = state.mediaState[mediumName];
     ensureMediaEntryQuantities(mediaEntry);
     const suggestions = getSizeSuggestions(mediumName);
@@ -735,15 +744,12 @@ function renderMediumBlocks() {
     <section class="medium-accordion is-selected ${isOpen ? 'is-open' : ''}" id="mb-${cssId(mediumName)}">
       <div class="medium-accordion-head">
         <strong class="medium-accordion-title">${escHtml(heading)}</strong>
-        <button type="button" class="medium-accordion-toggle" aria-expanded="${isOpen}" aria-label="${isOpen ? `${heading}のサイズ入力を閉じる` : `${heading}のサイズ入力を開く`}" onclick="toggleMediumAccordion('${escJs(mediumName)}')">
-          <span class="medium-accordion-status ${selectedEntries.length ? 'is-set' : 'is-empty'}">${settingSummary}</span>
-          <span class="medium-accordion-symbol" aria-hidden="true">${isOpen ? '−' : '＋'}</span>
-        </button>
+        <span class="medium-accordion-status ${selectedEntries.length ? 'is-set' : 'is-empty'}">${settingSummary}</span>
       </div>
       <div class="medium-accordion-body" ${isOpen ? '' : 'hidden'}>
         ${suggestionHtml}
         <div class="field medium-size-field" id="f-size-${cssId(mediumName)}">
-        <div class="lbl">サイズを入力 <span class="req">必須</span></div>
+        <div class="lbl">サイズを入力 <span class="opt">任意</span></div>
         <div class="hint">画像名を含めても構いません。例：メイン 700×300</div>
         <div class="size-input-list">
           ${mediaEntry.customSizes.map((sizeValue, sizeIndex) => `
@@ -764,6 +770,14 @@ function renderMediumBlocks() {
       </div>
     </section>`;
   }).join('');
+  syncMediumAccordionSymbols();
+}
+
+function syncMediumAccordionSymbols() {
+  document.querySelectorAll('.medium-accordion-toggle').forEach(button => {
+    const symbol = button.querySelector('.medium-accordion-symbol');
+    if (symbol) symbol.textContent = button.getAttribute('aria-expanded') === 'true' ? '\u2303' : '\u2304';
+  });
 }
 
 function ensureMediaEntryQuantities(mediaEntry) {
@@ -801,6 +815,7 @@ Object.assign(planSizeData, {
   'メンエスSNS02': [{ plan: '基本', sizes: ['エリアバナー 800×400', 'インフィードバナー 900×1200', '全国版エリアバナー 800×400', 'マイページバナー 500×500'] }],
   'メンエスリクルート': [{ plan: '基本掲載', sizes: ['基本掲載 600×600', '今月の急募 640×640'] }],
   'エステラブ': [{ plan: '基本', sizes: ['集客・求人 420×315'] }],
+  'エステ魂': [{ plan: '基本掲載', sizes: ['メイン画像 1000×500'] }],
   'FENIXJOB': [{ plan: '各プラン', sizes: ['背景 2000×500', '企業バナー 400×160', 'メイン 700×340', 'サブ画像 660×420'] }],
   '野郎WORK': [{ plan: 'プラチナ', sizes: ['メイン 460×270', 'トップ 200×80', 'ヘッダー 890×290', 'サブ画像 320×220'] }, { plan: 'ゴールド・シルバー', sizes: ['メイン 460×270', 'ヘッダー 890×290'] }],
   'Erotic Guide': [{ plan: '基本', sizes: ['通常枠 630×420', '通常枠 2000×800', 'ライト枠 630×420', 'VIPバナー 500×120', 'BIGバナー 960×350', 'TOPバナー 500×120', 'サイドバナー 336×280'] }],
@@ -808,8 +823,22 @@ Object.assign(planSizeData, {
   ,'ジャニーズチケット掲示板': [{ plan: '基本掲載', sizes: ['基本掲載 300×150'] }]
 });
 
+Object.assign(planSizeData, {
+  'R-30': [
+    { plan: '基本プラン', sizes: ['140X110', '580X200', '640X480'] },
+    { plan: 'TOPバナープラン', sizes: ['200X80', '140X110', '580X200', '640X480'] },
+    { plan: '注目のお仕事プラン', sizes: ['190X120', '140X110', '580X200', '640X480'] },
+    { plan: 'VIPバナープラン', sizes: ['200X200', '300X237', '140X110', '580X200', '640X480'] },
+    { plan: 'スマホ特別バナー', sizes: ['640X140'] },
+    { plan: 'スペシャルバナー', sizes: ['640X140'] },
+    { plan: 'ライトプラン', sizes: ['140X110'] },
+    { plan: '即日体験入店', sizes: ['580X200'] }
+  ]
+});
+
 function getSizeSuggestions(mediumName) {
   const sizeGroups = [];
+  const flexibleSuggestions = mediumName === 'R-30' ? ['580×タテ自由'] : [];
   (planSizeData[mediumName] || []).forEach(plan => {
     const sizes = (plan.sizes || []).filter(sizeLabel => /\d/.test(sizeLabel) && /[×xX]/.test(sizeLabel));
     sizes.forEach(sizeLabel => {
@@ -825,9 +854,9 @@ function getSizeSuggestions(mediumName) {
       }
     });
   });
-  return sizeGroups
+  return flexibleSuggestions.concat(sizeGroups
     .map(group => formatPlanSizeLabel(formatCombinedPlanName(group.planNames), group.sizeLabel))
-    .sort((left, right) => getSizeSuggestionPriority(left) - getSizeSuggestionPriority(right));
+    .sort((left, right) => getSizeSuggestionPriority(left) - getSizeSuggestionPriority(right)));
 }
 
 function normalizePlanNameForDisplay(mediumName, planName) {
@@ -864,6 +893,9 @@ function formatPlanSizeLabel(planName, sizeLabel) {
 function splitSizeSuggestion(sizeLabel) {
   const tags = [];
   let remainder = sizeLabel.trim();
+  if (/^\d+\s*[×xX]\s*タテ自由$/.test(remainder)) {
+    return { plan: '', title: '', dimension: remainder.replace(/\s+/g, ''), note: '' };
+  }
   let tagMatch = remainder.match(/^【([^】]+)】\s*/);
   while (tagMatch) {
     tags.push(tagMatch[1]);
@@ -950,7 +982,7 @@ function updateCustomSize(mediumName, sizeIndex, value) {
 function updateMediumAccordionSummary(mediumName) {
   const block = document.getElementById('mb-' + cssId(mediumName));
   if (!block) return;
-  const summary = block.querySelector('.medium-accordion-toggle span');
+  const summary = block.querySelector('.medium-accordion-status');
   if (!summary) return;
   const entries = getSelectedSizeEntriesForMedium(mediumName);
   const total = entries.reduce((sum, entry) => sum + entry.quantity, 0);
@@ -983,15 +1015,13 @@ function removeCustomSize(mediumName, sizeIndex) {
 }
 
 function hasMediumSize(mediumName) {
-  const mediaEntry = state.mediaState[mediumName];
-  return !!(mediaEntry && (
-    mediaEntry.selectedSizes.length ||
-    mediaEntry.customSizes.some(sizeValue => sizeValue.trim())
-  ));
+  return getSelectedSizeEntriesForMedium(mediumName).some(entry => Number(entry.quantity) > 0);
 }
 
 function validateSelectedMediaSizes() {
-  let ok = true;
+  let ok = state.selectedMedia.length > 0;
+  const mediumField = document.getElementById('f-medium');
+  if (mediumField) mediumField.classList.toggle('inv', !state.selectedMedia.length);
   state.selectedMedia.forEach(mediumName => {
     const field = document.getElementById(`f-size-${cssId(mediumName)}`);
     if (!field) return;
@@ -1425,7 +1455,7 @@ function renderCardTemplate(prefix, card, opts) {
 
     <div class="field file-share-url-field">
       <div class="lbl">ファイル共有URL <span class="opt">任意</span></div>
-      <div class="hint">ギガファイル便、Googleドライブなどの共有URLを入力してください</div>
+      <div class="hint">ギガファイル便、Googleドライブ、共有ドライブの共有リンクを入力してください。複数ある場合は改行してください。</div>
       <div class="file-share-url-row">
         <input type="url" id="fs-${prefix}" class="control-w-lg file-share-url-input" placeholder="https://" value="${escAttr(card.fileShareUrl || '')}" oninput="updateCardField('${prefix}','fileShareUrl',this.value)">
         <button type="button" class="btn file-share-open-button" onclick="window.open('https://gigafile.nu/','_blank','noopener,noreferrer')">ギガファイル便を開く</button>
@@ -1458,26 +1488,21 @@ function renderCardTemplate(prefix, card, opts) {
           ${COLOR_ROLE_CONFIG.map(role => {
             const roleValue = getColorRoleValue(card, role.key);
             const roleOther = getColorRoleOther(card, role.key);
+            const codeKey = role.key === 'sub' ? 'baseColorCode' : role.key === 'accent' ? 'accentColorCode' : 'mainColorCode';
+            const roleCode = normalizeColorCode(card[codeKey]) || COLOR_PRESET_CODES[roleValue] || '';
+            const pickerValue = roleCode || '#FFFFFF';
             const roleMarkup = `<div class="color-role-field">
               <div class="color-role-heading"><strong>${role.label}</strong><span class="opt">${role.hint}</span></div>
-              <div class="color-choice-grid" role="radiogroup" aria-label="${role.label}">
-                ${COLOR_OPTIONS.map(color => {
-                  const selected = roleValue === color;
-                  const chip = COLOR_PRESET_CODES[color] || (color === 'その他' ? '#d9d9d4' : 'transparent');
-                  return `<button type="button" class="color-choice ${selected ? 'is-selected' : ''} ${color === '白' ? 'is-white' : ''} ${color === '黒' ? 'is-dark' : ''}" style="--swatch:${chip}" onclick="setColorRole('${prefix}','${role.key}','${escJs(color)}')"><span class="color-chip" aria-hidden="true"></span><span>${escHtml(color)}</span></button>`;
-                }).join('')}
-              </div>
-              <div class="color-other-field" style="display:${roleValue === 'その他' ? 'block' : 'none'}">
-                <div class="hint">色名またはカラーコードを入力してください</div>
-                <input type="text" class="control-w-md" value="${escAttr(roleOther)}" placeholder="例：ベージュ / ネイビー / #FF0000" oninput="updateColorRoleOther('${prefix}','${role.key}',this.value)">
+              <div class="color-picker-code-row">
+                <label class="color-picker-control">色見本
+                  <input type="color" id="${codeKey}-picker-${prefix}" value="${pickerValue}" aria-label="${role.label}の色見本" oninput="setColorPicker('${prefix}','${codeKey}',this.value)">
+                </label>
+                <label class="color-code-control">カラーコード
+                  <input type="text" id="${codeKey}-code-${prefix}" class="color-code-input" value="${escAttr(roleCode)}" placeholder="#RRGGBB" inputmode="text" maxlength="7" oninput="updateColorCode('${prefix}','${codeKey}',this.value)">
+                </label>
               </div>
             </div>`;
-            return role.key === 'main'
-              ? roleMarkup
-              : `<details class="color-role-collapsible">
-                  <summary><strong>${role.label}</strong><span class="opt">${role.hint}</span><span class="color-role-current">${roleValue ? `選択中：${escHtml(roleValue)}` : '未指定'}</span></summary>
-                  ${roleMarkup}
-                </details>`;
+            return roleMarkup;
           }).join('')}
         </div>
         <div class="color-direction-hint">
@@ -1646,6 +1671,7 @@ function setColorPreset(prefix, colorKey, codeKey, colorName) {
 function setColorPicker(prefix, codeKey, value) {
   const colorCode = normalizeColorCode(value);
   const card = getCard(prefix);
+  if (!card) return;
   card[codeKey] = colorCode;
   const codeInput = document.getElementById(`${codeKey}-code-${prefix}`);
   if (codeInput) {
@@ -1653,10 +1679,12 @@ function setColorPicker(prefix, codeKey, value) {
     codeInput.classList.remove('invalid');
   }
   refreshInstructionCompletionIndicators();
+  saveDraft();
 }
 
 function updateColorCode(prefix, codeKey, value) {
   const card = getCard(prefix);
+  if (!card) return;
   const colorCode = normalizeColorCode(value);
   card[codeKey] = colorCode || value.trim().toUpperCase();
   const codeInput = document.getElementById(`${codeKey}-code-${prefix}`);
@@ -1664,6 +1692,7 @@ function updateColorCode(prefix, codeKey, value) {
   if (codeInput) codeInput.classList.toggle('invalid', !!value && !colorCode);
   if (picker && colorCode) picker.value = colorCode;
   refreshInstructionCompletionIndicators();
+  saveDraft();
 }
 
 function setAdvancedInstructionsOpen(prefix, isOpen) {
@@ -1982,9 +2011,9 @@ function setColorChoice(prefix, colorName) {
 }
 
 function getColorRoleValue(card, roleKey) {
-  if (roleKey === 'sub') return card.baseColor || '';
-  if (roleKey === 'accent') return card.accentColor || '';
-  return card.mainColor || card.colorChoice || '';
+  if (roleKey === 'sub') return card.baseColor || card.baseColorCode || '';
+  if (roleKey === 'accent') return card.accentColor || card.accentColorCode || '';
+  return card.mainColor || card.colorChoice || card.mainColorCode || '';
 }
 
 function getColorRoleOther(card, roleKey) {
@@ -2415,6 +2444,8 @@ setDelivery = function(value) {
   if (buttonId) document.getElementById('rb-' + buttonId)?.classList.add('sel');
   const dateInput = document.getElementById('date-input');
   if (dateInput) dateInput.style.display = value === '\u7d0d\u671f\u6307\u5b9a' ? 'block' : 'none';
+  const showRateTable = value === '\u7d0d\u671f\u6307\u5b9a';
+  document.querySelectorAll('.deadline-rate-note, .deadline-rate-details').forEach(el => { el.hidden = !showRateTable; });
   const picker = document.getElementById('delivery-calendar-picker');
   if (picker) picker.hidden = true;
   document.getElementById('f-delivery')?.classList.remove('inv');
@@ -2500,10 +2531,12 @@ function cardSummary(card, isIndividual) {
   const worldviewTxt = card.moods.filter(mood => WORLDVIEW_OPTIONS.includes(mood)).join('・') || '—';
   const colorTxt = COLOR_ROLE_CONFIG.map(role => {
     const value = getColorRoleValue(card, role.key);
-    if (!value) return `${role.label}：—`;
-    if (value === 'その他') return `${role.label}：その他（${getColorRoleOther(card, role.key) || '未入力'}）`;
     const codeKey = role.key === 'sub' ? 'baseColorCode' : role.key === 'accent' ? 'accentColorCode' : 'mainColorCode';
-    return `${role.label}：${value}${card[codeKey] ? `（${card[codeKey]}）` : ''}`;
+    const roleCode = normalizeColorCode(card[codeKey]);
+    if (!value && !roleCode) return `${role.label}：—`;
+    if (value === 'その他') return `${role.label}：その他（${getColorRoleOther(card, role.key) || '未入力'}）`;
+    const presetName = COLOR_PRESET_CODES[value] ? value : '';
+    return `${role.label}：${presetName ? `${presetName} ` : ''}${roleCode || value}`;
   }).join(' / ');
   const personUsage = card.personUsage || (card.person === '使用しない' ? '使用しない' : (card.person ? '使用する' : ''));
   let assetExtra = '';
@@ -2582,7 +2615,7 @@ function buildPreview() {
     <div class="psec">
       <div class="psec-h">業種・媒体・サイズ</div>
       <div class="prow"><span class="pk">業種</span><span class="pv">${state.industry === 'その他' ? state.industryOther || 'その他' : state.industry || '—'}</span></div>
-      <div class="prow"><span class="pk">制作内容</span><span class="pv">${state.productionType || '—'}</span></div>
+      <div class="prow"><span class="pk">制作内容</span><span class="pv">${getProductionTypeSelections().join('・') || '—'}</span></div>
       ${mediaDetailHtml || '<div class="prow"><span class="pk">媒体</span><span class="pv">—</span></div>'}
       <div class="prow"><span class="pk">媒体・サイズ（自動まとめ）</span><span class="pv">${fieldValue('inp-imgsize')}</span></div>
       <div class="prow"><span class="pk">画像総枚数</span><span class="pv">${fieldValue('inp-count')}枚</span></div>
@@ -2637,6 +2670,9 @@ function validate(step) {
   };
 
   if (step === 1) {
+    // 依頼者情報は必須表示を残しつつ、未入力でも次へ進める。
+    ['f-office', 'f-staff', 'f-agent', 'f-email'].forEach(id => document.getElementById(id)?.classList.remove('inv'));
+    return ok;
     req('f-office', () => document.getElementById('sel-office').value);
     const officeValue = document.getElementById('sel-office').value;
     if (officeValue === 'VOTEC' || officeValue === 'その他')
@@ -2861,7 +2897,7 @@ async function nextStep() {
     if (!(await confirmBlankDesignInstructions())) return;
   }
   // サイズ未入力の媒体だけは、テスト用の未完了ナビゲーションでも先へ進ませない。
-  if (!TEST_MODE_ALLOW_INCOMPLETE_NAVIGATION && currentStep === 3 && !validateSelectedMediaSizes()) {
+  if (currentStep === 3 && !validateSelectedMediaSizes()) {
     scrollToFirstError();
     return;
   }
@@ -2888,6 +2924,10 @@ function submit() {
   deleteDraft({silent: true});
   goTo(totalSteps + 1);
   document.getElementById('req-id').textContent = 'BNR-' + Date.now().toString(36).toUpperCase();
+}
+
+function continueRequest() {
+  window.location.href = 'form.html?new=' + Date.now();
 }
 
 /* ========== 一時保存（明示操作のみ） ========== */
@@ -3018,13 +3058,13 @@ function restoreDraftUI(draft) {
     button.classList.toggle('sel', button.textContent.trim() === state.industry);
   });
   document.querySelectorAll('#production-type-btns .rbtn').forEach(button => {
-    button.classList.toggle('sel', button.textContent.trim() === state.productionType);
+    button.classList.toggle('sel', getProductionTypeSelections().includes(button.textContent.trim()));
   });
   document.querySelectorAll('.fuzoku-warn').forEach(warning => {
     warning.style.display = state.industry === '風俗' ? 'flex' : 'none';
   });
   document.getElementById('f-industry-other').style.display = state.industry === 'その他' ? 'block' : 'none';
-  renderMediumChips(state.productionType);
+  renderMediumChips(getProductionTypeSelections());
   renderMediumBlocks();
   document.getElementById('f-medium-other').style.display =
     state.selectedMedia.includes('その他') ? 'block' : 'none';
@@ -3111,10 +3151,10 @@ function addWorkingDaysAfterRequest(date, businessDays) {
 }
 
 const DELIVERY_CARD_TYPES = [
-  { label: '2営業日', days: 2 },
-  { label: '5営業日', days: 5 },
-  { label: '7営業日', days: 7 },
-  { label: '10営業日', days: 10 }
+  { label: '2営業日案件', days: 2 },
+  { label: '5営業日案件', days: 5 },
+  { label: '7営業日案件', days: 7 },
+  { label: '10営業日案件', days: 10 }
 ];
 
 function renderTodayDeadline(today) {
@@ -3122,6 +3162,12 @@ function renderTodayDeadline(today) {
   if (!container) return;
   const closed = isNonWorkingDeliveryDate(toDateInputValue(today));
   const liveSchedule = DELIVERY_SCHEDULE_BY_DATE.get(toDateInputValue(today));
+  const exampleByDays = {
+    2: '文言修正・人物変更・リサイズなどの軽微な修正',
+    5: '新規作成・デザイン変更・季節変更などの中規模案件',
+    7: '4デザイン以上・GIF 3デザイン以上・総枚数10枚以上などの大規模案件',
+    10: '急募・料金表などの縦長画像、大型看板・複数デザインのポスターなどの特殊案件'
+  };
   const cards = DELIVERY_CARD_TYPES.map(({ label, days }) => {
     const due = addWorkingDaysAfterRequest(today, days);
     const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
@@ -3130,6 +3176,7 @@ function renderTodayDeadline(today) {
       <div class="deadline-today-label">${label}</div>
       <div class="deadline-today-term">通常納期</div>
       <div class="deadline-today-date">${dueLabel}</div>
+      <div class="deadline-today-example">${exampleByDays[days]}</div>
     </article>`;
   }).join('');
   container.innerHTML = `<div class="deadline-today-heading">本日 ${formatCalendarDate(today)} に依頼した場合</div>${cards}`;
@@ -3155,7 +3202,7 @@ function renderDeadlineCalendar() {
       const liveDue = liveSchedule ? liveSchedule[{ 5: 'five', 7: 'seven', 10: 'ten' }[days]] : '';
       return liveDue || (due ? formatCalendarDate(due) : '—');
     });
-    const deadlineLabels = ['2営業日', '5営業日', '7営業日', '10営業日'];
+    const deadlineLabels = ['2営業日案件', '5営業日案件', '7営業日案件', '10営業日案件'];
     const dueCards = dueDates.map((value, index) => `<div class="deadline-day-card-item"><span>${deadlineLabels[index]}</span><strong>${value}</strong></div>`).join('');
     rows.push(`<section class="deadline-day-row ${closed ? 'is-non-working' : ''} ${offset === 0 ? 'is-today' : ''}">
       <div class="deadline-day-request"><span class="deadline-day-request-label">依頼日</span>${offset === 0 ? '<span class="deadline-today-badge">今日</span>' : ''}<strong>${formatCalendarDate(requestDate)}</strong></div>
@@ -3268,6 +3315,7 @@ function repairStaticJapaneseLabelsFinal() {
 // label after each step is rendered.
 function repairStaticJapaneseLabels() {
   const setText = (selector, value) => document.querySelectorAll(selector).forEach(el => { el.textContent = value; });
+  const text = setText;
   const setLabel = (id, value) => { const el = document.querySelector(`#${id} .lbl`); if (el) { const badge = el.querySelector('.req,.opt'); el.textContent = value + ' '; if (badge) el.appendChild(badge); } };
   setText('.header-logo span', 'デザインオーダー');
   ['依頼者','画像種別','媒体・サイズ','デザイン指示','納期・指名','確認・送信'].forEach((v, i) => setText(`#step-${i + 1} .step-label`, v));
@@ -3286,7 +3334,7 @@ function repairStaticJapaneseLabels() {
   setText('#f-imgtype .err','画像種別を選択してください');
   setText('.imgtype-followup-kicker','追加設定'); setText('.imgtype-followup-head strong','有料案件の追加情報');
   const imgPay = document.querySelector('#f-pay-url .lbl'); if (imgPay) { const badge=imgPay.querySelector('.req,.opt'); imgPay.textContent='入稿URL '; if(badge)imgPay.appendChild(badge); }
-  setText('#f-pay-url .hint','有料案件の入稿先URLを入力してください'); setText('#f-pay-url .err','入稿URLを入力してください');
+  setText('#f-pay-url .hint','有料案件の入稿URLを入力してください'); setText('#f-pay-url .err','入稿URLを入力してください');
   const industries=['風俗','一般メンズエステ','カンパイワーク（女性）','カンパイワーク（男性）','その他'];
   document.querySelectorAll('#f-industry .rbtn').forEach((el,i)=>{ if(industries[i]){el.textContent=industries[i]; el.onclick=()=>setIndustry(industries[i],el);} });
   setText('#f-medium .hint','掲載する媒体をすべて選んでください。サイズは下の欄で設定します。');
@@ -3300,7 +3348,8 @@ function repairStaticJapaneseLabels() {
   setText('.deadline-guide-title','納期カレンダー'); setText('.deadline-calendar-intro','今日依頼した場合の通常納期です。土日・祝日・会社休日を除いた営業日で計算しています。'); setText('.deadline-calendar-details summary','今後の納期を確認');
   document.querySelectorAll('.deadline-calendar-table th').forEach((el,i)=>{el.textContent=['依頼日','2営業日','5営業日','7営業日','10営業日'][i]||el.textContent;});
   const notes=['納期目安は依頼日の翌営業日から計算となります。','内容や稼働状況によって希望に添えない場合があります。','事前予約は130%期間のみの受付となります。']; document.querySelectorAll('#p5 .deadline-note-list li').forEach((el,i)=>{if(notes[i])el.textContent=notes[i];});
-  const p5Fields=document.querySelectorAll('#p5 > .field'); if(p5Fields[1]){const l=p5Fields[1].querySelector(':scope > .lbl');if(l){const b=l.querySelector('.opt,.req');l.textContent='デザイナー指名 ';if(b)l.appendChild(b);}} setText('#p5 .select-stack .lbl',''); document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((el,i)=>el.textContent=`第${i+1}希望`); document.querySelectorAll('#p5 .select-stack option').forEach(el=>el.textContent='選択してください');
+  text('.deadline-rate-note','※納期希望による請求ポイントの変動倍率については、下記をご参照ください。');
+  const p5Fields=document.querySelectorAll('#p5 > .field'); if(p5Fields[1]){const l=p5Fields[1].querySelector(':scope > .lbl');if(l){const b=l.querySelector('.opt,.req');l.textContent='デザイナー指名 ';if(b)l.appendChild(b);}} setText('#p5 .select-stack .lbl',''); document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((el,i)=>el.textContent=`第${i+1}希望`); document.querySelectorAll('#p5 .select-stack option[value=""]').forEach(el=>el.textContent='選択してください');
   setText('#blank-design-confirm-title','デザイン指示が入力されていません'); setText('.blank-design-confirm-dialog p','おまかせでの依頼になりますが、よろしいですか？'); setText('.blank-design-confirm-secondary','入力画面に戻る'); setText('.blank-design-confirm-primary','おまかせで進む');
   setText('#btn-back','戻る'); setText('#btn-next','次へ'); setText('#btn-draft-save','一時保存'); setText('#btn-draft-delete','一時保存を削除');
   setText('.submit-notice span','送信することで利用規約に同意したものとみなします。'); setText('.terms-link','利用規約を確認');
@@ -3335,7 +3384,7 @@ function repairVisibleLabels() {
   document.querySelectorAll('#p2 .url-none-check').forEach(el=>{const input=el.querySelector('input');if(!input)return;el.replaceChildren(input);const span=document.createElement('span');span.textContent='\u0055\u0052\u004c\u306a\u3057';el.appendChild(span);});
   ['\u96f0\u56f2\u6c17','\u30c7\u30b6\u30a4\u30f3\u8981\u7d20\u30fb\u30e2\u30c1\u30fc\u30d5'].forEach((v,i)=>{const e=document.querySelectorAll('.mood-group-label')[i];if(e)e.textContent=v;});
   ['\u8868\u73fe\u30b9\u30bf\u30a4\u30eb','\u88c5\u98fe\u30fb\u30e2\u30c1\u30fc\u30d5','\u8272\u30fb\u5149','\u30c6\u30a4\u30b9\u30c8'].forEach((v,i)=>{const e=document.querySelectorAll('.mood-section-label')[i];if(e)e.textContent=v;});
-  document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((e,i)=>e.textContent=`\u7b2c${i+1}\u5e0c\u671b`);document.querySelectorAll('#p5 .select-stack option').forEach(e=>e.textContent=J.choose);
+  document.querySelectorAll('#p5 .select-stack > div > .lbl').forEach((e,i)=>e.textContent=`\u7b2c${i+1}\u5e0c\u671b`);document.querySelectorAll('#p5 .select-stack option[value=""]').forEach(e=>e.textContent=J.choose);
   // Final pass for the remaining static headings and helper text.  These values
   // are intentionally escaped so the repair layer itself cannot be corrupted by
   // the legacy mojibake strings still present in the handoff HTML.
@@ -3455,8 +3504,15 @@ function placeAdvancedInstructionsAfterDesign(root) {
 
 function normalizeOptionalInstructionLabels(root) {
   root.querySelectorAll('.instruction-text-part:first-child .req').forEach(badge => {
-    badge.className = 'opt';
-    badge.textContent = '任意';
+    if (badge.className !== 'opt') badge.className = 'opt';
+    if (badge.textContent !== '任意') badge.textContent = '任意';
+  });
+}
+
+function enforceOptionalDesignLabel(root) {
+  root.querySelectorAll('.design-label-row .req, .design-label-row .opt').forEach(badge => {
+    if (badge.className !== 'opt') badge.className = 'opt';
+    if (badge.textContent !== '\u4efb\u610f') badge.textContent = '\u4efb\u610f';
   });
 }
 
@@ -3464,10 +3520,12 @@ const instructionLayoutObserver = new MutationObserver(() => {
   document.querySelectorAll('.design-instruction-block').forEach(root => {
     placeAdvancedInstructionsAfterDesign(root);
     normalizeOptionalInstructionLabels(root);
+    enforceOptionalDesignLabel(root);
   });
 });
 instructionLayoutObserver.observe(document.body, { childList: true, subtree: true });
 document.querySelectorAll('.design-instruction-block').forEach(root => {
   placeAdvancedInstructionsAfterDesign(root);
   normalizeOptionalInstructionLabels(root);
+  enforceOptionalDesignLabel(root);
 });

@@ -576,6 +576,8 @@ input:focus, select:focus, textarea:focus {
 .btn.pri:hover { background: var(--color-primary-dark); border-color: var(--color-primary-dark); }
 
 .success { padding: 70px 20px; }
+.success-actions { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+.success-actions .btn { min-width: 160px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
 .sicon {
   width: 82px;
   height: 82px;
@@ -1031,7 +1033,35 @@ input:focus, select:focus, textarea:focus {
   gap: 9px;
   margin-top: 10px;
 }
-.color-role-list { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
+.color-picker-code-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+.color-picker-control,
+.color-picker-code-row .color-code-control {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  color: #666660;
+  font-size: 11px;
+  font-weight: 600;
+}
+.color-picker-control { flex: 0 0 auto; }
+.color-picker-control input[type="color"] {
+  width: 48px;
+  height: 38px;
+  padding: 3px;
+  border: 1px solid #c7c7c1;
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+}
+.color-picker-code-row .color-code-control { flex: 1 1 220px; }
+.color-picker-code-row .color-code-input { min-height: 38px; }
+.color-role-list { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin-top:10px; }
 .color-role-field { padding:12px; border:1px solid #e1e1db; border-radius:12px; background:#fff; }
 .color-role-heading { display:flex; align-items:center; gap:8px; margin-bottom:7px; font-size:13px; }
 .color-role-heading .opt { color:#777; font-size:11px; font-weight:500; }
@@ -1042,6 +1072,31 @@ input:focus, select:focus, textarea:focus {
 .color-role-collapsible[open] > summary::after { content:'\25B4'; }
 .color-role-current { color:#777; font-size:11px; font-weight:500; }
 .color-role-collapsible .color-role-field { border:0; border-top:1px solid #e8e8e2; border-radius:0; }
+
+@media (max-width: 600px) {
+  #f-delivery { margin-bottom: 14px; }
+  #f-delivery .radios { gap: 5px; }
+  .deadline-guide { margin-top: 0; padding: 12px 10px; }
+  .deadline-calendar-details { margin-top: 6px; }
+  .deadline-calendar-details-hint { margin: 8px 2px; line-height: 1.6; }
+  .deadline-today-label { display: inline; min-height: 0; }
+  .deadline-today-term { display: inline; margin: 0 0 0 4px; }
+}
+
+@media (max-width: 640px) {
+  .deadline-today-label { display: inline; min-height: 0; }
+  .deadline-today-term { display: inline; margin: 0 0 0 4px; }
+  .deadline-today-example { margin-top: 5px; font-size: 9px; line-height: 1.4; }
+  .deadline-day-list { gap: 4px; }
+  .deadline-day-request { min-height: 26px; padding: 4px 8px; gap: 5px; }
+  .deadline-day-request-label { font-size: 9px; }
+  .deadline-day-request strong { font-size: 12px; }
+  .deadline-today-badge { padding: 1px 5px; font-size: 8px; }
+  .deadline-day-card-item { min-height: 40px; padding: 5px 8px; gap: 2px; }
+  .deadline-day-card-item span { font-size: 9px; }
+  .deadline-day-card-item strong { font-size: 12px; }
+  .deadline-day-closed { padding: 5px 8px; font-size: 10px; }
+}
 .color-choice {
   display: inline-flex;
   min-height: 46px;
@@ -1075,6 +1130,17 @@ input:focus, select:focus, textarea:focus {
 .color-choice.is-dark { color: #111; }
 .color-other-field { margin-top: 10px; }
 @media (max-width: 640px) {
+  .color-picker-code-row { flex-wrap: wrap; gap: 9px; }
+  .color-picker-code-row .color-code-control { flex: 1 1 180px; }
+  .color-role-list { grid-template-columns:1fr; gap: 8px; margin-top: 7px; }
+  .color-role-field { gap: 5px; padding: 8px 10px; border-radius: 10px; }
+  .color-role-heading { margin-bottom: 0; font-size: 12px; }
+  .color-role-heading .opt { font-size: 10px; }
+  .color-picker-code-row { margin-top: 3px; gap: 7px; }
+  .color-picker-control,
+  .color-picker-code-row .color-code-control { gap: 3px; font-size: 10px; }
+  .color-picker-control input[type="color"] { width: 42px; height: 34px; }
+  .color-picker-code-row .color-code-input { min-height: 34px; padding: 6px 8px; }
   .color-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .color-choice { min-height: 48px; }
 }
@@ -1395,6 +1461,9 @@ textarea {
   margin: var(--form-section-space) 0 24px;
   padding-bottom: 13px;
 }
+#p2 > .subhead + .field {
+  margin-top: 10px;
+}
 
 .field {
   margin-bottom: var(--form-item-space);
@@ -1498,7 +1567,7 @@ textarea {
 .deadline-today {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   margin: 14px 0 16px;
 }
 .deadline-today-heading {
@@ -1509,20 +1578,22 @@ textarea {
 }
 .deadline-today-card {
   min-width: 0;
-  padding: 14px 12px 13px;
+  padding: 10px 11px 9px;
   border: 1px solid var(--color-border, #d8d8d2);
   border-radius: 12px;
   background: #fff;
 }
 .deadline-today-label {
-  min-height: 2.8em;
+  display: inline;
+  min-height: 0;
   color: var(--color-text, #22221f);
   font-size: 12px;
   font-weight: 800;
   line-height: 1.45;
 }
 .deadline-today-term {
-  margin-top: 6px;
+  display: inline;
+  margin: 0 0 0 4px;
   color: var(--color-text-muted, #686862);
   font-size: 11px;
 }
@@ -1539,6 +1610,16 @@ textarea {
   color: var(--color-text-muted, #686862);
   font-size: 10px;
   line-height: 1.45;
+}
+.deadline-today-example {
+  display: -webkit-box;
+  margin-top: 5px;
+  color: var(--color-text-muted, #686862);
+  font-size: 9px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .deadline-today-card.is-disabled {
   background: #f0f0ed;
@@ -1928,9 +2009,9 @@ textarea {
 .request-details-grid .billing-summary #f-pay-url {
   width: 100%;
   max-width: 760px;
-  margin-top: 16px !important;
+  margin: 16px 0 0 !important;
   margin-left: 0;
-  padding: 16px;
+  padding: 12px 16px 10px;
   border: 1px solid #d9d9d4;
   border-radius: 10px;
   background: #f7f7f5;
@@ -2070,9 +2151,11 @@ textarea {
 
 @media (max-width: 760px) {
   .imgtype-followup {
-    margin-top: 12px;
-    padding: 15px 13px 16px;
+    margin-top: 8px;
+    padding: 10px 11px 6px;
   }
+  .imgtype-followup > #f-pay-url { margin-bottom: 0; }
+  .imgtype-followup #f-pay-url .hint { margin-bottom: 0; }
   .imgtype-followup-head {
     align-items: flex-start;
     flex-direction: column;
@@ -2367,11 +2450,12 @@ textarea {
 .medium-accordion-status {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 3px 9px;
+  min-height: 20px;
+  padding: 2px 7px;
   border-radius: 999px;
   background: #eeeee9;
   color: #555550;
+  font-size: 10px;
   line-height: 1;
 }
 .medium-accordion-status.is-empty {
@@ -2400,6 +2484,17 @@ textarea {
   border-color: #777771;
   background: #f1f1ee;
 }
+.medium-accordion-symbol {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #555550;
+  font-size: 19px;
+  font-weight: 700;
+}
+.medium-accordion-toggle:hover .medium-accordion-symbol { background: #f1f1ee; }
 .design-copy-note {
   align-items: center;
   gap: 5px;
@@ -2680,6 +2775,12 @@ textarea {
   .draft-restore-actions .btn { width: 100%; }
   .nav-right-actions { gap: 7px; }
   .nav-right-actions .draft-status { flex-basis: 100%; text-align: right; }
+  .nav { display: flex; align-items: center; gap: 7px; min-height: 58px; }
+  .nav > #btn-back { flex: 0 0 auto; }
+  .nav-right-actions { flex: 1 1 auto; gap: 6px; margin-left: 0; flex-wrap: nowrap; }
+  .nav-right-actions .draft-status { position: absolute; right: 10px; bottom: calc(100% + 4px); flex-basis: auto; white-space: nowrap; }
+  .draft-save-button { min-height: 40px; padding: 8px 10px; white-space: nowrap; }
+  .nav-right-actions .btn.pri { min-width: 0; flex: 1 1 auto; padding-inline: 12px; }
 }
 @media (max-width: 680px) {
   #medium-chips { grid-template-columns: 1fr; column-gap: 0; }
@@ -3790,6 +3891,15 @@ textarea {
 }
 
 @media (max-width: 600px) {
+  /* Keep instruction blocks visually consistent on small screens. */
+  .design-instruction-block > .field > .lbl,
+  .img-card-body > .field > .lbl { margin-bottom: 7px; }
+  .design-instruction-block > .field > .hint,
+  .img-card-body > .field > .hint { margin-top: 5px; line-height: 1.5; }
+  .design-instruction-block > .field + .field,
+  .img-card-body > .field + .field { padding-top: 18px; }
+  .attachment-field .upload-box { margin-top: 10px; }
+  .file-share-url-row { margin-top: 7px; }
   .instruction-section-heading {
     align-items: flex-start;
     flex-direction: column;
@@ -3939,3 +4049,60 @@ textarea {
 .industry-other-wrap.inv .err {
   display: block;
 }
+
+#p5 .select-stack { gap: 14px; }
+@media (max-width: 760px) {
+  #p5 .select-stack { gap: 12px; }
+}
+
+@media (max-width: 760px) {
+  #p2 .subhead, #p3 .subhead { margin-top: 16px; margin-bottom: 10px; }
+  #p2 .field, #p3 .field { margin-bottom: 18px; }
+  #p3 #f-industry .radios { column-gap: 4px; row-gap: 2px; }
+  #p3 #f-industry .rbtn { min-height: 36px; padding: 7px 10px 7px 28px; }
+  .subhead { margin-top: 16px; margin-bottom: 10px; }
+  .field { margin-bottom: 20px; }
+  .psub { margin-bottom: 22px; }
+  #f-industry { margin-bottom: 14px; }
+  #f-industry .radios { column-gap: 4px; row-gap: 0; }
+  #f-industry .rbtn { min-height: 32px; padding: 5px 8px 5px 27px; }
+}
+
+/* Final mobile spacing for delivery preference and deadline cards. */
+@media (max-width: 600px) {
+  #f-delivery { margin-bottom: 14px; }
+  #f-delivery .radios { gap: 5px; }
+  .deadline-guide { margin-top: 0; padding: 12px 10px; }
+  .deadline-calendar-details { margin-top: 6px; }
+  .deadline-calendar-details-hint { margin: 8px 2px; line-height: 1.6; }
+  .deadline-today-label { display: inline; min-height: 0; }
+  .deadline-today-term { display: inline; margin: 0 0 0 4px; }
+}
+
+@media (max-width: 640px) {
+  .deadline-today-label { display: inline; min-height: 0; }
+  .deadline-today-term { display: inline; margin: 0 0 0 4px; }
+}
+
+/* Keep the expanded date-by-date deadline list compact on phones. */
+@media (max-width: 640px) {
+  .deadline-day-list { gap: 3px; }
+  .deadline-day-request { min-height: 24px; padding: 3px 7px; gap: 4px; }
+  .deadline-day-request-label { font-size: 9px; }
+  .deadline-day-request strong { font-size: 11px; }
+  .deadline-today-badge { padding: 1px 4px; font-size: 8px; }
+  .deadline-day-card-item { min-height: 36px; padding: 4px 7px; gap: 1px; }
+  .deadline-day-card-item span { font-size: 9px; }
+  .deadline-day-card-item strong { font-size: 11px; }
+  .deadline-day-closed { padding: 4px 7px; font-size: 9px; }
+}
+
+.deadline-rate-details { margin-top: 8px; border: 1px solid #d9d9d4; border-radius: 8px; background: #fff; }
+.deadline-rate-details summary { cursor: pointer; padding: 8px 10px; font-size: 12px; font-weight: 700; }
+.deadline-rate-table-wrap { overflow-x: auto; padding: 0 8px 8px; }
+.deadline-rate-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 10px; text-align: center; }
+.deadline-rate-table th, .deadline-rate-table td { border: 1px solid #c9c9c5; padding: 5px 4px; line-height: 1.35; }
+.deadline-rate-table thead th { background: #8f8f8f; color: #fff; font-weight: 700; }
+.deadline-rate-table thead th:first-child { background: #12b89e; }
+.deadline-rate-table tbody th { background: #fafaf8; white-space: nowrap; }
+.deadline-rate-table small { color: #e33434; font-size: 9px; }
