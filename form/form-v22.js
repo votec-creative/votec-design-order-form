@@ -3246,7 +3246,8 @@ function loadCalendarFromApi() {
 function repairStaticJapaneseLabelsFinal() {
   const text = (selector, value) => { const el = document.querySelector(selector); if (el) el.textContent = value; };
   const label = (id, value) => { const el = document.querySelector(`#${id} .lbl`); if (el && el.firstChild) el.firstChild.nodeValue = `${value} `; };
-  text('.header-logo span', 'デザインオーダー');
+  text('.wordmark-primary', 'DESIGN');
+  text('.wordmark-secondary', 'ORDER');
   ['依頼者', '画像種別', '媒体・サイズ', 'デザイン指示', '納期・指名', '確認・送信'].forEach((value, i) => text(`#l${i + 1}`, value));
   text('#p1 .ptitle', '依頼者情報');
   text('#p1 .psub', '支社・担当者情報を入力してください。支社を選ぶと担当営業者が絞り込まれます。');
@@ -3317,7 +3318,8 @@ function repairStaticJapaneseLabels() {
   const setText = (selector, value) => document.querySelectorAll(selector).forEach(el => { el.textContent = value; });
   const text = setText;
   const setLabel = (id, value) => { const el = document.querySelector(`#${id} .lbl`); if (el) { const badge = el.querySelector('.req,.opt'); el.textContent = value + ' '; if (badge) el.appendChild(badge); } };
-  setText('.header-logo span', 'デザインオーダー');
+  setText('.wordmark-primary', 'DESIGN');
+  setText('.wordmark-secondary', 'ORDER');
   ['依頼者','画像種別','媒体・サイズ','デザイン指示','納期・指名','確認・送信'].forEach((v, i) => setText(`#step-${i + 1} .step-label`, v));
   setText('#p1 .ptitle', '依頼者'); setText('#p1 .psub', '依頼者情報を入力してください。');
   setText('#p2 .ptitle', '画像種別・依頼内容'); setText('#p2 .psub', '画像の種類と依頼内容を選択してください。');
@@ -3373,7 +3375,7 @@ function repairVisibleLabels() {
     d1:'\u5e0c\u671b\u306a\u3057\uff08\u901a\u5e38\u7d0d\u671f\uff09',d2:'\u4e8b\u524d\u4e88\u7d04\u5206\uff08\u901a\u5e38\u7d0d\u671f\uff09',d3:'\u7d0d\u671f\u6307\u5b9a',
     back:'\u623b\u308b',next:'\u6b21\u3078',send:'\u9001\u4fe1\u3059\u308b',choose:'\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044'
   };
-  t('.header-logo span',J.logo); ['\u4f9d\u983c\u8005','\u753b\u50cf\u7a2e\u5225','\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba','\u30c7\u30b6\u30a4\u30f3\u6307\u793a','\u7d0d\u671f\u30fb\u6307\u540d','\u78ba\u8a8d\u30fb\u9001\u4fe1'].forEach((v,i)=>t(`#step-${i+1} .step-label`,v));
+  t('.wordmark-primary','DESIGN');t('.wordmark-secondary','ORDER'); ['\u4f9d\u983c\u8005','\u753b\u50cf\u7a2e\u5225','\u5a92\u4f53\u30fb\u30b5\u30a4\u30ba','\u30c7\u30b6\u30a4\u30f3\u6307\u793a','\u7d0d\u671f\u30fb\u6307\u540d','\u78ba\u8a8d\u30fb\u9001\u4fe1'].forEach((v,i)=>t(`#step-${i+1} .step-label`,v));
   t('#p1 .ptitle',J.p1);t('#p2 .ptitle',J.p2);t('#p3 .ptitle',J.p3);t('#p4 .ptitle',J.p4);t('#p5 .ptitle',J.p5);t('#p6 .ptitle',J.p6);
   label('f-imgtype',J.img);label('f-shop',J.shop);label('f-area',J.area);label('f-shopurl',J.url);label('f-shopurl2',J.url2);label('f-industry',J.industry);label('f-medium',J.medium);label('f-delivery',J.delivery);
   [['rc-new',J.new,'\u65b0\u3057\u304f\u30c7\u30b6\u30a4\u30f3\u3092\u4f5c\u6210\u3059\u308b',J.point],['rc-fix',J.fix,'\u904e\u53bb\u306b\u5236\u4f5c\u3057\u305f\u753b\u50cf\u306e\u4fee\u6b63\u30fb\u5909\u66f4\u30fb\u30ea\u30b5\u30a4\u30ba\u306a\u3069',J.point],['rc-pay',J.paid,'\u6709\u6599\u3067\u306e\u5236\u4f5c',J.paid]].forEach(([id,a,b,c])=>{const e=document.getElementById(id);if(!e)return;const x=e.querySelector('.rcard-title'),y=e.querySelector('.rcard-sub'),z=e.querySelector('.rcard-billing');if(x)x.textContent=a;if(y)y.textContent=b;if(z)z.textContent=c;});
