@@ -2773,8 +2773,8 @@ textarea {
 }
 .blank-design-confirm-dialog h2 { margin: 0 0 10px; font-size: 18px; }
 .blank-design-confirm-dialog p { margin: 0; color: var(--color-text-muted, #686862); line-height: 1.7; }
-.blank-design-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
-.blank-design-confirm-actions .btn { min-height: 42px; padding-inline: 16px; }
+.blank-design-confirm-actions { display: flex; align-items: stretch; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.blank-design-confirm-actions .btn { min-height: 42px; padding-inline: 16px; justify-content: center; text-align: center; }
 .nav-right-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-width: 0; margin-left: auto; flex-wrap: wrap; }
 .draft-save-button { min-height: 40px; }
 .draft-delete-button { border: 0; background: transparent; color: var(--color-text-muted, #686862); text-decoration: underline; cursor: pointer; padding: 6px 2px; font-size: 12px; }
@@ -2790,8 +2790,8 @@ textarea {
 .draft-restore-actions .btn { min-height: 42px; padding-inline: 16px; }
 @media (max-width: 560px) {
   .blank-design-confirm-dialog { padding: 22px 18px 18px; }
-  .blank-design-confirm-actions { flex-direction: column-reverse; }
-  .blank-design-confirm-actions .btn { width: 100%; }
+  .blank-design-confirm-actions { display: grid; grid-template-columns: 1fr; }
+  .blank-design-confirm-actions .btn { width: 100%; margin: 0; }
   .draft-restore-dialog { padding: 22px 18px 18px; }
   .draft-restore-actions { flex-direction: column-reverse; }
   .draft-restore-actions .btn { width: 100%; }

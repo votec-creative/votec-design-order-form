@@ -2865,6 +2865,7 @@ function resolveBlankDesignModal(accept) {
     rerenderDesignInstructions();
   }
   if (modal) modal.hidden = true;
+  document.body.style.overflow = modal?.dataset.previousBodyOverflow || '';
   const resolver = blankDesignModalResolver;
   blankDesignModalResolver = null;
   resolver?.(accept);
@@ -2882,8 +2883,15 @@ function confirmBlankDesignInstructions() {
   if (!getBlankDesignInstructionCards().length) return Promise.resolve(true);
   const modal = document.getElementById('blank-design-confirm-modal');
   if (!modal) return Promise.resolve(true);
+  if (modal.parentElement !== document.body) document.body.appendChild(modal);
+  modal.dataset.previousBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
   modal.hidden = false;
-  requestAnimationFrame(() => modal.querySelector('.blank-design-confirm-primary')?.focus());
+  modal.scrollTop = 0;
+  requestAnimationFrame(() => {
+    modal.querySelector('.blank-design-confirm-dialog')?.scrollIntoView({ block: 'center' });
+    modal.querySelector('.blank-design-confirm-primary')?.focus({ preventScroll: true });
+  });
   return new Promise(resolve => { blankDesignModalResolver = resolve; });
 }
 
