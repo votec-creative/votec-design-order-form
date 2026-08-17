@@ -3520,9 +3520,13 @@ function normalizeOptionalInstructionLabels(root) {
 }
 
 function enforceOptionalDesignLabel(root) {
-  root.querySelectorAll('.design-label-row .req, .design-label-row .opt').forEach(badge => {
-    if (badge.className !== 'opt') badge.className = 'opt';
-    if (badge.textContent !== '\u4efb\u610f') badge.textContent = '\u4efb\u610f';
+  root.querySelectorAll('.design-label-row').forEach(label => {
+    const badges = [...label.querySelectorAll('.req, .opt')];
+    const badge = badges.shift();
+    badges.forEach(extraBadge => extraBadge.remove());
+    if (!badge) return;
+    badge.className = 'opt';
+    badge.textContent = '\u4efb\u610f';
   });
 }
 
