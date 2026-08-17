@@ -3525,8 +3525,8 @@ function enforceOptionalDesignLabel(root) {
     const badge = badges.shift();
     badges.forEach(extraBadge => extraBadge.remove());
     if (!badge) return;
-    badge.className = 'opt';
-    badge.textContent = '\u4efb\u610f';
+    if (badge.className !== 'opt') badge.className = 'opt';
+    if (badge.textContent !== '\u4efb\u610f') badge.textContent = '\u4efb\u610f';
   });
 }
 
